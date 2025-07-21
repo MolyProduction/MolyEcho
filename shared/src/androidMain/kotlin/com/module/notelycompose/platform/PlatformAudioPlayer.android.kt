@@ -40,10 +40,30 @@ actual class PlatformAudioPlayer {
     }
 
     actual fun getCurrentPosition(): Int {
-        return mediaPlayer?.currentPosition ?: 0
+        return try {
+            mediaPlayer?.takeIf { isInValidStateForPlayback() }?.currentPosition ?: 0
+        } catch (e: IllegalStateException) {
+            // MediaPlayer is in invalid state, return 0
+            0
+        }
     }
 
     actual fun isPlaying(): Boolean {
         return mediaPlayer?.isPlaying ?: false
+    }
+
+    /**
+     * Checks if MediaPlayer is in a valid state for operations
+     * This helps prevent IllegalStateException crashes
+     */
+    private fun isInValidStateForPlayback(): Boolean {
+        val player = mediaPlayer ?: return false
+        return try {
+            // Try to access a property that would throw if in invalid state
+            player.isPlaying
+            true
+        } catch (e: IllegalStateException) {
+            false
+        }
     }
 }
