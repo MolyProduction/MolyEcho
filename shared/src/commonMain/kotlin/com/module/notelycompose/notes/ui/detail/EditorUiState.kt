@@ -15,7 +15,8 @@ data class EditorUiState(
     val selectionSize: TextFormatUiOption = TextUiFormats.Body,
     val recording: RecordingPathUiModel,
     val isStarred: Boolean,
-    val createdAt: String
+    val createdAt: String,
+    val bodyTextSize: Float
 )
 
 data class TextUiFormat(

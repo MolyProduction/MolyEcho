@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+private const val TEXT_SIZE_BODY = 14f
+
 class PreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -67,7 +69,7 @@ class PreferencesRepository(
     }
 
     suspend fun getBodyTextSize(): Float {
-        return dataStore.data.first()[KEY_BODY_TEXT_SIZE] ?: 14f
+        return dataStore.data.first()[KEY_BODY_TEXT_SIZE] ?: TEXT_SIZE_BODY
     }
 
     suspend fun setBodyTextSize(size: Float) {

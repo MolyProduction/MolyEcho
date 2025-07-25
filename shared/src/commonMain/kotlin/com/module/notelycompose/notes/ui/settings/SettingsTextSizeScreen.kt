@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.sp
 import com.module.notelycompose.notes.ui.detail.AndroidNoteTopBar
 import com.module.notelycompose.notes.ui.detail.IOSNoteTopBar
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
+import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.accessibility
 import com.module.notelycompose.resources.accessibility_a
 import com.module.notelycompose.resources.accessibility_desc
 import com.module.notelycompose.resources.accessibility_example
@@ -36,36 +36,46 @@ import com.module.notelycompose.resources.body_text_default
 import com.module.notelycompose.resources.body_text_size
 import com.module.notelycompose.resources.recording_ui_checkmark
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
-const val HIDE_TIME_ELAPSE = 1500L
+private const val HIDE_TIME_ELAPSE = 1500L
+private const val MIN_TEXT_SIZE = 12f
+private const val MAX_TEXT_SIZE = 32f
 
-@Composable
-fun SettingsTextSizeScreen(
-    navigateBack: () -> Unit
-) {
-    TextSizeSlider(
-        modifier = Modifier,
-        navigateBack = navigateBack
-    )
+// Function to convert text size to slider value (0.0 to 1.0)
+private fun textSizeToSliderValue(textSize: Float): Float {
+    return ((textSize - MIN_TEXT_SIZE) / (MAX_TEXT_SIZE - MIN_TEXT_SIZE)).coerceIn(0f, 1f)
+}
+
+// Function to convert slider value to text size
+private fun sliderValueToTextSize(sliderValue: Float): Float {
+    return MIN_TEXT_SIZE + (MAX_TEXT_SIZE - MIN_TEXT_SIZE) * sliderValue
 }
 
 @Composable
-fun TextSizeSlider(
-    modifier: Modifier = Modifier,
-    navigateBack: () -> Unit
+fun SettingsTextSizeScreen(
+    navigateBack: () -> Unit,
+    preferencesRepository: PreferencesRepository = koinInject()
 ) {
-    var sliderValue by remember { mutableFloatStateOf(0.5f) }
+
+    var sliderValue by remember { mutableFloatStateOf(0.2f) } // Default to 14f position
     var isProgressVisible by remember { mutableStateOf(false) }
     var isCheckMarkVisible by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Calculate text size based on slider value (12sp to 32sp range)
-    val minTextSize = 12f
-    val maxTextSize = 32f
-    val currentTextSize = minTextSize + (maxTextSize - minTextSize) * sliderValue
+    // Load the saved text size and set slider position
+    LaunchedEffect(Unit) {
+        val savedTextSize = preferencesRepository.getBodyTextSize()
+        sliderValue = textSizeToSliderValue(savedTextSize)
+    }
+
+    // Calculate current text size based on slider value
+    val currentTextSize = sliderValueToTextSize(sliderValue)
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .background(LocalCustomColors.current.bodyBackgroundColor)
             .fillMaxWidth()
     ) {
@@ -92,7 +102,7 @@ fun TextSizeSlider(
         }
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -140,9 +150,12 @@ fun TextSizeSlider(
                                 isProgressVisible = true
                             }
                             sliderValue = newValue
+                            coroutineScope.launch {
+                                preferencesRepository.setBodyTextSize(sliderValueToTextSize(newValue))
+                            }
                         },
                         modifier = Modifier.weight(1f),
-                        steps = 8, // Creates 9 positions total (0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0)
+                        steps = 8, // Creates 9 positions total
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF007AFF),
                             activeTrackColor = Color(0xFF007AFF),
@@ -192,7 +205,6 @@ fun TextSizeSlider(
         }
     }
 
-    // LaunchedEffect to handle hiding the progress indicator
     LaunchedEffect(sliderValue) {
         if (isProgressVisible) {
             delay(HIDE_TIME_ELAPSE)

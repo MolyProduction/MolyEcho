@@ -93,7 +93,6 @@ fun NoteDetailScreen(
     navigateBack: () -> Unit,
     navigateToRecorder: (noteId: String) -> Unit,
     navigateToTranscription: () -> Unit,
-    onNavigateToSettingsText: () -> Unit,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -221,8 +220,7 @@ fun NoteDetailScreen(
                 textFieldFocusRequester = focusRequester,
                 onShowTextFormatBar = { showFormatBar = it },
                 editorViewModel = editorViewModel,
-                navigateBack = navigateBack,
-                onNavigateToSettingsText = onNavigateToSettingsText
+                navigateBack = navigateBack
             )
         }
     ) { paddingValues ->
@@ -472,7 +470,8 @@ private fun NoteEditor(
                 },
         textStyle = TextStyle(
             color = LocalCustomColors.current.bodyContentColor,
-            textAlign = editorState.textAlign
+            textAlign = editorState.textAlign,
+            fontSize = editorState.bodyTextSize.sp
         ),
         cursorBrush = SolidColor(LocalCustomColors.current.bodyContentColor),
         readOnly = showFormatBar,

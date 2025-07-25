@@ -20,6 +20,8 @@ import com.module.notelycompose.notes.presentation.mapper.EditorPresentationToUi
 import com.module.notelycompose.notes.presentation.mapper.TextAlignPresentationMapper
 import com.module.notelycompose.notes.presentation.mapper.TextFormatPresentationMapper
 import com.module.notelycompose.notes.ui.detail.EditorUiState
+import com.module.notelycompose.onboarding.data.PreferencesRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,7 +45,8 @@ class TextEditorViewModel(
     private val editorPresentationToUiStateMapper: EditorPresentationToUiStateMapper,
     private val textFormatPresentationMapper: TextFormatPresentationMapper,
     private val textAlignPresentationMapper: TextAlignPresentationMapper,
-    private val textEditorHelper: TextEditorHelper
+    private val textEditorHelper: TextEditorHelper,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     private val _editorPresentationState = MutableStateFlow(EditorPresentationState())
@@ -69,18 +72,21 @@ class TextEditorViewModel(
     }
 
     private fun processNote(retrievedNote: NoteDomainModel) {
-        loadNote(
-            content = retrievedNote.content,
-            formats = retrievedNote.formatting.map {
-                textFormatPresentationMapper.mapToPresentationModel(it)
-            },
-            textAlign = textAlignPresentationMapper.mapToComposeTextAlign(
-                retrievedNote.textAlign
-            ),
-            recordingPath = retrievedNote.recordingPath,
-            starred = retrievedNote.starred,
-            createdAt = getFormattedDate(retrievedNote.createdAt)
-        )
+        viewModelScope.launch {
+            loadNote(
+                content = retrievedNote.content,
+                formats = retrievedNote.formatting.map {
+                    textFormatPresentationMapper.mapToPresentationModel(it)
+                },
+                textAlign = textAlignPresentationMapper.mapToComposeTextAlign(
+                    retrievedNote.textAlign
+                ),
+                recordingPath = retrievedNote.recordingPath,
+                starred = retrievedNote.starred,
+                createdAt = getFormattedDate(retrievedNote.createdAt),
+                bodyTextSize = preferencesRepository.getBodyTextSize()
+            )
+        }
     }
 
     fun onGetNoteById(id: String) {
@@ -131,7 +137,8 @@ class TextEditorViewModel(
         textAlign: TextAlign,
         recordingPath: String,
         starred: Boolean,
-        createdAt: String
+        createdAt: String,
+        bodyTextSize: Float
     ) {
         _editorPresentationState.update {
             it.copy(
@@ -140,7 +147,8 @@ class TextEditorViewModel(
                 textAlign = textAlign,
                 recording = recordingPath(recordingPath),
                 starred = starred,
-                createdAt = createdAt
+                createdAt = createdAt,
+                bodyTextSize = bodyTextSize
             )
         }
     }
@@ -258,14 +266,18 @@ class TextEditorViewModel(
     }
 
     private fun updateContent(newContent: TextFieldValue) {
-        textEditorHelper.updateContent(
-            newContent = newContent,
-            currentState = _editorPresentationState.value,
-            getFormattedDate = { getFormattedDate() },
-            updateState = { newState ->
-                _editorPresentationState.update { newState }
-            }
-        )
+        // TODO: Test this to ensure it works
+        viewModelScope.launch(Dispatchers.Default) {
+            textEditorHelper.updateContent(
+                newContent = newContent,
+                currentState = _editorPresentationState.value,
+                getFormattedDate = { getFormattedDate() },
+                updateState = { newState ->
+                    _editorPresentationState.update { newState }
+                },
+                bodyTextSize = preferencesRepository.getBodyTextSize()
+            )
+        }
     }
 
     fun onToggleBold() {

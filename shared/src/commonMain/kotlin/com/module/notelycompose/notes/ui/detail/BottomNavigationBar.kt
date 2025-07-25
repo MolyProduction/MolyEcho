@@ -23,6 +23,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.notes.presentation.detail.TextEditorViewModel
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.notes.ui.extensions.showKeyboard
+import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.resources.vectors.IcDetailList
 import com.module.notelycompose.resources.vectors.IcKeyboardHide
 import com.module.notelycompose.resources.vectors.IcLetterAa
@@ -49,7 +51,9 @@ import com.module.notelycompose.resources.bottom_navigation_bullet_list
 import com.module.notelycompose.resources.bottom_navigation_delete
 import com.module.notelycompose.resources.bottom_navigation_hide_keyboard
 import com.module.notelycompose.resources.bottom_navigation_starred
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 private const val ZERO_DENSITY = 0
 
@@ -63,13 +67,14 @@ fun BottomNavigationBar(
     onShowTextFormatBar: (show: Boolean) -> Unit,
     editorViewModel: TextEditorViewModel,
     navigateBack: () -> Unit,
-    onNavigateToSettingsText: () -> Unit
+    preferencesRepository: PreferencesRepository = koinInject()
 ) {
 
     var selectedFormat by remember { mutableStateOf(FormatOptionTextFormat.Body) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val imeHeight = WindowInsets.ime.getBottom(LocalDensity.current)
+    val coroutineScope = rememberCoroutineScope()
     val isKeyboardOpen by keyboardAsState() // true or false
 
     when(selectionSize) {
@@ -105,8 +110,11 @@ fun BottomNavigationBar(
                 selectedFormat = selectedFormat,
                 onFormatSelected = {
                     selectedFormat = it
-                    textSizeSelectedFormats(it) { textSize ->
-                        editorViewModel.setTextSize(textSize)
+                    coroutineScope.launch {
+                        val bodyTextSize = preferencesRepository.getBodyTextSize()
+                        textSizeSelectedFormats(it, bodyTextSize) { textSize ->
+                            editorViewModel.setTextSize(textSize)
+                        }
                     }
                 },
                 onClose = {
@@ -115,8 +123,7 @@ fun BottomNavigationBar(
                 onToggleBold = editorViewModel::onToggleBold,
                 onToggleItalic = editorViewModel::onToggleItalic,
                 onToggleUnderline = editorViewModel::onToggleUnderline,
-                onSetAlignment = editorViewModel::onSetAlignment,
-                onNavigateToSettingsText = onNavigateToSettingsText
+                onSetAlignment = editorViewModel::onSetAlignment
             )
         }
     }
