@@ -36,6 +36,7 @@ import com.module.notelycompose.resources.accessibility_a
 import com.module.notelycompose.resources.accessibility_desc
 import com.module.notelycompose.resources.accessibility_example
 import com.module.notelycompose.resources.body_text_default
+import com.module.notelycompose.resources.accessibility_default
 import com.module.notelycompose.resources.body_text_size
 import com.module.notelycompose.resources.recording_ui_checkmark
 import kotlinx.coroutines.delay
@@ -128,6 +129,13 @@ fun SettingsTextSizeScreen(
                     color = Color.Gray,
                     lineHeight = 20.sp
                 )
+
+                Text(
+                    text = stringResource(Res.string.accessibility_default),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    lineHeight = 20.sp
+                )
             }
 
             Column(
@@ -174,14 +182,6 @@ fun SettingsTextSizeScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-
-                Text(
-                    text = stringResource(Res.string.body_text_default),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
             }
 
             // Example text that changes size

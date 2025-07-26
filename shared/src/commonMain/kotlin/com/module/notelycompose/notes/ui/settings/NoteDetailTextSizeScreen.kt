@@ -23,6 +23,7 @@ import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.Res
 import com.module.notelycompose.resources.accessibility_a
+import com.module.notelycompose.resources.accessibility_default
 import com.module.notelycompose.resources.accessibility_desc
 import com.module.notelycompose.resources.accessibility_example
 import com.module.notelycompose.resources.body_text_default
@@ -121,6 +122,13 @@ fun NoteDetailTextSizeScreen(
                     color = Color.Gray,
                     lineHeight = 20.sp
                 )
+
+                Text(
+                    text = stringResource(Res.string.accessibility_default),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    lineHeight = 20.sp
+                )
             }
 
             Column(
@@ -168,14 +176,6 @@ fun NoteDetailTextSizeScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-
-                Text(
-                    text = stringResource(Res.string.body_text_default),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
             }
 
             // Example text that changes size
