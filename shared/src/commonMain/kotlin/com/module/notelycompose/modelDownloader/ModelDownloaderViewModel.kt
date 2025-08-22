@@ -2,15 +2,16 @@ package com.module.notelycompose.modelDownloader
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Downloader
 import com.module.notelycompose.platform.Transcriber
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -18,8 +19,16 @@ import kotlinx.coroutines.launch
 class ModelDownloaderViewModel(
     private val downloader: Downloader,
     private val transcriber: Transcriber,
+    private val modelSelection: ModelSelection
 ):ViewModel(){
-    private val _uiState = MutableStateFlow(DownloaderUiState("ggml-base.bin"))
+    private var _uiState: MutableStateFlow<DownloaderUiState> = MutableStateFlow(DownloaderUiState(modelSelection.getDefaultTranscriptionModel()))
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val selectedModel = modelSelection.getSelectedModel()
+            _uiState.value = DownloaderUiState(selectedModel)
+        }
+    }
     val uiState: StateFlow<DownloaderUiState> = _uiState
 
     private val _effects = MutableSharedFlow<DownloaderEffect>()
@@ -27,12 +36,14 @@ class ModelDownloaderViewModel(
 
 
     fun checkTranscriptionAvailability() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             _effects.emit(DownloaderEffect.CheckingEffect())
+            
             if (downloader.hasRunningDownload()) {
                 trackDownload()
             } else {
-                if (!transcriber.doesModelExists() || !transcriber.isValidModel() ) {
+                if (!transcriber.doesModelExists(uiState.value.selectedModel.name)
+                    || !transcriber.isValidModel(uiState.value.selectedModel.name)) {
                     _effects.emit(DownloaderEffect.AskForUserAcceptance())
                 } else {
                     _effects.emit(DownloaderEffect.ModelsAreReady())
@@ -43,18 +54,20 @@ class ModelDownloaderViewModel(
 
     fun startDownload() {
         viewModelScope.launch(Dispatchers.IO) {
-            downloader.startDownload(
-                "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
-                _uiState.value.fileName
-            )
-            trackDownload()
+                val modelUrl = uiState.value.selectedModel.url
+//            if (modelUrl != null) {
+                downloader.startDownload(modelUrl, uiState.value.selectedModel.name)
+                trackDownload()
+//            } else {
+//                _effects.emit(DownloaderEffect.ErrorEffect())
+//            }
         }
     }
 
     private suspend fun trackDownload() {
         _effects.emit(DownloaderEffect.DownloadEffect())
         downloader.trackDownloadProgress(
-            _uiState.value.fileName,
+            uiState.value.selectedModel.name,
             onProgressUpdated = { progress, downloadedMB, totalMB ->
             _uiState.update { current ->
                 current.copy(
@@ -65,7 +78,7 @@ class ModelDownloaderViewModel(
             }
         }, onSuccess = {
             viewModelScope.launch {
-                transcriber.initialize()
+                transcriber.initialize(uiState.value.selectedModel.name)
                 _effects.emit(DownloaderEffect.ModelsAreReady()) }
 
         }, onFailed = {

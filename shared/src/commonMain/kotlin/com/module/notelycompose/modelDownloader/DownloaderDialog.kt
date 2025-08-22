@@ -17,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
+import com.module.notelycompose.modelDownloader.ModelSelection
 
 
 @Composable
 fun DownloaderDialog(
-    modifier: Modifier,
+    transcriptionModel: TranscriptionModel,
     downloaderUiState: DownloaderUiState,
     onDismiss:()->Unit
 ) {
@@ -43,9 +44,8 @@ fun DownloaderDialog(
                     horizontalAlignment = Alignment.Start,
 
                     ) {
-                    // Hide file name: ${downloaderUiState.fileName}
                     Text(
-                        "Downloading Transcription model",
+                        "Downloading ${transcriptionModel.description}",
                         color = LocalCustomColors.current.bodyContentColor
                     )
                     LinearProgressIndicator(

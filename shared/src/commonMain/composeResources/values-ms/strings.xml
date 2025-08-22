@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Kongsi Rakaman Audio</string>
     <!-- Download Dialog -->
     <string name="download_required">Muat Turun Diperlukan</string>
+    <string name="download_required_for_hindi">Muat Turun Diperlukan untuk Hindi</string>
     <string name="for_accurate_transcription">Untuk transkripsi yang tepat, kami perlu memuat turun model AI.</string>
     <string name="take_few_minutes">Ini mungkin mengambil masa beberapa minit dan memerlukan sambungan internet yang stabil.</string>
-    <string name="file_size_approx">Saiz fail: kira-kira 142MB</string>
+    <string name="file_size_approx">Saiz fail: kira-kira %1$s</string>
+    <string name="file_model_english">Model pelbagai bahasa (menyokong 50+ bahasa)</string>
+    <string name="file_model_hindi">Model yang dioptimumkan untuk Hindi</string>
     <string name="download">Muat Turun</string>
     <!-- Settings Screen -->
     <string name="settings">Tetapan</string>

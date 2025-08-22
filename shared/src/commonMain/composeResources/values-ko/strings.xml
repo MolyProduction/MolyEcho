@@ -109,9 +109,12 @@
     <string name="share_audio_recording">오디오 녹음 공유</string>
     <!-- Download Dialog -->
     <string name="download_required">다운로드 필요</string>
+    <string name="download_required_for_hindi">힌디어 다운로드 필요</string>
     <string name="for_accurate_transcription">정확한 변환을 위해 AI 모델을 다운로드해야 합니다.</string>
     <string name="take_few_minutes">몇 분이 소요될 수 있으며 안정적인 인터넷 연결이 필요합니다.</string>
-    <string name="file_size_approx">파일 크기: 약 142MB</string>
+    <string name="file_size_approx">파일 크기: 약 %1$s</string>
+    <string name="file_model_english">다국어 모델 (50개 이상 언어 지원)</string>
+    <string name="file_model_hindi">힌디어 최적화 모델</string>
     <string name="download">다운로드</string>
     <!-- Settings Screen -->
     <string name="settings">설정</string>

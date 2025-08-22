@@ -107,9 +107,12 @@
     <string name="share_audio_recording">分享音频录音</string>
     <!-- Download Dialog -->
     <string name="download_required">所需下载</string>
+    <string name="download_required_for_hindi">印地语需要下载</string>
     <string name="for_accurate_transcription">为了确保转录的准确性，我们需要下载AI模型。</string>
     <string name="take_few_minutes">这可能需要几分钟时间，需要稳定的网络连接。</string>
-    <string name="file_size_approx">文件大小：约142MB</string>
+    <string name="file_size_approx">文件大小：约 %1$s</string>
+    <string name="file_model_english">多语言模型（支持50多种语言）</string>
+    <string name="file_model_hindi">印地语优化模型</string>
     <string name="download">下载</string>
     <!-- Settings Screen -->
     <string name="settings">设置</string>

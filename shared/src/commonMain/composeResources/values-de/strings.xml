@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Audioaufnahme teilen</string>
     <!-- Download Dialog -->
     <string name="download_required">Download erforderlich</string>
+    <string name="download_required_for_hindi">Download erforderlich für Hindi</string>
     <string name="for_accurate_transcription">Für eine genaue Transkription müssen wir das KI-Modell herunterladen.</string>
     <string name="take_few_minutes">Dies kann einige Minuten dauern und erfordert eine stabile Internetverbindung.</string>
-    <string name="file_size_approx">Dateigröße: etwa 142MB</string>
+    <string name="file_size_approx">Dateigröße: etwa %1$s</string>
+    <string name="file_model_english">Mehrsprachiges Modell (unterstützt über 50 Sprachen)</string>
+    <string name="file_model_hindi">Hindi-optimiertes Modell</string>
     <string name="download">Herunterladen</string>
     <!-- Settings Screen -->
     <string name="settings">Einstellungen</string>

@@ -111,9 +111,12 @@
     <string name="share_audio_recording">Udostępnij nagranie audio</string>
     <!-- Download Dialog -->
     <string name="download_required">Wymagane pobieranie</string>
+    <string name="download_required_for_hindi">Wymagane pobranie dla hindi</string>
     <string name="for_accurate_transcription">Aby uzyskać dokładną transkrypcję, musimy pobrać model AI.</string>
     <string name="take_few_minutes">Może to potrwać kilka minut i wymaga stabilnego połączenia internetowego.</string>
-    <string name="file_size_approx">Rozmiar pliku: około 142MB</string>
+    <string name="file_size_approx">Rozmiar pliku: około %1$s</string>
+    <string name="file_model_english">Model wielojęzyczny (obsługuje ponad 50 języków)</string>
+    <string name="file_model_hindi">Model zoptymalizowany dla hindi</string>
     <string name="download">Pobierz</string>
     <!-- Settings Screen -->
     <string name="settings">Ustawienia</string>

@@ -109,9 +109,12 @@
     <string name="share_audio_recording">اشتراک ضبط صوتی</string>
     <!-- Download Dialog -->
     <string name="download_required">دانلود مورد نیاز</string>
+    <string name="download_required_for_hindi">دانلود برای هندی مورد نیاز است</string>
     <string name="for_accurate_transcription">برای رونویسی دقیق، باید مدل هوش مصنوعی را دانلود کنیم.</string>
     <string name="take_few_minutes">این کار ممکن است چند دقیقه طول بکشد و به اتصال اینترنت پایدار نیاز دارد.</string>
-    <string name="file_size_approx">حجم فایل: تقریباً 142 مگابایت</string>
+    <string name="file_size_approx">حجم فایل: تقریباً %1$s مگابایت</string>
+    <string name="file_model_english">مدل چندزبانه (پشتیبانی از بیش از ۵۰ زبان)</string>
+    <string name="file_model_hindi">مدل بهینه‌شده برای هندی</string>
     <string name="download">دانلود</string>
     <!-- Settings Screen -->
     <string name="settings">تنظیمات</string>

@@ -35,17 +35,17 @@ actual class Transcriber{
     }
 
 
-    actual suspend fun initialize() {
+    actual suspend fun initialize(modelFileName: String) {
         debugPrintln{"speech: initialize model"}
         if(!isModelLoaded)
-        loadBaseModel()
+        loadBaseModel(modelFileName)
     }
 
-    private fun loadBaseModel(){
+    private fun loadBaseModel(modelFileName: String){
         try {
             whisperContext = null
-            debugPrintln{"Loading model..."}
-            val modelPath = getModelPath()
+            debugPrintln{"Loading model: $modelFileName"}
+            val modelPath = getModelPath(modelFileName)
             whisperContext = WhisperContext.createContext(modelPath)
             debugPrintln{"Loaded model ${modelPath.substringAfterLast("/")}"}
             isModelLoaded = true
@@ -57,14 +57,14 @@ actual class Transcriber{
         }
     }
 
-    actual fun doesModelExists() : Boolean{
-        return NSFileManager.defaultManager.fileExistsAtPath(getModelPath())
+    actual fun doesModelExists(modelFileName: String) : Boolean{
+        return NSFileManager.defaultManager.fileExistsAtPath(getModelPath(modelFileName))
     }
 
-    actual fun isValidModel() : Boolean{
+    actual fun isValidModel(modelFileName: String) : Boolean{
         try {
             if(!isModelLoaded)
-                loadBaseModel()
+                loadBaseModel(modelFileName)
         }catch (e:Exception){
             return false
         }
@@ -148,13 +148,13 @@ actual class Transcriber{
         return floatArray
     }
 
-    private fun getModelPath():String{
+    private fun getModelPath(modelFileName: String):String{
         val documentsDirectory = NSFileManager.defaultManager.URLsForDirectory(
             NSDocumentDirectory,
             NSUserDomainMask
         ).first() as NSURL
 
-        return documentsDirectory.URLByAppendingPathComponent("ggml-base.bin")?.path?:""
+        return documentsDirectory.URLByAppendingPathComponent(modelFileName)?.path?:""
     }
 
 }

@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Dela ljudinspelning</string>
     <!-- Download Dialog -->
     <string name="download_required">Nedladdning krävs</string>
+    <string name="download_required_for_hindi">Nedladdning krävs för hindi</string>
     <string name="for_accurate_transcription">För korrekt transkription behöver vi ladda ner AI-modellen.</string>
     <string name="take_few_minutes">Det här kan ta några minuter och kräver en stabil internetanslutning.</string>
-    <string name="file_size_approx">Filstorlek: cirka 142MB</string>
+    <string name="file_size_approx">Filstorlek: cirka %1$s</string>
+    <string name="file_model_english">Flerspråkig modell (stöder 50+ språk)</string>
+    <string name="file_model_hindi">Hindi-optimerad modell</string>
     <string name="download">Ladda ner</string>
     <!-- Settings Screen -->
     <string name="settings">Inställningar</string>

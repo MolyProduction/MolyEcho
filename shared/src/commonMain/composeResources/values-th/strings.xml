@@ -109,9 +109,12 @@
     <string name="share_audio_recording">แชร์การบันทึกเสียง</string>
     <!-- Download Dialog -->
     <string name="download_required">จำเป็นต้องดาวน์โหลด</string>
+    <string name="download_required_for_hindi">จำเป็นต้องดาวน์โหลดสำหรับภาษาฮินดี</string>
     <string name="for_accurate_transcription">เพื่อการแปลงเป็นข้อความที่แม่นยำ เราจำเป็นต้องดาวน์โหลดโมเดล AI</string>
     <string name="take_few_minutes">อาจใช้เวลาสองสามนาทีและต้องการการเชื่อมต่ออินเทอร์เน็ตที่เสถียร</string>
-    <string name="file_size_approx">ขนาดไฟล์: ประมาณ 142MB</string>
+    <string name="file_size_approx">ขนาดไฟล์: ประมาณ %1$s</string>
+    <string name="file_model_english">โมเดลหลายภาษา (รองรับมากกว่า 50 ภาษา)</string>
+    <string name="file_model_hindi">โมเดลที่เหมาะสำหรับภาษาฮินดี</string>
     <string name="download">ดาวน์โหลด</string>
     <!-- Settings Screen -->
     <string name="settings">การตั้งค่า</string>

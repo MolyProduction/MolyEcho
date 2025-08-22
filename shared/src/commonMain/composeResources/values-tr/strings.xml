@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Ses Kaydını Paylaş</string>
     <!-- Download Dialog -->
     <string name="download_required">İndirme Gerekli</string>
+    <string name="download_required_for_hindi">Hintçe için indirme gerekli</string>
     <string name="for_accurate_transcription">Doğru yazıya döküm için AI modelini indirmemiz gerekiyor.</string>
     <string name="take_few_minutes">Bu birkaç dakika sürebilir ve kararlı bir internet bağlantısı gerektirir.</string>
-    <string name="file_size_approx">Dosya boyutu: yaklaşık 142MB</string>
+    <string name="file_size_approx">Dosya boyutu: yaklaşık %1$s</string>
+    <string name="file_model_english">Çok dilli model (50+ dili destekler)</string>
+    <string name="file_model_hindi">Hintçe için optimize edilmiş model</string>
     <string name="download">İndir</string>
     <!-- Settings Screen -->
     <string name="settings">Ayarlar</string>

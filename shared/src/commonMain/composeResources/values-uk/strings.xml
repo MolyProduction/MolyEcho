@@ -111,9 +111,12 @@
     <string name="share_audio_recording">Поділитися аудіозаписом</string>
     <!-- Download Dialog -->
     <string name="download_required">Потрібно завантажити</string>
+    <string name="download_required_for_hindi">Потрібне завантаження для гінді</string>
     <string name="for_accurate_transcription">Для точної транскрипції нам потрібно завантажити модель ШІ.</string>
     <string name="take_few_minutes">Це може зайняти декілька хвилин і потребує стабільного інтернет-з\'єднання.</string>
-    <string name="file_size_approx">Розмір файлу: приблизно 142MB</string>
+    <string name="file_size_approx">Розмір файлу: приблизно %1$s</string>
+    <string name="file_model_english">Багатомовна модель (підтримує понад 50 мов)</string>
+    <string name="file_model_hindi">Модель, оптимізована для гінді</string>
     <string name="download">Завантажити</string>
     <!-- Settings Screen -->
     <string name="settings">Налаштування</string>

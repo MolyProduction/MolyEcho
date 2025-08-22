@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Chia sẻ bản ghi âm</string>
     <!-- Download Dialog -->
     <string name="download_required">Cần tải xuống</string>
+    <string name="download_required_for_hindi">Cần tải xuống cho tiếng Hindi</string>
     <string name="for_accurate_transcription">Để chuyển đổi văn bản chính xác, chúng tôi cần tải xuống mô hình AI.</string>
     <string name="take_few_minutes">Điều này có thể mất vài phút và cần kết nối internet ổn định.</string>
-    <string name="file_size_approx">Kích thước file: khoảng 142MB</string>
+    <string name="file_size_approx">Kích thước file: khoảng %1$s</string>
+    <string name="file_model_english">Mô hình đa ngôn ngữ (hỗ trợ hơn 50 ngôn ngữ)</string>
+    <string name="file_model_hindi">Mô hình được tối ưu hóa cho tiếng Hindi</string>
     <string name="download">Tải xuống</string>
     <!-- Settings Screen -->
     <string name="settings">Cài đặt</string>

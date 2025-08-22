@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Bagikan Rekaman Audio</string>
     <!-- Download Dialog -->
     <string name="download_required">Unduhan Diperlukan</string>
+    <string name="download_required_for_hindi">Unduhan Diperlukan untuk Hindi</string>
     <string name="for_accurate_transcription">Untuk transkripsi yang akurat, kami perlu mengunduh model AI.</string>
     <string name="take_few_minutes">Ini mungkin memakan waktu beberapa menit dan memerlukan koneksi internet yang stabil.</string>
-    <string name="file_size_approx">Ukuran file: sekitar 142MB</string>
+    <string name="file_size_approx">Ukuran file: sekitar %1$s</string>
+    <string name="file_model_english">Model multibahasa (mendukung 50+ bahasa)</string>
+    <string name="file_model_hindi">Model yang dioptimalkan untuk Hindi</string>
     <string name="download">Unduh</string>
     <!-- Settings Screen -->
     <string name="settings">Pengaturan</string>

@@ -109,9 +109,12 @@
     <string name="share_audio_recording">ऑडियो रिकॉर्डिंग शेयर करें</string>
     <!-- Download Dialog -->
     <string name="download_required">डाउनलोड आवश्यक</string>
+    <string name="download_required_for_hindi">हिंदी के लिए डाउनलोड आवश्यक</string>
     <string name="for_accurate_transcription">सटीक ट्रांसक्रिप्शन के लिए, हमें AI मॉडल डाउनलोड करना होगा।</string>
     <string name="take_few_minutes">इसमें कुछ मिनट लग सकते हैं और स्थिर इंटरनेट कनेक्शन की आवश्यकता है।</string>
-    <string name="file_size_approx">फ़ाइल साइज़: लगभग 142MB</string>
+    <string name="file_size_approx">फ़ाइल साइज़: लगभग %1$s</string>
+    <string name="file_model_english">बहुभाषी मॉडल (50+ भाषाओं का समर्थन करता है)</string>
+    <string name="file_model_hindi">हिंदी-अनुकूलित मॉडल</string>
     <string name="download">डाउनलोड करें</string>
     <!-- Settings Screen -->
     <string name="settings">सेटिंग्स</string>

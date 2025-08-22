@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Compartir Grabación de Audio</string>
     <!-- Download Dialog -->
     <string name="download_required">Descarga Requerida</string>
+    <string name="download_required_for_hindi">Descarga requerida para hindi</string>
     <string name="for_accurate_transcription">Para una transcripción precisa, necesitamos descargar el modelo de IA.</string>
     <string name="take_few_minutes">Esto puede tomar unos minutos y requiere una conexión a internet estable.</string>
-    <string name="file_size_approx">Tamaño del archivo: aproximadamente 142MB</string>
+    <string name="file_size_approx">Tamaño del archivo: aproximadamente %1$s</string>
+    <string name="file_model_english">Modelo multilingüe (compatible con más de 50 idiomas)</string>
+    <string name="file_model_hindi">Modelo optimizado para hindi</string>
     <string name="download">Descargar</string>
     <!-- Settings Screen -->
     <string name="settings">Configuración</string>

@@ -169,8 +169,8 @@ android {
         applicationId = "com.module.notelycompose.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 19
-        versionName = "1.1.8"
+        versionCode = 20
+        versionName = "1.1.9"
     }
     buildFeatures {
         compose = true
@@ -198,6 +198,8 @@ android {
         // Force consistent ordering
         jniLibs {
             useLegacyPackaging = true
+            // 16KB Page Size Support: Use uncompressed native libraries
+            pickFirsts += listOf("**/libc++_shared.so", "**/libwhisper.so")
         }
     }
     buildTypes {

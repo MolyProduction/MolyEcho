@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Del lydopptak</string>
     <!-- Download Dialog -->
     <string name="download_required">Nedlasting kreves</string>
+    <string name="download_required_for_hindi">Nedlasting kreves for hindi</string>
     <string name="for_accurate_transcription">For nøyaktig transkripsjon må vi laste ned AI-modellen.</string>
     <string name="take_few_minutes">Dette kan ta noen minutter og krever en stabil internettforbindelse.</string>
-    <string name="file_size_approx">Filstørrelse: omtrent 142MB</string>
+    <string name="file_size_approx">Filstørrelse: omtrent %1$s</string>
+    <string name="file_model_english">Flerspråklig modell (støtter 50+ språk)</string>
+    <string name="file_model_hindi">Hindi-optimalisert modell</string>
     <string name="download">Last ned</string>
     <!-- Settings Screen -->
     <string name="settings">Innstillinger</string>

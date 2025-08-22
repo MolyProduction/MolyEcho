@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Ibahagi ang Audio Recording</string>
     <!-- Download Dialog -->
     <string name="download_required">Kailangan ng Download</string>
+    <string name="download_required_for_hindi">Kailangan ang Download para sa Hindi</string>
     <string name="for_accurate_transcription">Para sa tumpak na transcription, kailangan namin i-download ang AI model.</string>
     <string name="take_few_minutes">Maaaring tumagal ito ng ilang minuto at kailangan ng matatag na internet connection.</string>
-    <string name="file_size_approx">Laki ng file: humigit-kumulang 142MB</string>
+    <string name="file_size_approx">Laki ng file: humigit-kumulang %1$s</string>
+    <string name="file_model_english">Multilingual na modelo (sumusuporta sa 50+ na wika)</string>
+    <string name="file_model_hindi">Hindi-optimized na modelo</string>
     <string name="download">I-download</string>
     <!-- Settings Screen -->
     <string name="settings">Mga Setting</string>

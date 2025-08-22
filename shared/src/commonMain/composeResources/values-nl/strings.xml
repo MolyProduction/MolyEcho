@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Audio Opname Delen</string>
     <!-- Download Dialog -->
     <string name="download_required">Download Vereist</string>
+    <string name="download_required_for_hindi">Download vereist voor Hindi</string>
     <string name="for_accurate_transcription">Voor nauwkeurige transcriptie moeten we het AI-model downloaden.</string>
     <string name="take_few_minutes">Dit kan enkele minuten duren en vereist een stabiele internetverbinding.</string>
-    <string name="file_size_approx">Bestandsgrootte: ongeveer 142MB</string>
+    <string name="file_size_approx">Bestandsgrootte: ongeveer %1$s</string>
+    <string name="file_model_english">Meertalig model (ondersteunt 50+ talen)</string>
+    <string name="file_model_hindi">Hindi-geoptimaliseerd model</string>
     <string name="download">Downloaden</string>
     <!-- Settings Screen -->
     <string name="settings">Instellingen</string>

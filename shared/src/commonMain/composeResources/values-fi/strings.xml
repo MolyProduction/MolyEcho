@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Jaa äänitallennus</string>
     <!-- Download Dialog -->
     <string name="download_required">Lataus vaaditaan</string>
+    <string name="download_required_for_hindi">Lataus vaaditaan hindille</string>
     <string name="for_accurate_transcription">Tarkkaa transkriptiota varten meidän täytyy ladata tekoälymalli.</string>
     <string name="take_few_minutes">Tämä voi kestää muutaman minuutin ja vaatii vakaan internetyhteyden.</string>
-    <string name="file_size_approx">Tiedostokoko: noin 142MB</string>
+    <string name="file_size_approx">Tiedostokoko: noin %1$s</string>
+    <string name="file_model_english">Monikielinen malli (tukee yli 50 kieltä)</string>
+    <string name="file_model_hindi">Hindi-optimoitu malli</string>
     <string name="download">Lataa</string>
     <!-- Settings Screen -->
     <string name="settings">Asetukset</string>

@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Compartir enregistrament d\'àudio</string>
     <!-- Download Dialog -->
     <string name="download_required">Descàrrega necessària</string>
+    <string name="download_required_for_hindi">Descàrrega necessària per al hindi</string>
     <string name="for_accurate_transcription">Per a una transcripció precisa, hem de descarregar el model d\'IA.</string>
     <string name="take_few_minutes">Això pot trigar uns minuts i requereix una connexió a internet estable.</string>
-    <string name="file_size_approx">Mida del fitxer: aproximadament 142MB</string>
+    <string name="file_size_approx">Mida del fitxer: aproximadament %1$s</string>
+    <string name="file_model_english">Model multilingüe (suporta més de 50 idiomes)</string>
+    <string name="file_model_hindi">Model optimitzat per al hindi</string>
     <string name="download">Descarregar</string>
     <!-- Settings Screen -->
     <string name="settings">Configuració</string>

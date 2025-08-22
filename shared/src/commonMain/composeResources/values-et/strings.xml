@@ -109,9 +109,12 @@
     <string name="share_audio_recording">Jaga helisalvestisena</string>
     <!-- Download Dialog -->
     <string name="download_required">Andmed vajavad allalaadimist</string>
+    <string name="download_required_for_hindi">Hindi jaoks on vajalik allalaadimine</string>
     <string name="for_accurate_transcription">Täpseks ümberkirjutuseks peama laadima alla vajaliku tehisaru mudeli.</string>
     <string name="take_few_minutes">Selleks võib kuluda mõni minut ja eeldab stabiilse internetiühenduse olemasolu.</string>
-    <string name="file_size_approx">Faili suurus: umbes 142MB</string>
+    <string name="file_size_approx">Faili suurus: umbes %1$s</string>
+    <string name="file_model_english">Mitmekeelne mudel (toetab üle 50 keele)</string>
+    <string name="file_model_hindi">Hindi-optimeeritud mudel</string>
     <string name="download">Laadi alla</string>
     <!-- Settings Screen -->
     <string name="settings">Seadistused</string>
