@@ -24,8 +24,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
@@ -52,6 +54,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -203,6 +206,153 @@ private fun RecordingInitialScreen(
 
 @Composable
 private fun RecordingInProgressScreen(
+    counterTimeString: String,
+    onNavigateBack: () -> Unit,
+    onStopRecording: () -> Unit,
+    onPauseRecording: () -> Unit,
+    onResumeRecording: () -> Unit,
+    isRecordPaused: Boolean
+) {
+
+    val windowInfo = LocalWindowInfo.current
+    val isLandscape = windowInfo.containerSize.width > windowInfo.containerSize.height
+
+    if(isLandscape) {
+        LandscapeRecordingInProgressScreen(
+            counterTimeString = counterTimeString,
+            onNavigateBack = onNavigateBack,
+            onStopRecording = onStopRecording,
+            onPauseRecording = onPauseRecording,
+            onResumeRecording = onResumeRecording,
+            isRecordPaused = isRecordPaused
+        )
+    } else {
+        PotraitRecordingInProgressScreen(
+            counterTimeString = counterTimeString,
+            onNavigateBack = onNavigateBack,
+            onStopRecording = onStopRecording,
+            onPauseRecording = onPauseRecording,
+            onResumeRecording = onResumeRecording,
+            isRecordPaused = isRecordPaused
+        )
+    }
+}
+
+@Composable
+private fun LandscapeRecordingInProgressScreen(
+    counterTimeString: String,
+    onNavigateBack: () -> Unit,
+    onStopRecording: () -> Unit,
+    onPauseRecording: () -> Unit,
+    onResumeRecording: () -> Unit,
+    isRecordPaused: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LocalCustomColors.current.bodyBackgroundColor)
+            .verticalScroll(rememberScrollState())
+    ) {
+        RecordingUiComponentBackButton(
+            onNavigateBack = onNavigateBack,
+            onStopRecording = onStopRecording
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(200.dp)
+            ) {
+                LoadingAnimation(
+                    isRecordPaused = isRecordPaused
+                )
+                Text(
+                    text = counterTimeString,
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Normal,
+                    color = LocalCustomColors.current.bodyContentColor
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 80.dp)
+                .padding(vertical = 32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, LocalCustomColors.current.bodyContentColor, CircleShape)
+                            .padding(vertical = 2.dp, horizontal = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if (!isRecordPaused) Images.Icons.IcPause else Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(Res.string.transcription_icon),
+                            tint = LocalCustomColors.current.bodyContentColor,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable {
+                                    if (isRecordPaused) {
+                                        onResumeRecording()
+                                    } else {
+                                        onPauseRecording()
+                                    }
+                                }
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, LocalCustomColors.current.bodyContentColor, CircleShape)
+                            .padding(2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color.Red)
+                                .clickable {
+                                    onStopRecording()
+                                }
+                        )
+                    }
+                }
+
+                Text(
+                    text = stringResource(Res.string.recording_ui_tap_stop_record),
+                    color = LocalCustomColors.current.bodyContentColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PotraitRecordingInProgressScreen(
     counterTimeString: String,
     onNavigateBack: () -> Unit,
     onStopRecording: () -> Unit,
