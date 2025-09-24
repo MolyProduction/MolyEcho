@@ -150,4 +150,11 @@ class IOSAudioConverter : AudioConverter {
             return@withContext null
         }
     }
+
+    override suspend fun extractAudioFromVideoToWav(
+        videoPath: String,
+        onProgress: (Float) -> Unit
+    ): String? {
+        TODO("Not yet implemented")
+    }
 }

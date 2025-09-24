@@ -21,11 +21,19 @@ internal class IOSFileManager(
         }
     }
 
+    override fun launchVideoPicker(onResult: () -> Unit) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun processPickedAudioToWav(onProgress: (Float) -> Unit): String? {
         val inputPath = copyToAppStorage() ?: return null
         val outputPath = audioConverter.convertAudioToWav(inputPath, onProgress)
         deleteFile(inputPath)
         return outputPath
+    }
+
+    override suspend fun processPickedVideoToWav(onProgress: (Float) -> Unit): String? {
+        TODO("Not yet implemented")
     }
 
     private fun copyToAppStorage(): String? {

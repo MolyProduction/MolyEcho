@@ -14,7 +14,7 @@ fun Context.generateWavFile(prefix: String = RECORDING_PREFIX): File {
     return outputFile
 }
 
-fun Context.savePickedAudioToAppStorage(uri: Uri): File? {
+fun Context.savePickedAudioOrVideoToAppStorage(uri: Uri): File? {
     val file = generateWavFile(prefix = IMPORTING_PREFIX)
     return try {
         this.contentResolver.openInputStream(uri)?.use { input ->

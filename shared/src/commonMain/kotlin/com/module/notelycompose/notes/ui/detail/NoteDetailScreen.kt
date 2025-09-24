@@ -171,6 +171,10 @@ fun NoteDetailScreen(
                     audioPlayerViewModel.releasePlayer()
                     audioImportViewModel.importAudio()
                 },
+                onImportVideoClick = {
+                    audioPlayerViewModel.releasePlayer()
+                    audioImportViewModel.importVideo()
+                },
                 isRecordingExist = editorState.recording.isRecordingExist,
                 onExportTextAsTxt = {
                     platformViewModel.onExportTextAsTxt(editorState.content.text)
