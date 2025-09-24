@@ -85,6 +85,8 @@ kotlin {
             // Data store
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
+
+            implementation(project(":core:audio"))
         }
 
 //        iosMain.dependencies {
@@ -155,7 +157,7 @@ sqldelight {
 }
 android {
     namespace = "com.module.notelycompose.android"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -163,8 +165,8 @@ android {
     // sourceSets["main"].resources.srcDirs("src/commonMain/resources")
     defaultConfig {
         applicationId = "com.module.notelycompose.android"
-        minSdk = 26
-        targetSdk = 35
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 24
         versionName = "1.2.3"
     }
