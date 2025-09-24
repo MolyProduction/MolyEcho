@@ -29,6 +29,7 @@ import com.module.notelycompose.notes.ui.list.InfoScreen
 import com.module.notelycompose.notes.ui.list.NoteListScreen
 import com.module.notelycompose.notes.ui.settings.LanguageSelectionScreen
 import com.module.notelycompose.notes.ui.settings.SettingsScreen
+import com.module.notelycompose.notes.ui.settings.SettingsTextSizeScreen
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.notes.ui.theme.MyApplicationTheme
 import com.module.notelycompose.onboarding.data.PreferencesRepository
@@ -131,11 +132,17 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
             ) {
                 SettingsScreen(
                     navigateBack = { navController.popBackStack() },
-                    navigateToLanguages = { navController.navigate(Routes.LANGUAGE) }
+                    navigateToLanguages = { navController.navigateSingleTop(Routes.Language)}
+                    navigateToSettingsText = { navController.navigateSingleTop(Routes.SettingsText)}
                 )
             }
             composable(Routes.LANGUAGE) {
                 LanguageSelectionScreen(
+                    navigateBack = { navController.popBackStack() }
+                )
+            }
+            composableWithVerticalSlide<Routes.SettingsText> {
+                SettingsTextSizeScreen(
                     navigateBack = { navController.popBackStack() }
                 )
             }
@@ -160,6 +167,9 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                     },
                     navigateToTranscription = {
                         navController.navigate(Routes.TRANSCRIPTION)
+                    },
+                    navigateToSettingsText = {
+                        navController.navigateSingleTop(Routes.SettingsText)
                     },
                     editorViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
                 )

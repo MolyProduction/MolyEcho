@@ -56,11 +56,13 @@ import com.module.notelycompose.resources.cancel
 import com.module.notelycompose.resources.theme
 import com.module.notelycompose.resources.choose_how_the_app_looks
 import com.module.notelycompose.resources.close
+import com.module.notelycompose.resources.accessibility
 
 @Composable
 fun SettingsScreen(
     navigateBack: () -> Unit,
     navigateToLanguages: () -> Unit,
+    navigateToSettingsText: () -> Unit,
     preferencesRepository: PreferencesRepository = koinInject()
 ) {
     val language by preferencesRepository.getDefaultTranscriptionLanguage()
@@ -98,6 +100,12 @@ fun SettingsScreen(
                             preferencesRepository.setTheme(it.name)
                         }
                     }
+                )
+            }
+
+            item {
+                AccessibilitySection(
+                    navigateToSettingsText = navigateToSettingsText
                 )
             }
         }
@@ -431,6 +439,28 @@ private fun ThemePreview(theme: Theme) {
                     )
             )
         }
+    }
+}
+
+@Composable
+private fun AccessibilitySection(
+    navigateToSettingsText: () -> Unit
+) {
+    Column {
+        Text(
+            text = stringResource(Res.string.accessibility),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = LocalCustomColors.current.bodyContentColor,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
+        Text(
+            text = stringResource(Res.string.accessibility),
+            modifier = Modifier.clickable {
+                navigateToSettingsText()
+            }
+        )
     }
 }
 

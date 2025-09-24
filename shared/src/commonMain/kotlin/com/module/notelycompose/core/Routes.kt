@@ -14,4 +14,7 @@ object Routes {
     const val MENU = "menu"
     const val DOWNLOADER = "downloader"
 
+    @Serializable
+    data object SettingsText : Routes
+
 }

@@ -93,6 +93,7 @@ fun NoteDetailScreen(
     navigateBack: () -> Unit,
     navigateToRecorder: (noteId: String) -> Unit,
     navigateToTranscription: () -> Unit,
+    navigateToSettingsText: () -> Unit,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
