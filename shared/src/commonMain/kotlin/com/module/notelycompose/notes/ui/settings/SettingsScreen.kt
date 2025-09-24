@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -57,6 +58,10 @@ import com.module.notelycompose.resources.theme
 import com.module.notelycompose.resources.choose_how_the_app_looks
 import com.module.notelycompose.resources.close
 import com.module.notelycompose.resources.accessibility
+import com.module.notelycompose.resources.body_text_default
+import com.module.notelycompose.resources.body_text_preferred_text
+import com.module.notelycompose.resources.body_text_size
+import com.module.notelycompose.resources.navigate
 
 @Composable
 fun SettingsScreen(
@@ -443,24 +448,96 @@ private fun ThemePreview(theme: Theme) {
 }
 
 @Composable
-private fun AccessibilitySection(
+fun AccessibilitySection(
     navigateToSettingsText: () -> Unit
 ) {
-    Column {
-        Text(
-            text = stringResource(Res.string.accessibility),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = LocalCustomColors.current.bodyContentColor,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+    Text(
+        text = stringResource(Res.string.accessibility),
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Medium,
+        color = LocalCustomColors.current.bodyContentColor,
+        modifier = Modifier.padding(bottom = 12.dp)
+    )
 
-        Text(
-            text = stringResource(Res.string.accessibility),
-            modifier = Modifier.clickable {
-                navigateToSettingsText()
-            }
+    TextSizeSettingItem(
+        title = stringResource(Res.string.body_text_size),
+        subtitle = stringResource(Res.string.body_text_preferred_text),
+        currentValue = stringResource(Res.string.body_text_default),
+        onClick = {
+            navigateToSettingsText()
+        }
+    )
+}
+
+@Composable
+fun TextSizeSettingItem(
+    title: String,
+    subtitle: String,
+    currentValue: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                LocalCustomColors.current.settingsBodyBorderColor,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
         )
+    ) {
+        Row(
+            modifier = Modifier
+                .background(LocalCustomColors.current.bodyBackgroundColor)
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = LocalCustomColors.current.bodyContentColor
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = subtitle,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = LocalCustomColors.current.settingsBodyTextColor,
+                    lineHeight = 20.sp
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = currentValue,
+                    fontSize = 16.sp,
+                    color = LocalCustomColors.current.settingsBodyTextColor,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = stringResource(Res.string.navigate),
+                    tint = Color.Gray,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
     }
 }
 

@@ -42,7 +42,9 @@ val DarkCustomColors = CustomColors(
     languageSearchUnfocusedColor = Color.White,
     shareDialogBackgroundColor = Color(0xFF333333),
     shareDialogButtonColor = Color.White,
-    statusBarBackgroundColor = Color(0xFFFFFAD0)
+    statusBarBackgroundColor = Color(0xFFFFFAD0),
+    settingsBodyTextColor = Color.Gray,
+    settingsBodyBorderColor = Color.DarkGray
 )
 
 val LightCustomColors = CustomColors(
@@ -84,7 +86,9 @@ val LightCustomColors = CustomColors(
     languageSearchUnfocusedColor = Color.Black,
     shareDialogBackgroundColor = Color.White,
     shareDialogButtonColor = Color(0xFF333333),
-    statusBarBackgroundColor = Color(0xFFFFFAD0)
+    statusBarBackgroundColor = Color(0xFFFFFAD0),
+    settingsBodyTextColor = Color.DarkGray,
+    settingsBodyBorderColor = Color.LightGray
 )
 
 // Create a CompositionLocal to hold the custom colors

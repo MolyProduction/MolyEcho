@@ -28,6 +28,12 @@ import com.module.notelycompose.notes.ui.detail.IOSNoteTopBar
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.Res
+import com.module.notelycompose.resources.accessibility
+import com.module.notelycompose.resources.accessibility_a
+import com.module.notelycompose.resources.accessibility_desc
+import com.module.notelycompose.resources.accessibility_example
+import com.module.notelycompose.resources.body_text_default
+import com.module.notelycompose.resources.body_text_size
 import com.module.notelycompose.resources.recording_ui_checkmark
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -97,14 +103,14 @@ fun TextSizeSlider(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Body Text Size",
+                    text = stringResource(Res.string.body_text_size),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Medium,
                     color = LocalCustomColors.current.bodyContentColor
                 )
 
                 Text(
-                    text = "Use the slider to set the preferred writing body size for the note editor, customise your accessibility.",
+                    text = stringResource(Res.string.accessibility_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     lineHeight = 20.sp
@@ -121,7 +127,7 @@ fun TextSizeSlider(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "A",
+                        text = stringResource(Res.string.accessibility_a),
                         fontSize = 14.sp,
                         color = Color.Gray,
                         fontWeight = FontWeight.Medium
@@ -146,7 +152,7 @@ fun TextSizeSlider(
 
                     // Large A
                     Text(
-                        text = "A",
+                        text = stringResource(Res.string.accessibility_a),
                         fontSize = 24.sp,
                         color = Color.Gray,
                         fontWeight = FontWeight.Medium
@@ -154,7 +160,7 @@ fun TextSizeSlider(
                 }
 
                 Text(
-                    text = "Default",
+                    text = stringResource(Res.string.body_text_default),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.fillMaxWidth(),
@@ -164,7 +170,7 @@ fun TextSizeSlider(
 
             // Example text that changes size
             Text(
-                text = "Example",
+                text = stringResource(Res.string.accessibility_example),
                 fontSize = currentTextSize.sp,
                 color = LocalCustomColors.current.bodyContentColor,
                 fontWeight = FontWeight.Normal,
