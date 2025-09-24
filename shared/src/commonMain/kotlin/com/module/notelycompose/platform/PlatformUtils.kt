@@ -20,4 +20,10 @@ expect class PlatformUtils {
         fileName: String,
         onResult: (Boolean, String?) -> Unit
     )
+    fun exportTextAsPDFWithFilePicker(
+        text: String,
+        fileName: String,
+        textSize: Float,
+        onResult: (Boolean, String?) -> Unit
+    )
 }

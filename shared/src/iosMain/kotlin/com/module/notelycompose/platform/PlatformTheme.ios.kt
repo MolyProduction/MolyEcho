@@ -9,7 +9,6 @@ import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSData
 import platform.Foundation.dataWithContentsOfURL
 import platform.UIKit.popoverPresentationController
-import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
 import platform.Foundation.dataWithBytes
 import platform.Foundation.writeToURL
@@ -133,5 +132,14 @@ actual class PlatformUtils {
         } catch (e: Exception) {
             onResult(false, "Export failed: ${e.message}")
         }
+    }
+
+    actual fun exportTextAsPDFWithFilePicker(
+        text: String,
+        fileName: String,
+        textSize: Float,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+
     }
 }

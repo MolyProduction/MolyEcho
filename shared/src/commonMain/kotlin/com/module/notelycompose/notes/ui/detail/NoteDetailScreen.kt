@@ -174,6 +174,9 @@ fun NoteDetailScreen(
                 isRecordingExist = editorState.recording.isRecordingExist,
                 onExportTextAsTxt = {
                     platformViewModel.onExportTextAsTxt(editorState.content.text)
+                },
+                onExportTextAsPDF = {
+                    platformViewModel.onExportTextAsPDF(editorState.content.text)
                 }
             )
         },

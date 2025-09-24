@@ -9,10 +9,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.net.toUri
 import com.module.notelycompose.FileSaverHandler
+import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
 
 actual class PlatformUtils(
     private val context: Context,
-    private val fileSaverHandler: FileSaverHandler
+    private val fileSaverHandler: FileSaverHandler,
+    private val androidPdfGenerator: AndroidPdfGenerator
 ) {
 
     actual fun shareText(text: String) {
@@ -98,6 +100,28 @@ actual class PlatformUtils(
             }
         } catch (e: Exception) {
             onResult(false, "Export failed: ${e.message}")
+        }
+    }
+
+    actual fun exportTextAsPDFWithFilePicker(
+        text: String,
+        fileName: String,
+        textSize: Float,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        try {
+            val pdfFileName = if (fileName.endsWith(".pdf")) fileName else "$fileName.pdf"
+
+            fileSaverHandler.saveFile(pdfFileName) { targetUri ->
+                try {
+                    val success = androidPdfGenerator.createPdfDocument(text, targetUri, textSize)
+                    onResult(success, if (success) "PDF exported successfully" else "Failed to export PDF")
+                } catch (e: Exception) {
+                    onResult(false, "PDF export failed: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            onResult(false, "PDF export failed: ${e.message}")
         }
     }
 

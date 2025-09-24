@@ -36,6 +36,7 @@ import com.module.notelycompose.resources.top_bar_export_audio_folder
 import com.module.notelycompose.resources.top_bar_import_audio
 import com.module.notelycompose.resources.top_bar_my_note
 import com.module.notelycompose.resources.top_bar_export_as_txt
+import com.module.notelycompose.resources.top_bar_export_as_pdf
 import com.module.notelycompose.resources.vectors.IcChevronLeft
 import com.module.notelycompose.resources.vectors.Images
 import org.jetbrains.compose.resources.stringResource
@@ -48,6 +49,7 @@ fun DetailNoteTopBar(
     onExportAudio: () -> Unit,
     onImportClick: () -> Unit = {},
     onExportTextAsTxt: () -> Unit,
+    onExportTextAsPDF: () -> Unit,
     isRecordingExist: Boolean
 ) {
     var showExistingRecordConfirmDialog by remember { mutableStateOf(false) }
@@ -64,7 +66,8 @@ fun DetailNoteTopBar(
                     showExistingRecordConfirmDialog = true
                 }
             },
-            onExportTextAsTxt = onExportTextAsTxt
+            onExportTextAsTxt = onExportTextAsTxt,
+            onExportTextAsPDF = onExportTextAsPDF
         )
     } else {
         DetailIOSNoteTopBar(
@@ -78,7 +81,8 @@ fun DetailNoteTopBar(
                     showExistingRecordConfirmDialog = true
                 }
             },
-            onExportTextAsTxt = onExportTextAsTxt
+            onExportTextAsTxt = onExportTextAsTxt,
+            onExportTextAsPDF = onExportTextAsPDF
         )
     }
 
@@ -102,6 +106,7 @@ fun DetailAndroidNoteTopBar(
     onExportAudio: () -> Unit,
     onImportClick: () -> Unit,
     onExportTextAsTxt: () -> Unit,
+    onExportTextAsPDF: () -> Unit,
     elevation: Dp = AppBarDefaults.TopAppBarElevation
 ) {
     TopAppBar(
@@ -125,7 +130,8 @@ fun DetailAndroidNoteTopBar(
             DetailDropDownMenu(
                 onExportAudio = onExportAudio,
                 onImportClick = onImportClick,
-                onExportTextAsTxt = onExportTextAsTxt
+                onExportTextAsTxt = onExportTextAsTxt,
+                onExportTextAsPDF = onExportTextAsPDF
             )
         },
         backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
@@ -140,6 +146,7 @@ fun DetailIOSNoteTopBar(
     onExportAudio: () -> Unit,
     onImportClick: () -> Unit,
     onExportTextAsTxt: () -> Unit,
+    onExportTextAsPDF: () -> Unit,
     onShare: () -> Unit
 ) {
     TopAppBar(
@@ -173,7 +180,8 @@ fun DetailIOSNoteTopBar(
             DetailDropDownMenu(
                 onExportAudio = onExportAudio,
                 onImportClick = onImportClick,
-                onExportTextAsTxt = onExportTextAsTxt
+                onExportTextAsTxt = onExportTextAsTxt,
+                onExportTextAsPDF = onExportTextAsPDF
             )
         },
         contentColor = LocalCustomColors.current.iOSBackButtonColor,
@@ -188,6 +196,7 @@ fun DetailDropDownMenu(
     onExportAudio: () -> Unit,
     onImportClick: () -> Unit = {},
     onExportTextAsTxt: () -> Unit,
+    onExportTextAsPDF: () -> Unit
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     Box {
@@ -228,6 +237,15 @@ fun DetailDropDownMenu(
                 }
             ) {
                 Text(stringResource(Res.string.top_bar_export_as_txt))
+            }
+
+            DropdownMenuItem(
+                onClick = {
+                    dropdownExpanded = false
+                    onExportTextAsPDF()
+                }
+            ) {
+                Text(stringResource(Res.string.top_bar_export_as_pdf))
             }
         }
     }

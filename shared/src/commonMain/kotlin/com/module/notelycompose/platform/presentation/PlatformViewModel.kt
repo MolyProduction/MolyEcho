@@ -1,15 +1,20 @@
 package com.module.notelycompose.platform.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Platform
 import com.module.notelycompose.platform.PlatformUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 class PlatformViewModel (
     private val platformInfo: Platform,
-    private val platformUtils: PlatformUtils
+    private val platformUtils: PlatformUtils,
+    private val preferencesRepository: PreferencesRepository
 ) :ViewModel(){
     private val _state = MutableStateFlow(PlatformUiState())
     val state: StateFlow<PlatformUiState> = _state
@@ -76,6 +81,28 @@ class PlatformViewModel (
                     exportSuccess = success,
                     exportMessage = message ?: if (success) "Text exported successfully" else "Failed to export text"
                 )
+            }
+        }
+    }
+
+    fun onExportTextAsPDF(text: String) {
+        viewModelScope.launch {
+            if (text.isNotBlank()) {
+                val defaultFileName = "pdf_${Clock.System.now().toEpochMilliseconds()}.pdf"
+                val textSize = preferencesRepository.getBodyTextSize().first()
+                _state.value = _state.value.copy(isExporting = true)
+
+                platformUtils.exportTextAsPDFWithFilePicker(
+                    text = text,
+                    fileName = defaultFileName,
+                    textSize = textSize
+                ) { success, message ->
+                    _state.value = _state.value.copy(
+                        isExporting = false,
+                        exportSuccess = success,
+                        exportMessage = message ?: if (success) "PDF exported successfully" else "Failed to export PDF"
+                    )
+                }
             }
         }
     }

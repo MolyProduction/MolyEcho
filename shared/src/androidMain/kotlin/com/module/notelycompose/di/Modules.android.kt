@@ -16,6 +16,7 @@ import com.module.notelycompose.platform.PlatformAudioPlayer
 import com.module.notelycompose.platform.PlatformUtils
 import com.module.notelycompose.platform.Transcriber
 import com.module.notelycompose.platform.dataStore
+import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 import org.koin.core.qualifier.named
@@ -33,10 +34,9 @@ actual val platformModule = module {
     }
     single<Platform> { AndroidPlatform(get(named("AppVersion")), get()) }
     single { dataStore(get()) }
-    single { PlatformUtils(get(), get()) }
+    single { PlatformUtils(get(), get(), get()) }
     single { BrowserLauncher(get()) }
-    single { FileSaverLauncherHolder() }
-    single { FileSaverHandler(get()) }
+    single { AndroidPdfGenerator(get()) }
 
     single<SqlDriver> {
         AndroidSqliteDriver(NoteDatabase.Schema, context = get(), "notes.db")
