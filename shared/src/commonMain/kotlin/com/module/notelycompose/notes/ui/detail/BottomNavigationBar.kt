@@ -51,6 +51,7 @@ import com.module.notelycompose.resources.bottom_navigation_bullet_list
 import com.module.notelycompose.resources.bottom_navigation_delete
 import com.module.notelycompose.resources.bottom_navigation_hide_keyboard
 import com.module.notelycompose.resources.bottom_navigation_starred
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -67,6 +68,7 @@ fun BottomNavigationBar(
     onShowTextFormatBar: (show: Boolean) -> Unit,
     editorViewModel: TextEditorViewModel,
     navigateBack: () -> Unit,
+    onNavigateToSettingsText: () -> Unit,
     preferencesRepository: PreferencesRepository = koinInject()
 ) {
 
@@ -111,7 +113,7 @@ fun BottomNavigationBar(
                 onFormatSelected = {
                     selectedFormat = it
                     coroutineScope.launch {
-                        val bodyTextSize = preferencesRepository.getBodyTextSize()
+                        val bodyTextSize = preferencesRepository.getBodyTextSize().first()
                         textSizeSelectedFormats(it, bodyTextSize) { textSize ->
                             editorViewModel.setTextSize(textSize)
                         }
@@ -123,7 +125,8 @@ fun BottomNavigationBar(
                 onToggleBold = editorViewModel::onToggleBold,
                 onToggleItalic = editorViewModel::onToggleItalic,
                 onToggleUnderline = editorViewModel::onToggleUnderline,
-                onSetAlignment = editorViewModel::onSetAlignment
+                onSetAlignment = editorViewModel::onSetAlignment,
+                onNavigateToSettingsText = onNavigateToSettingsText
             )
         }
     }

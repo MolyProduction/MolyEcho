@@ -28,6 +28,7 @@ import com.module.notelycompose.notes.ui.detail.NoteDetailScreen
 import com.module.notelycompose.notes.ui.list.InfoScreen
 import com.module.notelycompose.notes.ui.list.NoteListScreen
 import com.module.notelycompose.notes.ui.settings.LanguageSelectionScreen
+import com.module.notelycompose.notes.ui.settings.NoteDetailTextSizeScreen
 import com.module.notelycompose.notes.ui.settings.SettingsScreen
 import com.module.notelycompose.notes.ui.settings.SettingsTextSizeScreen
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
@@ -132,13 +133,24 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
             ) {
                 SettingsScreen(
                     navigateBack = { navController.popBackStack() },
-                    navigateToLanguages = { navController.navigateSingleTop(Routes.Language)}
-                    navigateToSettingsText = { navController.navigateSingleTop(Routes.SettingsText)}
+                    navigateToLanguages = { navController.navigateSingleTop(Routes.Language)},
+                    navigateToSettingsText = {
+                        navController.navigateSingleTop(Routes.SettingsText)
+                    }
                 )
             }
             composable(Routes.LANGUAGE) {
                 LanguageSelectionScreen(
                     navigateBack = { navController.popBackStack() }
+                )
+            }
+            composableWithVerticalSlide<Routes.NoteSettingsText> { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.DetailsGraph)
+                }
+                NoteDetailTextSizeScreen(
+                    navigateBack = { navController.popBackStack() },
+                    editorViewModel = koinViewModel(viewModelStoreOwner = parentEntry),
                 )
             }
             composableWithVerticalSlide<Routes.SettingsText> {
@@ -167,9 +179,6 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                     },
                     navigateToTranscription = {
                         navController.navigate(Routes.TRANSCRIPTION)
-                    },
-                    onNavigateToSettingsText = {
-                        navController.navigateSingleTop(Routes.SettingsText)
                     },
                     editorViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
                 )

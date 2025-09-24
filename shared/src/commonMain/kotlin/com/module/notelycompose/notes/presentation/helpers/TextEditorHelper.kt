@@ -46,7 +46,8 @@ class TextEditorHelper {
                     content = newContent,
                     formats = updatedFormats,
                     selectionSize = getSizeLabel(newContent, updatedFormats, bodyTextSize),
-                    createdAt = getFormattedDate()
+                    createdAt = getFormattedDate(),
+                    bodyTextSize = bodyTextSize
                 )
             )
         } catch (e: Exception) {
@@ -54,7 +55,8 @@ class TextEditorHelper {
                 currentState.copy(
                     content = newContent,
                     selectionSize = getSizeLabel(newContent, currentState.formats, bodyTextSize),
-                    createdAt = getFormattedDate()
+                    createdAt = getFormattedDate(),
+                    bodyTextSize = bodyTextSize
                 )
             )
         }

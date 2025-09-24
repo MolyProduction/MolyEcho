@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.module.notelycompose.notes.extension.TEXT_SIZE_BODY
+import com.module.notelycompose.notes.extension.intBodyFontSizes
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Theme
@@ -53,7 +55,7 @@ import com.module.notelycompose.resources.transcription_language
 import com.module.notelycompose.resources.language_used_for_voice_transcription
 import com.module.notelycompose.resources.select_language
 import com.module.notelycompose.resources.appearance
-import com.module.notelycompose.resources.cancel
+import com.module.notelycompose.resources.body_text_pt
 import com.module.notelycompose.resources.theme
 import com.module.notelycompose.resources.choose_how_the_app_looks
 import com.module.notelycompose.resources.close
@@ -74,6 +76,7 @@ fun SettingsScreen(
         .collectAsState(languageCodeMap.entries.first().key)
     val uiMode by preferencesRepository.getTheme().collectAsState(Theme.SYSTEM.name)
     val coroutineScope = rememberCoroutineScope()
+    val bodyTextSize = preferencesRepository.getBodyTextSize().collectAsState(TEXT_SIZE_BODY).value
 
     Column(
         modifier = Modifier
@@ -110,7 +113,8 @@ fun SettingsScreen(
 
             item {
                 AccessibilitySection(
-                    navigateToSettingsText = navigateToSettingsText
+                    navigateToSettingsText = navigateToSettingsText,
+                    bodyTextSize = bodyTextSize
                 )
             }
         }
@@ -449,7 +453,8 @@ private fun ThemePreview(theme: Theme) {
 
 @Composable
 fun AccessibilitySection(
-    navigateToSettingsText: () -> Unit
+    navigateToSettingsText: () -> Unit,
+    bodyTextSize: Float
 ) {
     Text(
         text = stringResource(Res.string.accessibility),
@@ -462,7 +467,11 @@ fun AccessibilitySection(
     TextSizeSettingItem(
         title = stringResource(Res.string.body_text_size),
         subtitle = stringResource(Res.string.body_text_preferred_text),
-        currentValue = stringResource(Res.string.body_text_default),
+        currentValue = if(bodyTextSize.intBodyFontSizes() == TEXT_SIZE_BODY.toInt()) {
+            stringResource(Res.string.body_text_default)
+        } else {
+            stringResource(Res.string.body_text_pt, bodyTextSize.intBodyFontSizes())
+        },
         onClick = {
             navigateToSettingsText()
         }

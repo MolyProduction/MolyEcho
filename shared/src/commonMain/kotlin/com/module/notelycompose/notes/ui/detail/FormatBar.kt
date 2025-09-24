@@ -35,7 +35,8 @@ fun FormatBar(
     onToggleBold: () -> Unit,
     onToggleItalic: () -> Unit,
     onToggleUnderline: () -> Unit,
-    onSetAlignment: (alignment: TextAlign) -> Unit
+    onSetAlignment: (alignment: TextAlign) -> Unit,
+    onNavigateToSettingsText: () -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -54,12 +55,27 @@ fun FormatBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = stringResource(Res.string.format_bar_text),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = LocalCustomColors.current.bottomFormattingContentColor
-                    )
+                    Row {
+                        Text(
+                            text = stringResource(Res.string.format_bar_text),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = LocalCustomColors.current.bottomFormattingContentColor
+                        )
+                        Spacer(
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            tint = Color.DarkGray,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    onNavigateToSettingsText()
+                                },
+                            contentDescription = ""
+                        )
+                    }
                     IconButton(onClick = onClose) {
                         Icon(
                             imageVector = Icons.Rounded.Close,

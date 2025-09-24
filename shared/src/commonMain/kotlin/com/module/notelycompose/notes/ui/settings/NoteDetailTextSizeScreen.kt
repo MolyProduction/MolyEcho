@@ -1,9 +1,5 @@
 package com.module.notelycompose.notes.ui.settings
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
@@ -11,14 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -59,14 +49,17 @@ private fun sliderValueToTextSize(sliderValue: Float): Float {
 }
 
 @Composable
-fun SettingsTextSizeScreen(
+fun NoteDetailTextSizeScreen(
     navigateBack: () -> Unit,
-    preferencesRepository: PreferencesRepository = koinInject()
+    preferencesRepository: PreferencesRepository = koinInject(),
+    editorViewModel: TextEditorViewModel
 ) {
+
     var sliderValue by remember { mutableFloatStateOf(0.2f) } // Default to 14f position
     var isProgressVisible by remember { mutableStateOf(false) }
     var isCheckMarkVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val editorState by editorViewModel.editorPresentationState.collectAsState()
 
     // Load the saved text size and set slider position
     LaunchedEffect(Unit) {
@@ -155,6 +148,7 @@ fun SettingsTextSizeScreen(
                             sliderValue = newValue
                             coroutineScope.launch {
                                 preferencesRepository.setBodyTextSize(sliderValueToTextSize(newValue))
+                                editorViewModel.onUpdateContent(TextFieldValue(editorState.content.text))
                             }
                         },
                         modifier = Modifier.weight(1f),
@@ -219,64 +213,3 @@ fun SettingsTextSizeScreen(
     }
 }
 
-@Composable
-internal fun SavingBodyTextCheckMark() {
-    val pathColor = LocalCustomColors.current.bodyContentColor
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(LocalCustomColors.current.bodyBackgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        var animationPlayed by remember { mutableStateOf(false) }
-        val pathProgress by animateFloatAsState(
-            targetValue = if (animationPlayed) 1f else 0f,
-            animationSpec = tween(
-                durationMillis = 1000,
-                easing = FastOutSlowInEasing
-            ),
-            label = stringResource(Res.string.recording_ui_checkmark)
-        )
-
-        LaunchedEffect(Unit) {
-            animationPlayed = true
-        }
-
-        Canvas(modifier = Modifier.size(50.dp)) {
-            val path = Path().apply {
-
-                addArc(
-                    Rect(
-                        offset = Offset(0f, 0f),
-                        size = Size(size.width, size.height)
-                    ),
-                    0f,
-                    360f * pathProgress
-                )
-
-                if (pathProgress > 0.5f) {
-                    val checkProgress = (pathProgress - 0.5f) * 2f
-                    moveTo(size.width * 0.2f, size.height * 0.5f)
-                    lineTo(
-                        size.width * 0.45f,
-                        size.height * 0.7f * checkProgress
-                    )
-                    lineTo(
-                        size.width * 0.8f,
-                        size.height * 0.3f * checkProgress
-                    )
-                }
-            }
-
-            drawPath(
-                path = path,
-                color = pathColor,
-                style = Stroke(
-                    width = 8f,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
-                )
-            )
-        }
-    }
-}

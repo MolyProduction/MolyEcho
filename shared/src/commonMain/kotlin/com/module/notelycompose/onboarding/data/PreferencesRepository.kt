@@ -62,14 +62,15 @@ class PreferencesRepository(
     fun getModelDownloadId(): Flow<Long> = dataStore.data.map { prefs ->
         prefs[KEY_MODEL_DOWNLOAD_ID]?:-1
     }
+
     suspend fun setModelDownloadId(downloadId: Long) {
         dataStore.edit { prefs ->
             prefs[KEY_MODEL_DOWNLOAD_ID] = downloadId
         }
     }
 
-    suspend fun getBodyTextSize(): Float {
-        return dataStore.data.first()[KEY_BODY_TEXT_SIZE] ?: TEXT_SIZE_BODY
+    fun getBodyTextSize(): Flow<Float> = dataStore.data.map { prefs ->
+        prefs[KEY_BODY_TEXT_SIZE] ?: TEXT_SIZE_BODY
     }
 
     suspend fun setBodyTextSize(size: Float) {

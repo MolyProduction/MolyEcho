@@ -89,7 +89,11 @@ fun DetailAndroidNoteTopBar(
                     contentDescription = "Share note"
                 )
             }
-            DetailDropDownMenu(onImportClick = onImportClick)
+            // Hide dropdown menu
+            DetailDropDownMenu(
+                onExportAudio = onExportAudio,
+                onImportClick = onImportClick
+            )
         },
         backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
         contentColor = LocalCustomColors.current.bodyContentColor,
