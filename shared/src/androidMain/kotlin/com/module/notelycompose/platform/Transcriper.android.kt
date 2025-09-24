@@ -7,10 +7,9 @@ import android.os.Environment
 import androidx.core.content.ContextCompat
 import audio.utils.LauncherHolder
 import com.module.notelycompose.core.debugPrintln
-import com.module.notelycompose.utils.decodeWaveFileStream
+import com.module.notelycompose.utils.decodeWaveFile
 import com.whispercpp.whisper.WhisperCallback
 import com.whispercpp.whisper.WhisperContext
-import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
@@ -93,66 +92,51 @@ actual class Transcriber(
     }
 
     actual suspend fun start(
-        filePath: String,
-        language: String,
-        onProgress: (Int) -> Unit,
-        onNewSegment: (Long, Long, String) -> Unit,
-        onComplete: () -> Unit
+        filePath: String, language: String,
+        onProgress : (Int) -> Unit,
+        onNewSegment : (Long, Long,String) -> Unit,
+        onComplete : () -> Unit,
+        onError : () -> Unit
     ) {
-        if (!canTranscribe) return
+        if (!canTranscribe) {
+            return
+        }
+
         canTranscribe = false
 
         try {
-            debugPrintln { "Streaming wave samples in chunks..." }
+            debugPrintln{"Reading wave samples... "}
             val file = File(filePath)
+            val data = decodeWaveFile(file)
+            debugPrintln{"${data.size / (16000 / 1000)} ms\n"}
+            debugPrintln{"Transcribing data...\n"}
+            val start = System.currentTimeMillis()
+            val text = whisperContext?.transcribeData(data, language, callback = object : WhisperCallback{
+                override fun onNewSegment(startMs: Long, endMs: Long, text: String) {
+                    onNewSegment(startMs, endMs, text)
+                }
 
-            // 1 second of audio at 16 kHz
-            val chunkFrames = 16_000
+                override fun onProgress(progress: Int) {
+                    onProgress(progress)
+                }
 
-            // track how many frames we've processed so we can report progress
-            var totalFramesRead = 0L
-            // approximate total frames from file size (minus 44 byte header):
-            val totalFrames = ((file.length() - 44) / 2 /*bytes/sample*/)
+                override fun onComplete() {
+                    onComplete()
+                }
 
-            // 1) collectIndexed gives us the chunk index
-            decodeWaveFileStream(file, chunkFrames).collectIndexed { chunkIndex, floatChunk ->
-                totalFramesRead += floatChunk.size
+            })
+            val elapsed = System.currentTimeMillis() - start
+            debugPrintln{"Done ($elapsed ms): \n$text\n"}
 
-                debugPrintln { "Chunk #$chunkIndex → ${floatChunk.size} samples" }
-
-                // 2) send each chunk into Whisper
-                whisperContext?.transcribeData(
-                    floatChunk,
-                    language,
-                    callback = object : WhisperCallback {
-                        override fun onNewSegment(startMs: Long, endMs: Long, text: String) {
-                            onNewSegment(startMs, endMs, text)
-                        }
-
-                        override fun onProgress(progress: Int) {
-                            onProgress(progress)
-                        }
-
-                        override fun onComplete() {
-                            // per‑chunk completion if needed
-                        }
-                    }
-                )
-
-                // 3) fire a rough progress callback in ms
-                val progressMs =
-                    (totalFramesRead.toFloat() / totalFrames * (file.length() / 16_000)).toInt()
-                onProgress(progressMs)
-            }
-
-            debugPrintln { "All chunks processed, signaling complete." }
-            onComplete()
-
+        } catch (e: OutOfMemoryError) {
+            onError()
+            debugPrintln{"OutOfMemoryError: File too large to process - ${e.message}\n"}
         } catch (e: Exception) {
             e.printStackTrace()
-            debugPrintln { "Error: ${e.localizedMessage}" }
-        } finally {
-            canTranscribe = true
+            debugPrintln{"${e.localizedMessage}\n"}
         }
+
+        canTranscribe = true
+
     }
 }

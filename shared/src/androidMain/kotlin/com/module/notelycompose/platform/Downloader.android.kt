@@ -29,20 +29,27 @@ actual class Downloader(
 
 
     actual suspend fun startDownload(url: String, fileName: String) {
-        val request = DownloadManager.Request(url.toUri())
-            .setTitle("Downloading $fileName")
-            .setDestinationInExternalFilesDir(
-                mainContext,
-                Environment.DIRECTORY_DOWNLOADS,
-                fileName
-            )
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+        try {
+            val request = DownloadManager.Request(url.toUri())
+                .setTitle("Downloading $fileName")
+                .setDestinationInExternalFilesDir(
+                    mainContext,
+                    Environment.DIRECTORY_DOWNLOADS,
+                    fileName
+                )
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
 
-        val downloadManager =
-            mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val downloadId = downloadManager.enqueue(request)
+            val downloadManager =
+                mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val downloadId = downloadManager.enqueue(request)
 
-        preferencesRepository.setModelDownloadId(downloadId)
+            preferencesRepository.setModelDownloadId(downloadId)
+
+        } catch (e: NullPointerException) {
+            debugPrintln {"Invalid download URL $url: ${e.message}"}
+        } catch (e: Exception) {
+            debugPrintln {"Failed to start download: ${e.message}"}
+        }
     }
 
     actual suspend fun hasRunningDownload(): Boolean {
@@ -74,38 +81,38 @@ actual class Downloader(
 
         registerDownloadReceiver(downloadId, onSuccess, onFailed)
         val downloadManager = mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            while (true) {
-                val query = DownloadManager.Query().setFilterById(downloadId)
-                val cursor: Cursor = downloadManager.query(query)
-                if (cursor.moveToFirst()) {
-                    val bytesDownloaded =
-                        cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                    val bytesTotal =
-                        cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+        while (true) {
+            val query = DownloadManager.Query().setFilterById(downloadId)
+            val cursor: Cursor = downloadManager.query(query)
+            if (cursor.moveToFirst()) {
+                val bytesDownloaded =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                val bytesTotal =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
 
-                    if (bytesTotal > 0) {
-                        val progress = (bytesDownloaded * 100L / bytesTotal).toInt()
+                if (bytesTotal > 0) {
+                    val progress = (bytesDownloaded * 100L / bytesTotal).toInt()
 
-                        // Convert to MB
-                        val downloadedMB =
-                            String.format("%.2f MB", bytesDownloaded / 1024.0 / 1024.0)
-                        val totalMB = String.format("%.2f MB", bytesTotal / 1024.0 / 1024.0)
+                    // Convert to MB
+                    val downloadedMB =
+                        String.format("%.2f MB", bytesDownloaded / 1024.0 / 1024.0)
+                    val totalMB = String.format("%.2f MB", bytesTotal / 1024.0 / 1024.0)
 
-                        onProgressUpdated(progress, downloadedMB, totalMB)
-                    }
+                    onProgressUpdated(progress, downloadedMB, totalMB)
+                }
 
-                    val status =
-                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                    cursor.close()
+                val status =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                cursor.close()
 
-                    if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
-                        break
-                    }
-                } else {
-                    cursor.close()
+                if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
                     break
                 }
-                delay(1000)
+            } else {
+                cursor.close()
+                break
+            }
+            delay(1000)
         }
     }
 
@@ -171,15 +178,15 @@ actual class Downloader(
     }
 
     private fun getErrorTextFromReason(reason: Int) = when (reason) {
-            DownloadManager.ERROR_CANNOT_RESUME -> "ERROR_CANNOT_RESUME"
-            DownloadManager.ERROR_DEVICE_NOT_FOUND -> "ERROR_DEVICE_NOT_FOUND"
-            DownloadManager.ERROR_FILE_ALREADY_EXISTS -> "ERROR_FILE_ALREADY_EXISTS"
-            DownloadManager.ERROR_FILE_ERROR -> "ERROR_FILE_ERROR"
-            DownloadManager.ERROR_HTTP_DATA_ERROR -> "ERROR_HTTP_DATA_ERROR"
-            DownloadManager.ERROR_INSUFFICIENT_SPACE -> "ERROR_INSUFFICIENT_SPACE"
-            DownloadManager.ERROR_TOO_MANY_REDIRECTS -> "ERROR_TOO_MANY_REDIRECTS"
-            DownloadManager.ERROR_UNHANDLED_HTTP_CODE -> "ERROR_UNHANDLED_HTTP_CODE"
-            DownloadManager.ERROR_UNKNOWN -> "ERROR_UNKNOWN"
+        DownloadManager.ERROR_CANNOT_RESUME -> "ERROR_CANNOT_RESUME"
+        DownloadManager.ERROR_DEVICE_NOT_FOUND -> "ERROR_DEVICE_NOT_FOUND"
+        DownloadManager.ERROR_FILE_ALREADY_EXISTS -> "ERROR_FILE_ALREADY_EXISTS"
+        DownloadManager.ERROR_FILE_ERROR -> "ERROR_FILE_ERROR"
+        DownloadManager.ERROR_HTTP_DATA_ERROR -> "ERROR_HTTP_DATA_ERROR"
+        DownloadManager.ERROR_INSUFFICIENT_SPACE -> "ERROR_INSUFFICIENT_SPACE"
+        DownloadManager.ERROR_TOO_MANY_REDIRECTS -> "ERROR_TOO_MANY_REDIRECTS"
+        DownloadManager.ERROR_UNHANDLED_HTTP_CODE -> "ERROR_UNHANDLED_HTTP_CODE"
+        DownloadManager.ERROR_UNKNOWN -> "ERROR_UNKNOWN"
         else -> "DOWNLOAD_ERROR"
     }
 

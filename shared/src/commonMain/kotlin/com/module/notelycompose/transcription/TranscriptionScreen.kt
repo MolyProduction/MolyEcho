@@ -20,24 +20,25 @@ import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavBackStackEntry
 import com.module.notelycompose.notes.presentation.detail.TextEditorViewModel
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.HandlePlatformBackNavigation
@@ -49,9 +50,11 @@ import com.module.notelycompose.resources.top_bar_back
 import com.module.notelycompose.resources.transcription_dialog_append
 import com.module.notelycompose.resources.transcription_dialog_original
 import com.module.notelycompose.resources.transcription_dialog_summarize
+import com.module.notelycompose.resources.transcription_dialog_error_got_it
+import com.module.notelycompose.resources.transcription_dialog_error_audio_file_title
+import com.module.notelycompose.resources.transcription_dialog_error_audio_file_desc
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun TranscriptionScreen(
@@ -77,47 +80,49 @@ fun TranscriptionScreen(
             viewModel.finishRecognizer()
         }
     }
-        Card(
-            backgroundColor = LocalCustomColors.current.bodyBackgroundColor
+    Card(
+        backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
+        elevation = 0.dp
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 48.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 48.dp)
+            Box(modifier = Modifier.align(Alignment.Start)
+                .padding(start = 4.dp, bottom = 12.dp, top = 4.dp)) {
+                BackButton(onNavigateBack = {
+                    viewModel.stopRecognizer()
+                    viewModel.finishRecognizer()
+                    navigateBack()
+                }
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .border(
+                        2.dp,
+                        LocalCustomColors.current.bodyContentColor,
+                        RoundedCornerShape(8.dp)
+                    )
+                    .padding(8.dp)
             ) {
-                Box(modifier = Modifier.align(Alignment.Start)
-                    .padding(start = 4.dp, bottom = 12.dp, top = 4.dp)) {
-                    BackButton(onNavigateBack = {
-                        viewModel.stopRecognizer()
-                        viewModel.finishRecognizer()
-                        navigateBack()
-                        }
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .verticalScroll(scrollState)
-                        .border(
-                            2.dp,
-                            LocalCustomColors.current.bodyContentColor,
-                            RoundedCornerShape(8.dp)
-                        )
-                        .padding(8.dp)
-                ) {
-                    Text(
-                        if(transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText,
-                        color = LocalCustomColors.current.bodyContentColor
-                    )
-                }
-                if(transcriptionUiState.progress == 0){
-                    LinearProgressIndicator(
-                        modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(),
-                        strokeCap = StrokeCap.Round
-                    )
-                }else if(transcriptionUiState.progress in 1..99){
-                   SmoothLinearProgressBar((transcriptionUiState.progress / 100f))
-                }
+                Text(
+                    text = if(transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText,
+                    color = LocalCustomColors.current.bodyContentColor,
+                    style = TextStyle(fontSize = editorState.bodyTextSize.sp)
+                )
+            }
+            if(transcriptionUiState.progress == 0){
+                LinearProgressIndicator(
+                    modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(),
+                    strokeCap = StrokeCap.Round
+                )
+            } else if(transcriptionUiState.progress in 1..99){
+                SmoothLinearProgressBar((transcriptionUiState.progress / 100f))
+            }
 //                FloatingActionButton(
 //                    modifier = Modifier.padding(vertical = 8.dp),
 //                    shape = CircleShape,
@@ -137,51 +142,64 @@ fun TranscriptionScreen(
 //                    )
 //                }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        modifier = Modifier.weight(1f),
-                        enabled = !transcriptionUiState.inTranscription,
-                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        content = {
-                            Text(
-                                stringResource(Res.string.transcription_dialog_append),
-                                color = LocalCustomColors.current.bodyContentColor
-                            )
-                        }, onClick = {
-                            val result = if (transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText
-                            editorViewModel.onUpdateContent(TextFieldValue("${editorState.content.text}\n$result"))
-                            navigateBack()
-                        }
-                    )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    enabled = !transcriptionUiState.inTranscription,
+                    border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    content = {
+                        Text(
+                            stringResource(Res.string.transcription_dialog_append),
+                            color = LocalCustomColors.current.bodyContentColor
+                        )
+                    }, onClick = {
+                        val result = if (transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText
+                        editorViewModel.onUpdateContent(TextFieldValue("${editorState.content.text}\n$result"))
+                        navigateBack()
+                    }
+                )
 
-                    Spacer(modifier = Modifier.width(8.dp))
-                    OutlinedButton(
-                        modifier = Modifier.weight(1f),
-                        enabled = !transcriptionUiState.inTranscription,
-                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp),
-                        shape = RoundedCornerShape(4.dp),
-                        content = {
-                            Text(
-                                if(transcriptionUiState.viewOriginalText) stringResource(Res.string.transcription_dialog_summarize) else
-                                    stringResource(Res.string.transcription_dialog_original),
-                                fontSize = 12.sp,
-                                color = LocalCustomColors.current.bodyContentColor
-                            )
-                        }, onClick = {
-                            viewModel.summarize()
-                        })
-                }
-
+                Spacer(modifier = Modifier.width(8.dp))
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    enabled = !transcriptionUiState.inTranscription,
+                    border = ButtonDefaults.outlinedButtonBorder.copy(width = 2.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    content = {
+                        Text(
+                            if(transcriptionUiState.viewOriginalText) stringResource(Res.string.transcription_dialog_summarize) else
+                                stringResource(Res.string.transcription_dialog_original),
+                            fontSize = 12.sp,
+                            color = LocalCustomColors.current.bodyContentColor
+                        )
+                    }, onClick = {
+                        viewModel.summarize()
+                    })
             }
+
         }
+    }
 
     HandlePlatformBackNavigation(enabled = true) {
         navigateBack()
+    }
+
+    if(transcriptionUiState.hasError) {
+        AlertDialog(
+            onDismissRequest = navigateBack,
+            confirmButton = {
+                TextButton(onClick = navigateBack) {
+                    Text(stringResource(Res.string.transcription_dialog_error_got_it))
+                }
+            },
+            title = { Text(stringResource(Res.string.transcription_dialog_error_audio_file_title)) },
+            text = { Text(stringResource(Res.string.transcription_dialog_error_audio_file_desc)) }
+        )
     }
 
 }
@@ -236,8 +254,3 @@ fun SmoothLinearProgressBar(progress: Float) {
         strokeCap = StrokeCap.Round
     )
 }
-
-
-
-
-

@@ -31,14 +31,14 @@ actual class Transcriber{
 
 
     actual suspend fun requestRecordingPermission(): Boolean {
-       return true
+        return true
     }
 
 
     actual suspend fun initialize() {
         debugPrintln{"speech: initialize model"}
         if(!isModelLoaded)
-        loadBaseModel()
+            loadBaseModel()
     }
 
     private fun loadBaseModel(){
@@ -84,7 +84,8 @@ actual class Transcriber{
         filePath: String, language: String,
         onProgress : (Int) -> Unit,
         onNewSegment : (Long, Long,String) -> Unit,
-        onComplete : () -> Unit
+        onComplete : () -> Unit,
+        onError : () -> Unit
     ) {
         if (!canTranscribe) {
             debugPrintln{"Model not loaded yet"}
@@ -98,7 +99,7 @@ actual class Transcriber{
             val data = decodeWaveFile(filePath)
             debugPrintln{"${data.size / (16000 / 1000)} ms\n"}
             debugPrintln{"Transcribing data...\n"}
-           whisperContext?.fullTranscribe(data, language, object : WhisperCallback{
+            whisperContext?.fullTranscribe(data, language, object : WhisperCallback{
                 override fun onProgress(progress: Int) {
                     onProgress(progress)
                 }
@@ -107,9 +108,9 @@ actual class Transcriber{
                     onNewSegment(l1,l2,text)
                 }
 
-               override fun onComplete() {
-                   onComplete()
-               }
+                override fun onComplete() {
+                    onComplete()
+                }
 
             })
         } catch (e: Exception) {
