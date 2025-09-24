@@ -36,9 +36,9 @@ kotlinx-coroutines = "1.10.2"
 core-ktx = "1.16.0"
 
 # Android SDK
-android-compileSdk = "36"
+android-compileSdk = "35"
 android-minSdk = "26"
-android-targetSdk = "36"
+android-targetSdk = "35"
 
 [libraries]
 # Non-UI dependencies
