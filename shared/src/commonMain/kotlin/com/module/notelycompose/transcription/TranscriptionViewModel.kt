@@ -51,7 +51,7 @@ class TranscriptionViewModel(
                             )
                         }
                     }, onNewSegment = { _, _, text ->
-
+                        
                         val delimiter = if(_uiState.value.originalText.endsWith(".")) "\n\n" else SPACE_STR
                         debugPrintln{"\n text ========================= $text"}
                         _uiState.update { current ->
