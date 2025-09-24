@@ -13,6 +13,7 @@
     <string name="top_bar_my_note">My Note</string>
     <string name="top_bar_export_audio_folder">Export Audio to Folder</string>
     <string name="top_bar_import_audio">Import Audio</string>
+    <string name="top_bar_export_as_txt">Export Text as .txt</string>
 
     <!-- Delete Dialog -->
     <string name="confirmation">Confirm</string>
@@ -143,7 +144,7 @@
     <string name="theme">Theme</string>
     <string name="choose_how_the_app_looks">Choose how the app looks and feels</string>
     <string name="accessibility">Accessibility</string>
-    <string name="body_text_size">Body Text size</string>
+    <string name="body_text_size">Body text size</string>
     <string name="body_text_preferred_text">Set your preferred body text size for the notes editor to enhance your writing experience.</string>
     <string name="body_text_default">Default</string>
     <string name="body_text_pt">%1$d pt</string>

@@ -35,6 +35,7 @@ import com.module.notelycompose.resources.top_bar_back
 import com.module.notelycompose.resources.top_bar_export_audio_folder
 import com.module.notelycompose.resources.top_bar_import_audio
 import com.module.notelycompose.resources.top_bar_my_note
+import com.module.notelycompose.resources.top_bar_export_as_txt
 import com.module.notelycompose.resources.vectors.IcChevronLeft
 import com.module.notelycompose.resources.vectors.Images
 import org.jetbrains.compose.resources.stringResource
@@ -44,22 +45,53 @@ fun DetailNoteTopBar(
     title: String = stringResource(Res.string.top_bar_my_note),
     onNavigateBack: () -> Unit,
     onShare: () -> Unit = {},
+    onExportAudio: () -> Unit,
     onImportClick: () -> Unit = {},
+    onExportTextAsTxt: () -> Unit,
+    isRecordingExist: Boolean
 ) {
+    var showExistingRecordConfirmDialog by remember { mutableStateOf(false) }
     if (getPlatform().isAndroid) {
         DetailAndroidNoteTopBar(
             title = title,
             onNavigateBack = onNavigateBack,
             onShare = onShare,
-            onImportClick = onImportClick
+            onExportAudio = onExportAudio,
+            onImportClick = {
+                if (!isRecordingExist) {
+                    onImportClick()
+                } else {
+                    showExistingRecordConfirmDialog = true
+                }
+            },
+            onExportTextAsTxt = onExportTextAsTxt
         )
     } else {
         DetailIOSNoteTopBar(
             onNavigateBack = onNavigateBack,
             onShare = onShare,
-            onImportClick = onImportClick
+            onExportAudio = onExportAudio,
+            onImportClick = {
+                if (!isRecordingExist) {
+                    onImportClick()
+                } else {
+                    showExistingRecordConfirmDialog = true
+                }
+            },
+            onExportTextAsTxt = onExportTextAsTxt
         )
     }
+
+    ReplaceRecordingConfirmationDialog(
+        showDialog = showExistingRecordConfirmDialog,
+        onDismiss = {
+            showExistingRecordConfirmDialog = false
+        },
+        onConfirm = {
+            onImportClick()
+        },
+        option = RecordingConfirmationUiModel.Import
+    )
 }
 
 @Composable
@@ -67,11 +99,11 @@ fun DetailAndroidNoteTopBar(
     title: String,
     onNavigateBack: () -> Unit,
     onShare: () -> Unit,
+    onExportAudio: () -> Unit,
     onImportClick: () -> Unit,
+    onExportTextAsTxt: () -> Unit,
     elevation: Dp = AppBarDefaults.TopAppBarElevation
 ) {
-
-
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
@@ -92,7 +124,8 @@ fun DetailAndroidNoteTopBar(
             // Hide dropdown menu
             DetailDropDownMenu(
                 onExportAudio = onExportAudio,
-                onImportClick = onImportClick
+                onImportClick = onImportClick,
+                onExportTextAsTxt = onExportTextAsTxt
             )
         },
         backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
@@ -104,8 +137,10 @@ fun DetailAndroidNoteTopBar(
 @Composable
 fun DetailIOSNoteTopBar(
     onNavigateBack: () -> Unit,
-    onShare: () -> Unit,
+    onExportAudio: () -> Unit,
     onImportClick: () -> Unit,
+    onExportTextAsTxt: () -> Unit,
+    onShare: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -135,7 +170,11 @@ fun DetailIOSNoteTopBar(
                     modifier = Modifier.size(24.dp)
                 )
             }
-            DetailDropDownMenu(onImportClick = onImportClick)
+            DetailDropDownMenu(
+                onExportAudio = onExportAudio,
+                onImportClick = onImportClick,
+                onExportTextAsTxt = onExportTextAsTxt
+            )
         },
         contentColor = LocalCustomColors.current.iOSBackButtonColor,
         backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
@@ -146,7 +185,9 @@ fun DetailIOSNoteTopBar(
 
 @Composable
 fun DetailDropDownMenu(
-    onImportClick: () -> Unit = {}
+    onExportAudio: () -> Unit,
+    onImportClick: () -> Unit = {},
+    onExportTextAsTxt: () -> Unit,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     Box {
@@ -165,7 +206,16 @@ fun DetailDropDownMenu(
             DropdownMenuItem(
                 onClick = {
                     dropdownExpanded = false
-                    // Handle option 1
+                    onImportClick()
+                }
+            ) {
+                Text(stringResource(Res.string.top_bar_import_audio))
+            }
+
+            DropdownMenuItem(
+                onClick = {
+                    dropdownExpanded = false
+                    onExportAudio()
                 }
             ) {
                 Text(stringResource(Res.string.top_bar_export_audio_folder))
@@ -174,10 +224,10 @@ fun DetailDropDownMenu(
             DropdownMenuItem(
                 onClick = {
                     dropdownExpanded = false
-                    onImportClick()
+                    onExportTextAsTxt()
                 }
             ) {
-                Text(stringResource(Res.string.top_bar_import_audio))
+                Text(stringResource(Res.string.top_bar_export_as_txt))
             }
         }
     }

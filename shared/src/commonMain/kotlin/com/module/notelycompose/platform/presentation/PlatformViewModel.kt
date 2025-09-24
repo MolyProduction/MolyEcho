@@ -5,6 +5,7 @@ import com.module.notelycompose.platform.Platform
 import com.module.notelycompose.platform.PlatformUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.Clock
 
 class PlatformViewModel (
     private val platformInfo: Platform,
@@ -28,15 +29,62 @@ class PlatformViewModel (
     }
 
     fun shareText(text: String) {
-         if (text.isNotBlank()) {
-             platformUtils.shareText(text)
-         }
+        if (text.isNotBlank()) {
+            platformUtils.shareText(text)
+        }
     }
 
     fun shareRecording(path: String) {
-         if (path.isNotBlank()) {
-             platformUtils.shareRecording(path)
-         }
+        if (path.isNotBlank()) {
+            if(_state.value.isAndroid) {
+                platformUtils.shareRecording(path)
+            } else {
+                onExportAudio(path)
+            }
+        }
+    }
+
+    fun onExportAudio(path: String) {
+        if (path.isNotBlank()) {
+            val defaultFileName = "recording_${Clock.System.now().toEpochMilliseconds()}.wav"
+            _state.value = _state.value.copy(isExporting = true)
+
+            platformUtils.exportRecordingWithFilePicker(
+                sourcePath = path,
+                fileName = defaultFileName
+            ) { success, message ->
+                _state.value = _state.value.copy(
+                    isExporting = false,
+                    exportSuccess = success,
+                    exportMessage = message ?: if (success) "Audio exported successfully" else "Failed to export audio"
+                )
+            }
+        }
+    }
+
+    fun onExportTextAsTxt(text: String) {
+        if (text.isNotBlank()) {
+            val defaultFileName = "text_${Clock.System.now().toEpochMilliseconds()}.txt"
+            _state.value = _state.value.copy(isExporting = true)
+
+            platformUtils.exportTextWithFilePicker(
+                text = text,
+                fileName = defaultFileName
+            ) { success, message ->
+                _state.value = _state.value.copy(
+                    isExporting = false,
+                    exportSuccess = success,
+                    exportMessage = message ?: if (success) "Text exported successfully" else "Failed to export text"
+                )
+            }
+        }
+    }
+
+    fun clearExportStatus() {
+        _state.value = _state.value.copy(
+            exportSuccess = null,
+            exportMessage = null
+        )
     }
 }
 
@@ -45,5 +93,8 @@ data class PlatformUiState(
     val platformName: String = "",
     val isAndroid: Boolean = false,
     val isTablet: Boolean = false,
-    val isLandscape: Boolean = false
+    val isLandscape: Boolean = false,
+    val isExporting: Boolean = false,
+    val exportSuccess: Boolean? = null,
+    val exportMessage: String? = null
 )

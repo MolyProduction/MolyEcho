@@ -31,7 +31,7 @@ actual val platformModule = module {
     }
     single<Platform> { AndroidPlatform(get(named("AppVersion")), get()) }
     single { dataStore(get()) }
-    single { PlatformUtils(get()) }
+    single { PlatformUtils(get(), get()) }
     single { BrowserLauncher(get()) }
 
     single<SqlDriver> {
