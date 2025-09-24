@@ -1,1 +1,7 @@
-- Import & Export feature
+- Fix crashes on Transcription
+- Import & Export audio feature
+- Import Video
+- Re-size body text
+- Export as PDF
+- Export as .Txt file
+
