@@ -44,7 +44,9 @@ val DarkCustomColors = CustomColors(
     shareDialogButtonColor = Color.White,
     statusBarBackgroundColor = Color(0xFFFFFAD0),
     settingsBodyTextColor = Color.Gray,
-    settingsBodyBorderColor = Color.DarkGray
+    settingsBodyBorderColor = Color.DarkGray,
+    selectAllCheckboxColor = Color(0xFFBD7D4E),
+    selectAllCancelColor = Color.Gray
 )
 
 val LightCustomColors = CustomColors(
@@ -88,7 +90,9 @@ val LightCustomColors = CustomColors(
     shareDialogButtonColor = Color(0xFF333333),
     statusBarBackgroundColor = Color(0xFFFFFAD0),
     settingsBodyTextColor = Color.DarkGray,
-    settingsBodyBorderColor = Color.LightGray
+    settingsBodyBorderColor = Color.LightGray,
+    selectAllCheckboxColor = Color(0xFFBD7D4E),
+    selectAllCancelColor = Color.White
 )
 
 // Create a CompositionLocal to hold the custom colors

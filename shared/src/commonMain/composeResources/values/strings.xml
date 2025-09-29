@@ -4,6 +4,7 @@
     <string name="error">Error</string>
     <string name="close">Close</string>
     <string name="cancel">Cancel</string>
+    <string name="export">Export</string>
     <string name="navigate">Navigate</string>
 
     <!-- TopBar -->
@@ -76,7 +77,7 @@
 
     <!-- Note List -->
     <string name="note_list_add_note">Add Note</string>
-
+    <string name="select_deselect_all">Select / Deselect All</string>
     <!-- Search Bar -->
     <string name="search_bar_search_text">Search notes...</string>
     <string name="search_bar_search_description">Search</string>
