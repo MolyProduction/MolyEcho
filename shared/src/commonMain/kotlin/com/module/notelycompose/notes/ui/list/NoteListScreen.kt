@@ -26,8 +26,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.module.notelycompose.export.presentation.ExportSelectionViewModel
+import com.module.notelycompose.export.ui.ExportSelectedItemConfirmationDialog
 import com.module.notelycompose.notes.presentation.list.NoteListIntent
 import com.module.notelycompose.notes.presentation.list.NoteListViewModel
+import com.module.notelycompose.notes.ui.share.ShareDialog
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.presentation.PlatformUiState
 import com.module.notelycompose.resources.Res
@@ -52,6 +54,7 @@ fun NoteListScreen(
     val notesListState by viewModel.state.collectAsState()
     val focusManager = LocalFocusManager.current
     var isSelectAllAction by remember { mutableStateOf(false) }
+    var showExportNotesConfirmDialog by remember { mutableStateOf(false) }
 
     Scaffold(
             topBar = {
@@ -71,7 +74,7 @@ fun NoteListScreen(
                     onClick = {
                         if(isSelectAllAction) {
                             // call function depending what was chosen
-                            exportViewModel.exportSelection()
+                            showExportNotesConfirmDialog = true
                         } else {
                             navigateToNoteDetails("0")
                         }
@@ -141,5 +144,14 @@ fun NoteListScreen(
                 if(notesListState.showEmptyContent) EmptyNoteUi(platformUiState.isTablet)
             }
         }
+
+    if(showExportNotesConfirmDialog) {
+        ExportSelectedItemConfirmationDialog(
+            onExport = { _, _, _ ->
+
+            },
+            onDismiss = { showExportNotesConfirmDialog = false }
+        )
+    }
 
 }
