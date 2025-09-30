@@ -32,10 +32,18 @@ fun NoteList(
         selectedNoteIds = setOf()
     }
 
+    fun cancelAllSelections() {
+        isAllChecked = false
+        selectedNoteIds = emptySet()
+        onCancelSelectionAction()
+    }
+
     SelectAllToExportUi(
         isSelectAllAction = isSelectAllAction,
         onSelectAllChecked = { isAllChecked = it },
-        onCancelSelectionAction = onCancelSelectionAction
+        onCancelSelectionAction = {
+            cancelAllSelections()
+        }
     )
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Adaptive(minSize = 300.dp),
@@ -61,7 +69,9 @@ fun NoteList(
                     }
                 },
                 isSelectAllAction = isSelectAllAction,
-                onNoteLongPress = onCancelSelectionAction
+                onNoteLongPress = {
+                    cancelAllSelections()
+                }
             )
         }
     }
