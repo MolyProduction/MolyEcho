@@ -17,16 +17,23 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
+import kotlinx.coroutines.Delay
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ExportSelectedItemConfirmationDialog(
@@ -96,7 +103,11 @@ fun ExportSelectedItemConfirmationDialog(
             },
             confirmButton = {
                 TextButton(
-                    onClick = { onExport(exportAudio, exportTxt, exportMarkdown) },
+                    onClick = {
+                        onDismiss().also {
+                            onExport(exportAudio, exportTxt, exportMarkdown)
+                        }
+                    },
                     enabled = hasSelection,
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (hasSelection) {

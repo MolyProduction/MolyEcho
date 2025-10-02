@@ -110,6 +110,9 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                     navigateToNoteDetails = { noteId ->
                         navController.navigateSingleTop(Routes.Details(noteId))
                     },
+                    navigateToExportNotes = {
+                        navController.navigateSingleTop(Routes.ExportBatchNotes)
+                    },
                     platformUiState = platformUiState
                 )
             }
@@ -191,9 +194,13 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                     editorViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
                 )
             }
-            composableWithHorizontalSlide<Routes.ExportBatchNotes> {
+            composableWithHorizontalSlide<Routes.ExportBatchNotes> { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.List)
+                }
                 ExportNotesScreen(
-                    navigateBack = { navController.popBackStack() }
+                    navigateBack = { navController.popBackStack() },
+                    viewModel = koinViewModel(viewModelStoreOwner = parentEntry)
                 )
             }
         }

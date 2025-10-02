@@ -1,10 +1,16 @@
 package com.module.notelycompose.export.domain
 
-class ExportSelectionInteractorImpl(
+import android.content.Context
 
+class ExportSelectionInteractorImpl(
+    private val context: Context
 ): ExportSelectionInteractor {
-    override fun exportAllSelection() {
-        TODO("Not yet implemented")
+
+    override fun exportAllSelection(
+        audioPath: List<String>,
+        texts: List<String>
+    ) {
+
     }
 
     override fun exportTextSelectionOnly() {

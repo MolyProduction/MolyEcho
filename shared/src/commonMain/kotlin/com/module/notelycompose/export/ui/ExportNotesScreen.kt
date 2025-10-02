@@ -11,24 +11,32 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.module.notelycompose.export.presentation.ExportSelectionViewModel
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.Res
 import com.module.notelycompose.resources.top_bar_back
 import com.module.notelycompose.resources.vectors.IcChevronLeft
 import com.module.notelycompose.resources.vectors.Images
+import com.module.notelycompose.transcription.TranscriptionViewModel
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ExportNotesScreen(
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    viewModel: ExportSelectionViewModel
 ) {
-    ComponentBackButton(
-        onNavigateBack = navigateBack
-    )
+    val exportUiState by viewModel.state.collectAsState()
+    val exportSelectionList = exportUiState.noteIds
+
+    ComponentBackButton(onNavigateBack = navigateBack)
+    
 }
 
 @Composable

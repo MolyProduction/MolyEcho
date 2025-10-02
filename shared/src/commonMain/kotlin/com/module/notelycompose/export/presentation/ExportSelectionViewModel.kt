@@ -49,6 +49,7 @@ class ExportSelectionViewModel(
                 shouldExportMd = shouldExportMd
             )
         }
+        onFilterSelectedNotes()
     }
 
     private fun onFilterSelectedNotes() {
