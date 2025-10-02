@@ -29,7 +29,7 @@ fun NoteList(
 
     if (isAllChecked) {
         selectedNoteIds = noteList.map { it.id }.toSet()
-    } else if (selectedNoteIds.size == noteList.size) {
+    } else {
         selectedNoteIds = setOf()
     }
 
