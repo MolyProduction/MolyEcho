@@ -27,12 +27,6 @@ fun NoteList(
     var isAllChecked by remember { mutableStateOf(false) }
     var selectedNoteIds by remember { mutableStateOf(setOf<Long>()) }
 
-    if (isAllChecked) {
-        selectedNoteIds = noteList.map { it.id }.toSet()
-    } else {
-        selectedNoteIds = setOf()
-    }
-
     fun cancelAllSelections() {
         isAllChecked = false
         selectedNoteIds = emptySet()
@@ -42,7 +36,15 @@ fun NoteList(
 
     SelectAllToExportUi(
         isSelectAllAction = isSelectAllAction,
-        onSelectAllChecked = { isAllChecked = it },
+        onSelectAllChecked = { checked ->
+            isAllChecked = checked
+            selectedNoteIds = if (checked) {
+                noteList.map { it.id }.toSet()
+            } else {
+                emptySet()
+            }
+            onUpdateSelection(selectedNoteIds.toList())
+        },
         onCancelSelectionAction = {
             cancelAllSelections()
         }
