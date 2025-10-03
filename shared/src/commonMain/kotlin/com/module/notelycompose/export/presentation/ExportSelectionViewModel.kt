@@ -72,17 +72,13 @@ class ExportSelectionViewModel(
     }
 
     fun onExportSelection() {
-//        exportSelectionInteractor.exportTextSelectionOnly(
-//
-//        )
-    }
-
-    fun onExportTextSelectionOnly() {
         val texts = _state.value.selectedNotes.map { it.content }
-        val titles = _state.value.selectedNotes.map { it.title }
-        exportSelectionInteractor.exportTextSelectionOnly(
+        val titles =  _state.value.selectedNotes.map { it.title }
+        val audioPath =  _state.value.selectedNotes.map { it.recordingPath }
+        exportSelectionInteractor.exportAllSelection(
             texts = texts,
-            titles = titles
+            titles = titles,
+            audioPath = audioPath
         ) { _ ->
 
         }

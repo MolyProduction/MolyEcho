@@ -12,12 +12,4 @@ class ExportSelectionInteractorImpl(
     ) {
         TODO("Not yet implemented")
     }
-
-    override fun exportTextSelectionOnly(
-        texts: List<String>,
-        titles: List<String>,
-        onResult: (Result<String>) -> Unit
-    ) {
-        TODO("Not yet implemented")
-    }
 }

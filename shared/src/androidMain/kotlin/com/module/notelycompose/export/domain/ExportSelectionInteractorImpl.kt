@@ -8,11 +8,13 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import org.json.JSONObject
 
 private const val TEXT_BLANK_DEFAULT = "blank"
 
@@ -21,24 +23,16 @@ class ExportSelectionInteractorImpl(
     private val folderPickerHandler: FolderPickerHandler
 ): ExportSelectionInteractor {
 
-    override fun exportAllSelection(
-        audioPath: List<String>,
-        texts: List<String>,
-        titles: List<String>,
-        onResult: (Result<String>) -> Unit
-    ) {
-
-    }
-
     @OptIn(DelicateCoroutinesApi::class)
-    override fun exportTextSelectionOnly(
+    override fun exportAllSelection(
         texts: List<String>,
         titles: List<String>,
+        audioPath: List<String>,
         onResult: (Result<String>) -> Unit
     ) {
         folderPickerHandler.pickFolder { folderUri ->
             kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
-                val result = performTextExport(folderUri, texts, titles)
+                val result = performTextExport(folderUri, texts, titles, audioPath)
                 withContext(Dispatchers.Main) {
                     onResult(result)
                 }
@@ -49,30 +43,100 @@ class ExportSelectionInteractorImpl(
     private suspend fun performTextExport(
         folderUri: Uri,
         texts: List<String>,
-        titles: List<String>
+        titles: List<String>,
+        audioPath: List<String>
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
             val folder = DocumentFile.fromTreeUri(context, folderUri)
                 ?: return@withContext Result.failure(Exception("Invalid folder URI"))
 
             val timestamp = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
-            val exportFolder = folder.createDirectory("TextExport_$timestamp")
+            val exportFolder = folder.createDirectory("NotesExport_$timestamp")
                 ?: return@withContext Result.failure(Exception("Failed to create export folder"))
+
+            val textFileNames = mutableListOf<String>()
+            val audioFileNames = mutableListOf<String>()
 
             texts.forEachIndexed { index, text ->
                 val timestampText = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
                 val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
-                val textFile = exportFolder.createFile("text/plain", "${timestampText}-${textTitle}.txt")
+                val fileName = "${textTitle}-${timestampText}.txt"
+                val textFile = exportFolder.createFile("text/plain", fileName)
                     ?: return@withContext Result.failure(Exception("Failed to create text file $index"))
 
                 context.contentResolver.openOutputStream(textFile.uri)?.use { outputStream ->
                     outputStream.write(text.toByteArray())
                 }
+                textFileNames.add(fileName)
             }
+
+            audioPath.forEachIndexed { index, path ->
+                val timestampAudio = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+                val sourceFile = File(path)
+                if (!sourceFile.exists()) {
+                    return@withContext Result.failure(Exception("Audio file not found: $path"))
+                }
+
+                val audioFileName = "audio-${timestampAudio}.wav"
+                val mimeType = getMimeType(audioFileName)
+                val audioFile = exportFolder.createFile(mimeType, audioFileName)
+                    ?: return@withContext Result.failure(Exception("Failed to create audio file $index"))
+
+                context.contentResolver.openOutputStream(audioFile.uri)?.use { outputStream ->
+                    FileInputStream(sourceFile).use { inputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                audioFileNames.add(audioFileName)
+            }
+
+            // Create JSON file with all filenames
+            createMetadataJson(exportFolder, textFileNames, audioFileNames)
 
             Result.success("Successfully exported ${texts.size} text files")
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun getMimeType(fileName: String): String {
+        return when (fileName.substringAfterLast('.', "").lowercase()) {
+            "wav" -> "audio/wav"
+            "mp3" -> "audio/mpeg"
+            "m4a" -> "audio/mp4"
+            "ogg" -> "audio/ogg"
+            else -> "audio/*"
+        }
+    }
+
+    private fun createMetadataJson(
+        exportFolder: DocumentFile,
+        textFileNames: List<String>,
+        audioFileNames: List<String>
+    ) {
+        try {
+            val jsonArray = JSONArray()
+
+            val maxSize = maxOf(textFileNames.size, audioFileNames.size)
+
+            for (i in 0 until maxSize) {
+                val jsonObject = JSONObject().apply {
+                    put("textFile", textFileNames.getOrNull(i) ?: "")
+                    put("audioFile", audioFileNames.getOrNull(i) ?: "")
+                    put("timestamp", SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()))
+                }
+                jsonArray.put(jsonObject)
+            }
+
+            val timestampJson = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+            val jsonFile = exportFolder.createFile("application/json", "metadata-${timestampJson}.json")
+                ?: throw Exception("Failed to create JSON metadata file")
+
+            context.contentResolver.openOutputStream(jsonFile.uri)?.use { outputStream ->
+                outputStream.write(jsonArray.toString(2).toByteArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

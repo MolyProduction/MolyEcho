@@ -37,7 +37,7 @@ fun ExportNotesScreen(
 
     ComponentBackButton(onNavigateBack = navigateBack)
 
-    viewModel.onExportTextSelectionOnly()
+    viewModel.onExportSelection()
     
 }
 
