@@ -5,6 +5,8 @@ interface ExportSelectionInteractor {
         texts: List<String>,
         titles: List<String>,
         audioPath: List<String>,
+        shouldExportAudio: Boolean,
+        shouldExportTxt: Boolean,
         onResult: (Result<String>) -> Unit
     )
 }

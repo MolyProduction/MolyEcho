@@ -38,15 +38,14 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun ExportSelectedItemConfirmationDialog(
     showExportNotesConfirmDialog: Boolean,
-    onExport: (exportAudio: Boolean, exportTxt: Boolean, exportMarkdown: Boolean) -> Unit,
+    onExport: (exportAudio: Boolean, exportTxt: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     if(showExportNotesConfirmDialog) {
-        var exportAudio by remember { mutableStateOf(false) }
-        var exportTxt by remember { mutableStateOf(false) }
-        var exportMarkdown by remember { mutableStateOf(false) }
+        var exportAudio by remember { mutableStateOf(true) }
+        var exportTxt by remember { mutableStateOf(true) }
 
-        val hasSelection = exportAudio || exportTxt || exportMarkdown
+        val hasSelection = exportAudio || exportTxt
 
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -83,12 +82,6 @@ fun ExportSelectedItemConfirmationDialog(
                         onCheckedChange = { exportTxt = it }
                     )
 
-                    ExportOption(
-                        text = "Export text as Markdown files",
-                        checked = exportMarkdown,
-                        onCheckedChange = { exportMarkdown = it }
-                    )
-
                     if (!hasSelection) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -105,7 +98,7 @@ fun ExportSelectedItemConfirmationDialog(
                 TextButton(
                     onClick = {
                         onDismiss().also {
-                            onExport(exportAudio, exportTxt, exportMarkdown)
+                            onExport(exportAudio, exportTxt)
                         }
                     },
                     enabled = hasSelection,

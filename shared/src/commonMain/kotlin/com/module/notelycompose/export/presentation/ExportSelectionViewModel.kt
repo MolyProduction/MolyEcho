@@ -39,14 +39,12 @@ class ExportSelectionViewModel(
 
     fun onUpdateExportOptions(
         shouldExportAudio: Boolean,
-        shouldExportTxt: Boolean,
-        shouldExportMd: Boolean
+        shouldExportTxt: Boolean
     ) {
         _state.update { currentState ->
             currentState.copy(
                 shouldExportAudio = shouldExportAudio,
-                shouldExportTxt = shouldExportTxt,
-                shouldExportMd = shouldExportMd
+                shouldExportTxt = shouldExportTxt
             )
         }
         onFilterSelectedNotes()
@@ -78,7 +76,9 @@ class ExportSelectionViewModel(
         exportSelectionInteractor.exportAllSelection(
             texts = texts,
             titles = titles,
-            audioPath = audioPath
+            audioPath = audioPath,
+            shouldExportAudio = _state.value.shouldExportAudio,
+            shouldExportTxt = _state.value.shouldExportTxt
         ) { _ ->
 
         }

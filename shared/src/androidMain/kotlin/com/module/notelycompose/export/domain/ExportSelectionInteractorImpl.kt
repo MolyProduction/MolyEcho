@@ -16,7 +16,7 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
-private const val TEXT_BLANK_DEFAULT = "blank"
+private const val TEXT_BLANK_DEFAULT = "text"
 
 class ExportSelectionInteractorImpl(
     private val context: Context,
@@ -28,11 +28,20 @@ class ExportSelectionInteractorImpl(
         texts: List<String>,
         titles: List<String>,
         audioPath: List<String>,
+        shouldExportAudio: Boolean,
+        shouldExportTxt: Boolean,
         onResult: (Result<String>) -> Unit
     ) {
         folderPickerHandler.pickFolder { folderUri ->
             kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
-                val result = performTextExport(folderUri, texts, titles, audioPath)
+                val result = performTextExport(
+                    folderUri,
+                    texts,
+                    titles,
+                    audioPath,
+                    shouldExportAudio,
+                    shouldExportTxt
+                )
                 withContext(Dispatchers.Main) {
                     onResult(result)
                 }
@@ -44,7 +53,9 @@ class ExportSelectionInteractorImpl(
         folderUri: Uri,
         texts: List<String>,
         titles: List<String>,
-        audioPath: List<String>
+        audioPath: List<String>,
+        shouldExportAudio: Boolean,
+        shouldExportTxt: Boolean,
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
             val folder = DocumentFile.fromTreeUri(context, folderUri)
@@ -57,37 +68,42 @@ class ExportSelectionInteractorImpl(
             val textFileNames = mutableListOf<String>()
             val audioFileNames = mutableListOf<String>()
 
-            texts.forEachIndexed { index, text ->
-                val timestampText = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
-                val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
-                val fileName = "${textTitle}-${timestampText}.txt"
-                val textFile = exportFolder.createFile("text/plain", fileName)
-                    ?: return@withContext Result.failure(Exception("Failed to create text file $index"))
+            if(shouldExportTxt) {
+                texts.forEachIndexed { index, text ->
+                    val timestampText = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+                    val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                    val fileName = "${textTitle}-${timestampText}.txt"
+                    val textFile = exportFolder.createFile("text/plain", fileName)
+                        ?: return@withContext Result.failure(Exception("Failed to create text file $index"))
 
-                context.contentResolver.openOutputStream(textFile.uri)?.use { outputStream ->
-                    outputStream.write(text.toByteArray())
+                    context.contentResolver.openOutputStream(textFile.uri)?.use { outputStream ->
+                        outputStream.write(text.toByteArray())
+                    }
+                    textFileNames.add(fileName)
                 }
-                textFileNames.add(fileName)
             }
 
-            audioPath.forEachIndexed { index, path ->
-                val timestampAudio = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
-                val sourceFile = File(path)
-                if (!sourceFile.exists()) {
-                    return@withContext Result.failure(Exception("Audio file not found: $path"))
-                }
-
-                val audioFileName = "audio-${timestampAudio}.wav"
-                val mimeType = getMimeType(audioFileName)
-                val audioFile = exportFolder.createFile(mimeType, audioFileName)
-                    ?: return@withContext Result.failure(Exception("Failed to create audio file $index"))
-
-                context.contentResolver.openOutputStream(audioFile.uri)?.use { outputStream ->
-                    FileInputStream(sourceFile).use { inputStream ->
-                        inputStream.copyTo(outputStream)
+            if(shouldExportAudio) {
+                audioPath.forEachIndexed { index, path ->
+                    val timestampAudio = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+                    val sourceFile = File(path)
+                    if (!sourceFile.exists()) {
+                        return@withContext Result.failure(Exception("Audio file not found: $path"))
                     }
+
+                    val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                    val audioFileName = "${textTitle}-audio-${timestampAudio}.wav"
+                    val mimeType = getMimeType(audioFileName)
+                    val audioFile = exportFolder.createFile(mimeType, audioFileName)
+                        ?: return@withContext Result.failure(Exception("Failed to create audio file $index"))
+
+                    context.contentResolver.openOutputStream(audioFile.uri)?.use { outputStream ->
+                        FileInputStream(sourceFile).use { inputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                    audioFileNames.add(audioFileName)
                 }
-                audioFileNames.add(audioFileName)
             }
 
             // Create JSON file with all filenames
