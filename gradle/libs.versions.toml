@@ -41,6 +41,8 @@ android-compileSdk = "35"
 android-minSdk = "26"
 android-targetSdk = "35"
 
+documentfile = "1.1.0"
+
 [libraries]
 # Non-UI dependencies
 accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanistNavigationMaterial" }
@@ -71,6 +73,7 @@ androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-ui-tooling" }
 androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui-tooling" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+androidx-compose-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
 
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
