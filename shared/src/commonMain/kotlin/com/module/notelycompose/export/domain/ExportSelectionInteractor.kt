@@ -7,6 +7,7 @@ interface ExportSelectionInteractor {
         audioPath: List<String>,
         shouldExportAudio: Boolean,
         shouldExportTxt: Boolean,
+        onProgress: (Float) -> Unit,
         onResult: (Result<String>) -> Unit
     )
 }

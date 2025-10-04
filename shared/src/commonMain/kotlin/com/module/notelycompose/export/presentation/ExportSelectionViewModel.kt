@@ -3,8 +3,10 @@ package com.module.notelycompose.export.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import audio.utils.deleteFile
+import com.module.notelycompose.audio.ui.importing.ImportingAudioState
 import com.module.notelycompose.export.domain.ExportSelectionInteractor
 import com.module.notelycompose.export.presentation.model.ExportSelectionPresentationState
+import com.module.notelycompose.export.presentation.model.ExportingFileState
 import com.module.notelycompose.notes.domain.GetAllNotesUseCase
 import com.module.notelycompose.notes.presentation.list.NoteListPresentationState
 import com.module.notelycompose.notes.presentation.mapper.NotePresentationMapper
@@ -26,6 +28,9 @@ class ExportSelectionViewModel(
 
     private val _state = MutableStateFlow(ExportSelectionPresentationState())
     val state: StateFlow<ExportSelectionPresentationState> = _state
+
+    private var _exportingState = MutableStateFlow<ExportingFileState>(ExportingFileState.Idle)
+    val exportingFileState: StateFlow<ExportingFileState> = _exportingState
 
     fun onUpdateNoteIds(
         noteIds: List<Long>
@@ -78,14 +83,28 @@ class ExportSelectionViewModel(
             titles = titles,
             audioPath = audioPath,
             shouldExportAudio = _state.value.shouldExportAudio,
-            shouldExportTxt = _state.value.shouldExportTxt
-        ) { _ ->
-
+            shouldExportTxt = _state.value.shouldExportTxt,
+            onProgress = { progress ->
+                _exportingState.update { ExportingFileState.Exporting(progress) }
+            }
+        ) { result ->
+            _exportingState.update {
+                when {
+                    result.isSuccess -> ExportingFileState.Success
+                    else -> ExportingFileState.Failure(
+                        result.exceptionOrNull()?.message ?: "Export failed"
+                    )
+                }
+            }
         }
     }
 
     override fun onCleared() {
         _state.value = ExportSelectionPresentationState()
         super.onCleared()
+    }
+
+    internal fun releaseState() = viewModelScope.launch {
+        _exportingState.update { ExportingFileState.Idle }
     }
 }

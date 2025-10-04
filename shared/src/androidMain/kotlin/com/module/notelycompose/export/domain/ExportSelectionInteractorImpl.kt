@@ -16,7 +16,8 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
-private const val TEXT_BLANK_DEFAULT = "text"
+private const val TEXT_BLANK_DEFAULT = "no-title"
+private const val PATTERN_DATE_FORMAT = "yyyy-MM-ddHH-mm-ss-SSS"
 
 class ExportSelectionInteractorImpl(
     private val context: Context,
@@ -30,6 +31,7 @@ class ExportSelectionInteractorImpl(
         audioPath: List<String>,
         shouldExportAudio: Boolean,
         shouldExportTxt: Boolean,
+        onProgress: (Float) -> Unit,
         onResult: (Result<String>) -> Unit
     ) {
         folderPickerHandler.pickFolder { folderUri ->
@@ -40,7 +42,8 @@ class ExportSelectionInteractorImpl(
                     titles,
                     audioPath,
                     shouldExportAudio,
-                    shouldExportTxt
+                    shouldExportTxt,
+                    onProgress
                 )
                 withContext(Dispatchers.Main) {
                     onResult(result)
@@ -56,21 +59,27 @@ class ExportSelectionInteractorImpl(
         audioPath: List<String>,
         shouldExportAudio: Boolean,
         shouldExportTxt: Boolean,
+        onProgress: (Float) -> Unit,
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
             val folder = DocumentFile.fromTreeUri(context, folderUri)
                 ?: return@withContext Result.failure(Exception("Invalid folder URI"))
 
-            val timestamp = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
-            val exportFolder = folder.createDirectory("NotesExport_$timestamp")
+            val timestamp = SimpleDateFormat(PATTERN_DATE_FORMAT, Locale.getDefault()).format(Date())
+            val exportFolder = folder.createDirectory("Notes_export_$timestamp")
                 ?: return@withContext Result.failure(Exception("Failed to create export folder"))
 
             val textFileNames = mutableListOf<String>()
             val audioFileNames = mutableListOf<String>()
 
+            // Calculate total items to export
+            val totalItems = (if (shouldExportTxt) texts.size else 0) +
+                    (if (shouldExportAudio) audioPath.size else 0)
+            var completedItems = 0
+
             if(shouldExportTxt) {
                 texts.forEachIndexed { index, text ->
-                    val timestampText = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+                    val timestampText = SimpleDateFormat(PATTERN_DATE_FORMAT, Locale.getDefault()).format(Date())
                     val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
                     val fileName = "${textTitle}-${timestampText}.txt"
                     val textFile = exportFolder.createFile("text/plain", fileName)
@@ -80,12 +89,19 @@ class ExportSelectionInteractorImpl(
                         outputStream.write(text.toByteArray())
                     }
                     textFileNames.add(fileName)
+
+                    // Update progress
+                    completedItems++
+                    val progress = completedItems.toFloat() / totalItems.toFloat()
+                    withContext(Dispatchers.Main) {
+                        onProgress(progress)
+                    }
                 }
             }
 
             if(shouldExportAudio) {
                 audioPath.forEachIndexed { index, path ->
-                    val timestampAudio = SimpleDateFormat("yyyy-MM-ddHH-mm-ss", Locale.getDefault()).format(Date())
+                    val timestampAudio = SimpleDateFormat(PATTERN_DATE_FORMAT, Locale.getDefault()).format(Date())
                     val sourceFile = File(path)
                     if (!sourceFile.exists()) {
                         return@withContext Result.failure(Exception("Audio file not found: $path"))
@@ -103,6 +119,13 @@ class ExportSelectionInteractorImpl(
                         }
                     }
                     audioFileNames.add(audioFileName)
+
+                    // Update progress
+                    completedItems++
+                    val progress = completedItems.toFloat() / totalItems.toFloat()
+                    withContext(Dispatchers.Main) {
+                        onProgress(progress)
+                    }
                 }
             }
 

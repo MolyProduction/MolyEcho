@@ -1,4 +1,4 @@
-package com.module.notelycompose.audio.ui.importing
+package com.module.notelycompose.export.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,6 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,55 +22,60 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.audio.ui.recorder.RecordingSuccessScreen
+import com.module.notelycompose.export.presentation.model.ExportingFileState
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.import_failed_title
-import com.module.notelycompose.resources.ok
+import com.module.notelycompose.resources.batch_export_failed
+import com.module.notelycompose.resources.batch_export_ok
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ImportingAudioStateHost(
-    state: ImportingAudioState,
-    onSuccess: (String) -> Unit,
-    onRelease: () -> Unit,
+internal fun ExportingFileStateHost(
+    state: ExportingFileState,
+    onDismiss: () -> Unit
 ) {
+    var shouldShowDialog by remember { mutableStateOf(true) }
     when (state) {
-        is ImportingAudioState.Idle -> Unit // No UI needed
+        is ExportingFileState.Idle -> Unit
 
-        is ImportingAudioState.Importing -> {
-            ImportingCircularProgressIndicator(
+        is ExportingFileState.Exporting -> {
+            ExportingCircularProgressIndicator(
                 percentage = state.progress
             )
         }
 
-        is ImportingAudioState.Success -> {
+        is ExportingFileState.Success -> {
             RecordingSuccessScreen()
             LaunchedEffect(Unit) {
                 delay(2000)
-                onSuccess(state.path)
-                onRelease()
+                onDismiss()
             }
         }
 
-        is ImportingAudioState.Failure -> {
-            AlertDialog(
-                onDismissRequest = onRelease,
-                confirmButton = {
-                    TextButton(onClick = onRelease) {
-                        Text(stringResource(Res.string.ok))
-                    }
-                },
-                title = { Text(stringResource(Res.string.import_failed_title)) },
-                text = { Text(state.message) }
-            )
+        is ExportingFileState.Failure -> {
+            if(shouldShowDialog) {
+                AlertDialog(
+                    onDismissRequest = onDismiss,
+                    confirmButton = {
+                        TextButton(onClick = {
+                            shouldShowDialog = false
+                            onDismiss()
+                        }) {
+                            Text(stringResource(Res.string.batch_export_ok))
+                        }
+                    },
+                    title = { Text(stringResource(Res.string.batch_export_failed)) },
+                    text = { Text(state.message) }
+                )
+            }
         }
     }
 }
 
 
 @Composable
-private fun ImportingCircularProgressIndicator(
+private fun ExportingCircularProgressIndicator(
     percentage: Float,
     radius: Dp = 80.dp,
     strokeWidth: Dp = 12.dp,

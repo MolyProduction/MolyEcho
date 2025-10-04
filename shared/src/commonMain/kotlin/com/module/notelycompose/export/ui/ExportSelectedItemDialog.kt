@@ -17,23 +17,25 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import kotlinx.coroutines.Delay
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
+import com.module.notelycompose.resources.Res
+import com.module.notelycompose.resources.batch_export_audio_files
+import com.module.notelycompose.resources.batch_export_options
+import com.module.notelycompose.resources.batch_export_select_at_least_one_option
+import com.module.notelycompose.resources.batch_export_select_formats
+import com.module.notelycompose.resources.batch_export_title
+import com.module.notelycompose.resources.batch_export_txt_files
+import com.module.notelycompose.resources.cancel
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ExportSelectedItemConfirmationDialog(
@@ -51,7 +53,7 @@ fun ExportSelectedItemConfirmationDialog(
             onDismissRequest = onDismiss,
             title = {
                 Text(
-                    text = "Export Options",
+                    text = stringResource(Res.string.batch_export_options),
                     style = MaterialTheme.typography.h6.copy(
                         fontWeight = FontWeight.SemiBold
                     )
@@ -64,20 +66,20 @@ fun ExportSelectedItemConfirmationDialog(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Select the formats you want to export:",
+                        text = stringResource(Res.string.batch_export_select_formats),
                         style = MaterialTheme.typography.body2,
                         color = LocalCustomColors.current.bodyContentColor.copy(alpha = 0.7f),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
                     ExportOption(
-                        text = "Export audio files",
+                        text = stringResource(Res.string.batch_export_audio_files),
                         checked = exportAudio,
                         onCheckedChange = { exportAudio = it }
                     )
 
                     ExportOption(
-                        text = "Export text as TXT files",
+                        text = stringResource(Res.string.batch_export_txt_files),
                         checked = exportTxt,
                         onCheckedChange = { exportTxt = it }
                     )
@@ -85,7 +87,7 @@ fun ExportSelectedItemConfirmationDialog(
                     if (!hasSelection) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Please select at least one option",
+                            text = stringResource(Res.string.batch_export_select_at_least_one_option),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.error,
                             modifier = Modifier.padding(top = 12.dp),
@@ -119,7 +121,7 @@ fun ExportSelectedItemConfirmationDialog(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        text = "Export",
+                        text = stringResource(Res.string.batch_export_title),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -133,7 +135,7 @@ fun ExportSelectedItemConfirmationDialog(
                     ),
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = stringResource(Res.string.cancel))
                 }
             },
             backgroundColor = LocalCustomColors.current.shareDialogBackgroundColor,

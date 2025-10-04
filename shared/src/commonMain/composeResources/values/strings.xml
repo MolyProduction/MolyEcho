@@ -6,7 +6,7 @@
     <string name="cancel">Cancel</string>
     <string name="export">Export</string>
     <string name="navigate">Navigate</string>
-
+    <string name="ok">OK</string>
     <!-- TopBar -->
     <string name="top_bar_back">Back</string>
     <string name="top_bar_notes">Notely Voice</string>
@@ -186,6 +186,16 @@
     <string name="accessibility_desc">Use the slider to set the preferred writing body size for the notes editor, customise your experience.</string>
     <string name="accessibility_a">A</string>
     <string name="accessibility_default">Default is 14 pt</string>
-
-
+    <!-- Batch Export feature -->
+    <string name="batch_export_ok">OK</string>
+    <string name="batch_export_failed">Export Failed</string>
+    <string name="batch_export_options">Export Options</string>
+    <string name="batch_export_select_formats">Select the formats you want to export:</string>
+    <string name="batch_export_audio_files">Export audio files</string>
+    <string name="batch_export_txt_files">Export text as TXT files</string>
+    <string name="batch_export_select_at_least_one_option">Please select at least one option</string>
+    <string name="batch_export_title">Export</string>
+    <string name="batch_export_no_selection_made">No selection made, please select an item to export</string>
+    <!-- Import -->
+    <string name="import_failed_title">Import Failed</string>
 </resources>
