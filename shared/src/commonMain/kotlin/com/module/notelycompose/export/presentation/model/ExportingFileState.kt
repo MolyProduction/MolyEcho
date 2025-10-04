@@ -5,4 +5,5 @@ sealed interface ExportingFileState {
     data class Exporting(val progress: Float = 0f) : ExportingFileState
     object Success : ExportingFileState
     data class Failure(val message: String) : ExportingFileState
+    object NoFolderSelected : ExportingFileState
 }

@@ -56,14 +56,15 @@ class MainActivity : AppCompatActivity() {
     private fun setupFolderPickerLauncher() {
         folderPickerLauncherHolder.folderPickerLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
-                uri?.let {
+                if (uri != null) {
                     contentResolver.takePersistableUriPermission(
                         uri,
                         android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
                                 android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
-                    folderPickerLauncherHolder.onFolderSelected?.invoke(uri)
                 }
+                // Always invoke callback, even if uri is null
+                folderPickerLauncherHolder.onFolderSelected?.invoke(uri)
             }
     }
 

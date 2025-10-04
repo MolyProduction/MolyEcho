@@ -35,6 +35,12 @@ class ExportSelectionInteractorImpl(
         onResult: (Result<String>) -> Unit
     ) {
         folderPickerHandler.pickFolder { folderUri ->
+
+            if (folderUri == null) {
+                onResult(Result.failure(NoFolderSelectedException("Folder selection cancelled")))
+                return@pickFolder
+            }
+
             kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
                 val result = performTextExport(
                     folderUri,

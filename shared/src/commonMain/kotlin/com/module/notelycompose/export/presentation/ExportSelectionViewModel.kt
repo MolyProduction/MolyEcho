@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import audio.utils.deleteFile
 import com.module.notelycompose.audio.ui.importing.ImportingAudioState
 import com.module.notelycompose.export.domain.ExportSelectionInteractor
+import com.module.notelycompose.export.domain.NoFolderSelectedException
 import com.module.notelycompose.export.presentation.model.ExportSelectionPresentationState
 import com.module.notelycompose.export.presentation.model.ExportingFileState
 import com.module.notelycompose.notes.domain.GetAllNotesUseCase
 import com.module.notelycompose.notes.presentation.list.NoteListPresentationState
 import com.module.notelycompose.notes.presentation.mapper.NotePresentationMapper
+import kotlinx.coroutines.Delay
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class ExportSelectionViewModel(
     private val getAllNotesUseCase: GetAllNotesUseCase,
@@ -78,6 +82,10 @@ class ExportSelectionViewModel(
         val texts = _state.value.selectedNotes.map { it.content }
         val titles =  _state.value.selectedNotes.map { it.title }
         val audioPath =  _state.value.selectedNotes.map { it.recordingPath }
+        viewModelScope.launch {
+            delay(2.seconds)
+            _exportingState.update { ExportingFileState.Exporting() }
+        }
         exportSelectionInteractor.exportAllSelection(
             texts = texts,
             titles = titles,
@@ -91,9 +99,16 @@ class ExportSelectionViewModel(
             _exportingState.update {
                 when {
                     result.isSuccess -> ExportingFileState.Success
-                    else -> ExportingFileState.Failure(
-                        result.exceptionOrNull()?.message ?: "Export failed"
-                    )
+                    else -> {
+                        _exportingState.update { ExportingFileState.Idle }
+                        if(result.exceptionOrNull() is NoFolderSelectedException) {
+                            ExportingFileState.NoFolderSelected
+                        } else {
+                            ExportingFileState.Failure(
+                                result.exceptionOrNull()?.message ?: "Export failed"
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -19,13 +19,13 @@ class FileSaverHandler(
 
 class FolderPickerLauncherHolder {
     var folderPickerLauncher: ActivityResultLauncher<Uri?>? = null
-    var onFolderSelected: ((Uri) -> Unit)? = null
+    var onFolderSelected: ((Uri?) -> Unit)? = null
 }
 
 class FolderPickerHandler(
     private val folderPickerLauncherHolder: FolderPickerLauncherHolder
 ) {
-    fun pickFolder(onFolderSelected: (Uri) -> Unit) {
+    fun pickFolder(onFolderSelected: (Uri?) -> Unit) {
         folderPickerLauncherHolder.onFolderSelected = onFolderSelected
         folderPickerLauncherHolder.folderPickerLauncher?.launch(null)
     }

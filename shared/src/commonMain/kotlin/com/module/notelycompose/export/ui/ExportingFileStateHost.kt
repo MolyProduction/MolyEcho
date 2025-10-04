@@ -26,7 +26,9 @@ import com.module.notelycompose.export.presentation.model.ExportingFileState
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.resources.Res
 import com.module.notelycompose.resources.batch_export_settings_error_occurred
+import com.module.notelycompose.resources.batch_export_settings_no_folder_selected
 import com.module.notelycompose.resources.batch_export_ok
+import com.module.notelycompose.resources.error
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -65,8 +67,26 @@ internal fun ExportingFileStateHost(
                             Text(stringResource(Res.string.batch_export_ok))
                         }
                     },
-                    title = { Text(stringResource(Res.string.batch_export_ok)) },
+                    title = { Text(stringResource(Res.string.error)) },
                     text = { Text(stringResource(Res.string.batch_export_settings_error_occurred)) }
+                )
+            }
+        }
+
+        is ExportingFileState.NoFolderSelected -> {
+            if(shouldShowDialog) {
+                AlertDialog(
+                    onDismissRequest = onDismiss,
+                    confirmButton = {
+                        TextButton(onClick = {
+                            shouldShowDialog = false
+                            onDismiss()
+                        }) {
+                            Text(stringResource(Res.string.batch_export_ok))
+                        }
+                    },
+                    title = { Text(stringResource(Res.string.error)) },
+                    text = { Text(stringResource(Res.string.batch_export_settings_no_folder_selected)) }
                 )
             }
         }

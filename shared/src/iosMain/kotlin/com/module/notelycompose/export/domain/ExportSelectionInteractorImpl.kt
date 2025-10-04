@@ -35,7 +35,7 @@ class ExportSelectionInteractorImpl : ExportSelectionInteractor {
             val folderUrl = pickFolder()
 
             if (folderUrl == null) {
-                onResult(Result.failure(Exception("Folder selection cancelled")))
+                onResult(Result.failure(NoFolderSelectedException("Folder selection cancelled")))
                 return@launch
             }
 
