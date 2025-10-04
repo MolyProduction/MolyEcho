@@ -68,7 +68,7 @@ internal fun ExportingFileStateHost(
                         }
                     },
                     title = { Text(stringResource(Res.string.error)) },
-                    text = { Text(stringResource(Res.string.batch_export_settings_error_occurred)) }
+                    text = { Text(state.message) }
                 )
             }
         }

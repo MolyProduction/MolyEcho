@@ -136,7 +136,7 @@ class ExportSelectionInteractorImpl : ExportSelectionInteractor {
             if (shouldExportTxt) {
                 texts.forEachIndexed { index, text ->
                     val timestampText = getFormattedDate(PATTERN_DATE_FORMAT)
-                    val textTitle = titles.getOrNull(index)?.takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                    val textTitle = (titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT).take(20)
                     val fileName = "${textTitle}-${timestampText}.txt"
 
                     val fileUrl = exportFolderUrl.URLByAppendingPathComponent(fileName)
@@ -164,7 +164,7 @@ class ExportSelectionInteractorImpl : ExportSelectionInteractor {
                     // Update progress
                     completedItems++
                     val progress = completedItems.toFloat() / totalItems.toFloat()
-                    withContext(Dispatchers.Main) {
+                    kotlinx.coroutines.MainScope().launch {
                         onProgress(progress)
                     }
                 }
@@ -180,7 +180,7 @@ class ExportSelectionInteractorImpl : ExportSelectionInteractor {
                             return@withContext Result.failure(Exception("Audio file not found: $path"))
                         }
 
-                        val textTitle = titles.getOrNull(index)?.takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                        val textTitle = (titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT).take(20)
                         val audioFileName = "${textTitle}-audio-${timestampAudio}.wav"
 
                         val destUrl = exportFolderUrl.URLByAppendingPathComponent(audioFileName)
@@ -206,7 +206,7 @@ class ExportSelectionInteractorImpl : ExportSelectionInteractor {
 
                         completedItems++
                         val progress = completedItems.toFloat() / totalItems.toFloat()
-                        withContext(Dispatchers.Main) {
+                        kotlinx.coroutines.MainScope().launch {
                             onProgress(progress)
                         }
                     }

@@ -100,7 +100,7 @@ class ExportSelectionViewModel(
                 when {
                     result.isSuccess -> ExportingFileState.Success
                     else -> {
-                        _exportingState.update { ExportingFileState.Idle }
+                        ExportingFileState.Idle
                         if(result.exceptionOrNull() is NoFolderSelectedException) {
                             ExportingFileState.NoFolderSelected
                         } else {

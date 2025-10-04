@@ -86,7 +86,7 @@ class ExportSelectionInteractorImpl(
             if(shouldExportTxt) {
                 texts.forEachIndexed { index, text ->
                     val timestampText = SimpleDateFormat(PATTERN_DATE_FORMAT, Locale.getDefault()).format(Date())
-                    val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                    val textTitle = (titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT).take(20)
                     val fileName = "${textTitle}-${timestampText}.txt"
                     val textFile = exportFolder.createFile("text/plain", fileName)
                         ?: return@withContext Result.failure(Exception("Failed to create text file $index"))
@@ -99,7 +99,7 @@ class ExportSelectionInteractorImpl(
                     // Update progress
                     completedItems++
                     val progress = completedItems.toFloat() / totalItems.toFloat()
-                    withContext(Dispatchers.Main) {
+                    kotlinx.coroutines.MainScope().launch {
                         onProgress(progress)
                     }
                 }
@@ -114,7 +114,7 @@ class ExportSelectionInteractorImpl(
                             return@withContext Result.failure(Exception("Audio file not found: $path"))
                         }
 
-                        val textTitle = titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT
+                        val textTitle = (titles[index].takeIf { it.isNotBlank() } ?: TEXT_BLANK_DEFAULT).take(20)
                         val audioFileName = "${textTitle}-audio-${timestampAudio}.wav"
                         val mimeType = getMimeType(audioFileName)
                         val audioFile = exportFolder.createFile(mimeType, audioFileName)
@@ -130,7 +130,7 @@ class ExportSelectionInteractorImpl(
                         // Update progress
                         completedItems++
                         val progress = completedItems.toFloat() / totalItems.toFloat()
-                        withContext(Dispatchers.Main) {
+                        kotlinx.coroutines.MainScope().launch {
                             onProgress(progress)
                         }
                     }
