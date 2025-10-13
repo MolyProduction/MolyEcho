@@ -27,6 +27,7 @@ import com.module.notelycompose.notes.ui.detail.NoteDetailScreen
 import com.module.notelycompose.notes.ui.list.InfoScreen
 import com.module.notelycompose.notes.ui.list.NoteListScreen
 import com.module.notelycompose.notes.ui.settings.LanguageSelectionScreen
+import com.module.notelycompose.notes.ui.settings.ModelExplanationScreen
 import com.module.notelycompose.notes.ui.settings.ModelSelectionScreen
 import com.module.notelycompose.notes.ui.settings.NoteDetailTextSizeScreen
 import com.module.notelycompose.notes.ui.settings.SettingsScreen
@@ -209,6 +210,12 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
             }
             composableWithVerticalSlide<Routes.LanguageModelSelection> {
                 ModelSelectionScreen(
+                    navigateBack = { navController.popBackStack() },
+                    navigateToModelExplanation = { navController.navigateSingleTop(Routes.LanguageModelExplanation) }
+                )
+            }
+            composableWithVerticalSlide<Routes.LanguageModelExplanation> {
+                ModelExplanationScreen(
                     navigateBack = { navController.popBackStack() }
                 )
             }

@@ -212,4 +212,12 @@
     <string name="batch_export_settings_no_folder_selected">Folder selection cancelled</string>
     <!-- Import -->
     <string name="import_failed_title">Import Failed</string>
+    <!-- model selection -->
+    <string name="question_mark">question mark</string>
+    <string name="ai_model_title">What is an AI model?</string>
+    <string name="ai_model_description">An AI model is like a digital brain that has been trained to understand speech and convert it into written text. Different models have different strengths - some are faster, some are more accurate. Choose the one that matches your needs.</string>
+    <string name="standard_model_title">Standard model (multilingual)</string>
+    <string name="standard_model_description">This is the faster, lighter option that works well for everyday use. It quickly converts your speech to text and doesn't take up much space on your phone. Perfect if you want quick results and use multiple languages. Think of it like a compact car - efficient and gets the job done.</string>
+    <string name="optimized_model_title">Optimized Model (Multilingual)</string>
+    <string name="optimized_model_description">This is the more powerful option that gives you the most accurate transcriptions possible. It takes a bit longer and uses more storage, but catches more words correctly, especially with accents or background noise. Like a luxury car - bigger and slower, but delivers premium quality. Note: doesn't support Hindi/Gujarati.</string>
 </resources>
