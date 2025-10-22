@@ -42,6 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.module.notelycompose.modelDownloader.FARSI
+import com.module.notelycompose.modelDownloader.OPTIMIZED_MODEL_SELECTION
+import com.module.notelycompose.modelDownloader.STANDARD_MODEL_SELECTION
 import com.module.notelycompose.notes.ui.detail.AndroidNoteTopBar
 import com.module.notelycompose.notes.ui.detail.IOSNoteTopBar
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
@@ -226,6 +229,9 @@ fun LanguageSelectionScreen(
                                     .clickable {
                                         coroutineScope.launch {
                                             preferencesRepository.setDefaultTranscriptionLanguage(languageEntry.key)
+                                            if(languageEntry.key == FARSI) {
+                                                preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
+                                            }
                                         }
                                         navigateBack()
                                     },

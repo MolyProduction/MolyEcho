@@ -224,7 +224,7 @@
     <string name="standard_model_setting_desc">Faster performance and smaller file size\nSupports all languages</string>
     <string name="optimized_model_setting_desc">Highest accuracy available\nLarger file size, slower performance\nSupports all languages except Hindi/Gujarati</string>
     <string name="standard_model_setting_size">142 MB</string>
-    <string name="optimized_model_setting_size">488 MB</string>
+    <string name="optimized_model_setting_size">465 MB</string>
     <string name="settings_model_selection">Model Selection</string>
     <string name="settings_model_selection_text">AI Model</string>
     <string name="settings_model_selection_description">Choose the model that best fits your needs</string>
