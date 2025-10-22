@@ -58,7 +58,7 @@ fun ModelExplanationScreen(
             Text(
                 text = stringResource(Res.string.ai_model_description),
                 fontSize = 16.sp,
-                color = LocalCustomColors.current.bodyContentColor,
+                color = LocalCustomColors.current.modelSelectionDescColor,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
@@ -72,7 +72,7 @@ fun ModelExplanationScreen(
             Text(
                 text = stringResource(Res.string.standard_model_description),
                 fontSize = 16.sp,
-                color = LocalCustomColors.current.bodyContentColor,
+                color = LocalCustomColors.current.modelSelectionDescColor,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
@@ -86,7 +86,7 @@ fun ModelExplanationScreen(
             Text(
                 text = stringResource(Res.string.optimized_model_description),
                 fontSize = 16.sp,
-                color = LocalCustomColors.current.bodyContentColor,
+                color = LocalCustomColors.current.modelSelectionDescColor,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
         }

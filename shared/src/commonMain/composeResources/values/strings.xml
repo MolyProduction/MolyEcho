@@ -220,4 +220,12 @@
     <string name="standard_model_description">This is the faster, lighter option that works well for everyday use. It quickly converts your speech to text and doesn't take up much space on your phone. Perfect if you want quick results and use multiple languages. Think of it like a compact car - efficient and gets the job done.</string>
     <string name="optimized_model_title">Optimized Model (Multilingual)</string>
     <string name="optimized_model_description">This is the more powerful option that gives you the most accurate transcriptions possible. It takes a bit longer and uses more storage, but catches more words correctly, especially with accents or background noise. Like a luxury car - bigger and slower, but delivers premium quality. Note: doesn't support Hindi/Gujarati.</string>
+    <!-- settings -->
+    <string name="standard_model_setting_desc">Faster performance and smaller file size\nSupports all languages</string>
+    <string name="optimized_model_setting_desc">Highest accuracy available\nLarger file size, slower performance\nSupports all languages except Hindi/Gujarati</string>
+    <string name="standard_model_setting_size">142 MB</string>
+    <string name="optimized_model_setting_size">488 MB</string>
+    <string name="settings_model_selection">Model Selection</string>
+    <string name="settings_model_selection_text">AI Model</string>
+    <string name="settings_model_selection_description">Choose the model that best fits your needs</string>
 </resources>

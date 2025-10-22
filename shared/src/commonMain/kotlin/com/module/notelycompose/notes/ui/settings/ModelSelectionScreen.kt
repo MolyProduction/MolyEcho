@@ -20,7 +20,17 @@ import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.Res
 import com.module.notelycompose.resources.ic_question_mark
+import com.module.notelycompose.resources.optimized_model_description
+import com.module.notelycompose.resources.optimized_model_setting_desc
+import com.module.notelycompose.resources.optimized_model_setting_size
+import com.module.notelycompose.resources.optimized_model_title
 import com.module.notelycompose.resources.question_mark
+import com.module.notelycompose.resources.settings_model_selection
+import com.module.notelycompose.resources.settings_model_selection_description
+import com.module.notelycompose.resources.settings_model_selection_text
+import com.module.notelycompose.resources.standard_model_setting_desc
+import com.module.notelycompose.resources.standard_model_setting_size
+import com.module.notelycompose.resources.standard_model_title
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -44,14 +54,14 @@ fun ModelSelectionScreen(
 ) {
     val modelOptions = listOf(
         ModelOption(
-            title = "Standard model (multilingual)",
-            description = "Faster performance and smaller file size\nSupports all languages",
-            size = "142 MB"
+            title = stringResource(Res.string.standard_model_title),
+            description = stringResource(Res.string.standard_model_setting_desc),
+            size = stringResource(Res.string.standard_model_setting_size)
         ),
         ModelOption(
-            title = "Optimized Model (Multilingual)",
-            description = "Highest accuracy available\nLarger file size, slower performance\nSupports all languages except Hindi/Gujarati",
-            size = "488 MB"
+            title = stringResource(Res.string.optimized_model_title),
+            description = stringResource(Res.string.optimized_model_setting_desc),
+            size = stringResource(Res.string.optimized_model_setting_size)
         )
     )
 
@@ -86,7 +96,7 @@ fun ModelSelectionScreen(
         ) {
             // Title
             Text(
-                text = "Model Selection",
+                text = stringResource(Res.string.settings_model_selection),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = LocalCustomColors.current.bodyContentColor,
@@ -98,7 +108,7 @@ fun ModelSelectionScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "AI Model",
+                    text = stringResource(Res.string.settings_model_selection_text),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = LocalCustomColors.current.bodyContentColor,
@@ -118,7 +128,7 @@ fun ModelSelectionScreen(
 
             // Description
             Text(
-                text = "Choose the model that best fits your needs",
+                text = stringResource(Res.string.settings_model_selection_description),
                 fontSize = 16.sp,
                 color = LocalCustomColors.current.bodyContentColor,
                 modifier = Modifier.padding(bottom = 24.dp)
