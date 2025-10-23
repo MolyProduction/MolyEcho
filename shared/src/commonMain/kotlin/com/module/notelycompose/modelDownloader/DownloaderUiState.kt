@@ -1,7 +1,7 @@
 package com.module.notelycompose.modelDownloader
 
 data class DownloaderUiState(
-    val fileName:String ,
+    val selectedModel:TranscriptionModel ,
     val downloading:Boolean = false,
     val progress: Float = 0f,
     val downloaded: String = "0 MB ",
@@ -9,9 +9,9 @@ data class DownloaderUiState(
 )
 
 sealed class DownloaderEffect() {
-     class DownloadEffect : DownloaderEffect()
+    class DownloadEffect : DownloaderEffect()
     class ModelsAreReady:DownloaderEffect()
     class AskForUserAcceptance:DownloaderEffect()
-     class ErrorEffect : DownloaderEffect()
+    class ErrorEffect : DownloaderEffect()
     class CheckingEffect : DownloaderEffect()
 }

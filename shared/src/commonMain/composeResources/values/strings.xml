@@ -18,7 +18,6 @@
     <string name="top_bar_import_video">Import Video</string>
     <string name="top_bar_export_as_pdf">Export Text as PDF</string>
     <string name="top_bar_export_as_txt">Export as Text File</string>
-
     <!-- Delete Dialog -->
     <string name="confirmation">Confirm</string>
     <string name="confirmation_text">Do you want to delete the Note? This action cannot be undone</string>
@@ -28,14 +27,12 @@
     <string name="recording_replace_error">You already have a recording saved. Creating a new recording will permanently replace it. Do you want to continue?</string>
     <string name="recording_import_error">You already have a recording saved. Importing a new record will permanently replace it. Do you want to continue?</string>
     <string name="recording_replace_continue">Continue</string>
-
     <!-- BottomNavigationBar -->
     <string name="bottom_navigation_letter">Letter Aa</string>
     <string name="bottom_navigation_starred">Starred</string>
     <string name="bottom_navigation_bullet_list">Bullet list</string>
     <string name="bottom_navigation_delete">Delete Note</string>
     <string name="bottom_navigation_hide_keyboard">Hide Keyboard</string>
-
     <!-- Editing Toolbar -->
     <string name="editing_bold">Bold</string>
     <string name="editing_italic">Italic</string>
@@ -43,7 +40,6 @@
     <string name="editing_align_left">Align Left</string>
     <string name="editing_align_center">Align Center</string>
     <string name="editing_align_right">Align Right</string>
-
     <!-- Format Bar -->
     <string name="format_bar_text">Format</string>
     <string name="format_bar_close">Close</string>
@@ -51,20 +47,17 @@
     <string name="format_bar_heading">Heading</string>
     <string name="format_bar_subheading">Subheading</string>
     <string name="format_bar_body">Body</string>
-
     <!-- Note Detail -->
     <string name="note_detail_recorder">Recorder</string>
     <string name="transcription_icon">Icon</string>
     <string name="copied">Copied!</string>
     <!-- Date Selection -->
     <string name="note_detail_more_options">More options</string>
-
     <!-- Date Tab Bar -->
     <string name="date_tab_bar_all">All %1$s</string>
     <string name="date_tab_bar_starred">Starred</string>
     <string name="date_tab_bar_voices">Voices</string>
     <string name="date_tab_bar_recent">Recent</string>
-
     <!-- Note Item -->
     <string name="note_item_delete">Delete Note</string>
     <string name="note_item_edit">Edit</string>
@@ -75,14 +68,12 @@
         <item quantity="one">%1$d word</item>
         <item quantity="other">%1$d words</item>
     </plurals>
-
     <!-- Note List -->
     <string name="note_list_add_note">Add Note</string>
     <string name="select_deselect_all">Select / Deselect All</string>
     <!-- Search Bar -->
     <string name="search_bar_search_text">Search notes...</string>
     <string name="search_bar_search_description">Search</string>
-
     <!-- Recording UI -->
     <string name="recording_ui_microphone">Microphone</string>
     <string name="recording_ui_tap_start_record">Tap to start recording</string>
@@ -90,13 +81,10 @@
     <string name="recording_ui_loading">loading</string>
     <string name="recording_ui_loading_rotation">loading rotation</string>
     <string name="recording_ui_checkmark">checkmark</string>
-
     <!-- Player UI -->
     <string name="player_ui_initial_time">00:00</string>
     <string name="player_ui_pause">Pause</string>
     <string name="player_ui_play">Play</string>
-
-
     <!-- Transcription Dialog -->
     <string name="transcription_dialog_cancel">Cancel</string>
     <string name="transcription_dialog_append">Append</string>
@@ -105,10 +93,8 @@
     <string name="transcription_dialog_error_got_it">Got it</string>
     <string name="transcription_dialog_error_audio_file_title">Audio file too large</string>
     <string name="transcription_dialog_error_audio_file_desc">This audio file is too big to transcribe on your device. Try using a shorter recording or a smaller file size.</string>
-
     <!-- Download Dialog -->
     <string name="download_dialog_error">Error while downloading</string>
-
     <!-- Information UI -->
     <string name="information_base_url">https://tosinonikute.com/notely/</string>
     <string name="faq">FAQ</string>
@@ -119,24 +105,23 @@
     <string name="about_url">about.html</string>
     <string name="support_url">support.html</string>
     <string name="privacy_url">privacyupdated.html</string>
-
     <!-- Empty List String -->
     <string name="empty_list_title">No Notes Yet</string>
     <string name="empty_list_description">Start capturing your thoughts and voice recordings. Tap the plus + icon at the bottom right corner to create your first note.</string>
     <string name="empty_list_description_tablet">Start capturing your thoughts and voice recordings.\nTap the plus + icon at the bottom right corner to create your first note.</string>
-
     <!-- Share Dialog -->
     <string name="share_options">Share Options</string>
     <string name="share_text">Share Texts</string>
     <string name="share_audio_recording">Share Audio Recording</string>
-
     <!-- Download Dialog -->
     <string name="download_required">Download Required</string>
+    <string name="download_required_for_hindi">Download Required for Hindi</string>
     <string name="for_accurate_transcription">For accurate transcription, we need to download the AI model.</string>
     <string name="take_few_minutes">This may take a few minutes and requires a stable internet connection.</string>
-    <string name="file_size_approx">File size: approximately 142MB</string>
+    <string name="file_size_approx">File size: approximately %1$s</string>
+    <string name="file_model_english">Multilingual model (supports 50+ languages)</string>
+    <string name="file_model_hindi">Hindi-optimized model</string>
     <string name="download">Download</string>
-
     <!-- Settings Screen -->
     <string name="settings">Settings</string>
     <string name="customize_your_experience">Scroll down to see all settings</string>
@@ -153,7 +138,6 @@
     <string name="body_text_preferred_text">Set your preferred body text size for the notes editor to enhance your writing experience.</string>
     <string name="body_text_default">Default</string>
     <string name="body_text_pt">%1$d pt</string>
-
     <!-- Onboarding Screen -->
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_next">Next</string>
@@ -166,7 +150,6 @@
     <string name="onboarding_screen_three_desc">Convert voice notes to text and\nsummaries without internet</string>
     <string name="onboarding_screen_four_title">Supports\nOver 50 languages</string>
     <string name="onboarding_screen_four_desc">Create and transcribe notes in\nyour preferred language</string>
-
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Light Theme</string>
     <string name="settings_dark_theme">Dark Theme</string>
@@ -176,13 +159,11 @@
     <string name="settings_transcription_language">Transcription Language</string>
     <string name="settings_themes">Themes</string>
     <string name="settings_title">Settings</string>
-
     <!-- Language Selection -->
     <string name="language_selection_no_languages_found">No languages found</string>
     <string name="language_selection_supported_languages">SUPPORTED LANGUAGES</string>
     <string name="language_selection_search">Search</string>
     <string name="language_selection_select_language">Select Language</string>
-
     <!-- Accessibility -->
     <string name="accessibility_example">Example %1$d pt</string>
     <string name="accessibility_desc">Use the slider to set the preferred writing body size for the notes editor, customise your experience.</string>

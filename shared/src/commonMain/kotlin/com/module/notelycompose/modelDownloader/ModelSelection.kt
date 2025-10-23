@@ -57,7 +57,8 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
             HINDI_MODEL, GUJARATI -> models[2] // hindi
             FARSI -> models[1] // optimised
             else -> {
-                if(preferencesRepository.getModelSelection().first() == STANDARD_MODEL_SELECTION) {
+                if(preferencesRepository.getModelSelection().first() == STANDARD_MODEL_SELECTION
+                    || preferencesRepository.getModelSelection().first() == NO_MODEL_SELECTION) {
                     models[0] // standard
                 } else {
                     models[1] // optimised

@@ -59,27 +59,33 @@ actual class Transcriber(
     }
 
 
-    actual suspend fun initialize() {
+    actual suspend fun initialize(modelFileName: String) {
         debugPrintln{"speech: initialize model"}
-        loadBaseModel()
+        loadBaseModel(modelFileName)
     }
 
-    private fun loadBaseModel(){
-        debugPrintln{"Loading model...\n"}
-        val firstModel = File(modelsPath, "ggml-base.bin")
-        whisperContext = WhisperContext.createContextFromFile(firstModel.absolutePath)
-        canTranscribe = true
-    }
-
-    actual fun doesModelExists() : Boolean{
-        val firstModel = File(modelsPath, "ggml-base.bin")
-        return firstModel.exists()
-    }
-
-    actual fun isValidModel() : Boolean{
+    private fun loadBaseModel(modelFileName: String) {
         try {
-            loadBaseModel()
-        }catch (e:Exception){
+            debugPrintln{"Loading model: $modelFileName\n"}
+            val modelFile = File(modelsPath, modelFileName)
+            whisperContext = WhisperContext.createContextFromFile(modelFile.absolutePath)
+            canTranscribe = true
+        } catch (e: OutOfMemoryError) {
+            e.printStackTrace()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
+    actual fun doesModelExists(modelFileName: String) : Boolean{
+        val modelFile = File(modelsPath, modelFileName)
+        return modelFile.exists()
+    }
+
+    actual fun isValidModel(modelFileName: String) : Boolean{
+        try {
+            loadBaseModel(modelFileName)
+        } catch (e:Exception){
             return false
         }
         return true

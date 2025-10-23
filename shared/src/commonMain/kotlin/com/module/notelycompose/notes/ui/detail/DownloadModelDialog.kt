@@ -19,7 +19,6 @@ import com.module.notelycompose.resources.download_required
 import com.module.notelycompose.resources.download_required_for_hindi
 import com.module.notelycompose.resources.for_accurate_transcription
 import com.module.notelycompose.resources.take_few_minutes
-import com.module.notelycompose.resources.file_size_approx
 import com.module.notelycompose.resources.download
 import com.module.notelycompose.resources.cancel
 import com.module.notelycompose.modelDownloader.TranscriptionModel
@@ -31,6 +30,7 @@ import com.module.notelycompose.resources.file_model_hindi
 fun DownloadModelDialog(
     onDownload: () -> Unit,
     onCancel: () -> Unit,
+    transcriptionModel: TranscriptionModel,
     modifier: Modifier = Modifier
 ) {
     val fileInfo: String = if(transcriptionModel.getModelDownloadType() == HINDI_MODEL) {

@@ -1,8 +1,8 @@
 package com.module.notelycompose.platform
 
 expect class Transcriber {
-    fun doesModelExists():Boolean
-    suspend fun initialize()
+    fun doesModelExists(modelFileName: String ): Boolean
+    suspend fun initialize(modelFileName: String)
     suspend fun finish()
     suspend fun stop()
     suspend fun start(
@@ -14,5 +14,5 @@ expect class Transcriber {
     )
     fun hasRecordingPermission(): Boolean
     suspend fun requestRecordingPermission():Boolean
-    fun isValidModel(): Boolean
+    fun isValidModel(modelFileName: String): Boolean
 }

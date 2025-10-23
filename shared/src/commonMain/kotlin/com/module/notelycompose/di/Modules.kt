@@ -50,6 +50,8 @@ val appModule = module {
         )
     }
 
+    factory { ModelSelection(get()) }
+
 }
 
 val mapperModule = module {
