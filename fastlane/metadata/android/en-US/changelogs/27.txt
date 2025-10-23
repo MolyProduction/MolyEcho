@@ -1,0 +1,4 @@
+- F-droid compatible build
+- Add optimised language model for more accurate transcription
+- Allow the user to choose between models
+- Add Persian (Farsi) language to transcription
