@@ -215,6 +215,8 @@
     <string name="import_failed_title">Import fehlgeschlagen</string>
     <string name="version_string">Version %1$s</string>
     <string name="preparing">Bitte warten…</string>
+    <string name="preparing_model">Sprachmodell wird initialisiert…</string>
+    <string name="preparing_model_first_launch">Spracherkennung wird beim ersten Start eingerichtet…</string>
     <string name="downloading_model">Wird heruntergeladen: %1$s</string>
     <!-- model selection -->
     <string name="question_mark">Fragezeichen</string>

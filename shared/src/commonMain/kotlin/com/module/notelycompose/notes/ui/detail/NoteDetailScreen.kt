@@ -86,6 +86,7 @@ import com.module.notelycompose.resources.confirmation_cancel
 import com.module.notelycompose.resources.download_dialog_error
 import com.module.notelycompose.resources.ic_transcription
 import com.module.notelycompose.resources.note_detail_recorder
+import com.module.notelycompose.resources.preparing_model
 import com.module.notelycompose.resources.transcription_icon
 import com.module.notelycompose.resources.vectors.IcRecorder
 import com.module.notelycompose.resources.vectors.Images
@@ -330,7 +331,7 @@ fun NoteDetailScreen(
 
 
     if (showLoadingDialog) {
-        PreparingLoadingDialog()
+        PreparingLoadingDialog(text = stringResource(Res.string.preparing_model))
     }
     ReplaceRecordingConfirmationDialog(
         showDialog = showExistingRecordConfirmDialog,

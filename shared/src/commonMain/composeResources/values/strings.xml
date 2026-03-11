@@ -215,6 +215,8 @@
     <string name="import_failed_title">Import Failed</string>
     <string name="version_string">Version %1$s</string>
     <string name="preparing">Preparing...</string>
+    <string name="preparing_model">Initializing speech model…</string>
+    <string name="preparing_model_first_launch">Setting up speech recognition for the first time…</string>
     <string name="downloading_model">Downloading %1$s</string>
     <!-- model selection -->
     <string name="question_mark">question mark</string>
