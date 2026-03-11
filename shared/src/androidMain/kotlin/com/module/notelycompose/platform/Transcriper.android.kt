@@ -103,6 +103,16 @@ actual class Transcriber(
         }
     }
 
+    actual fun deleteModel(modelFileName: String): Boolean {
+        val modelFile = File(modelsPath, modelFileName)
+        return if (modelFile.exists()) modelFile.delete() else false
+    }
+
+    actual fun getModelFileSizeBytes(modelFileName: String): Long {
+        val modelFile = File(modelsPath, modelFileName)
+        return if (modelFile.exists()) modelFile.length() else 0L
+    }
+
     actual fun isValidModel(modelFileName: String) : Boolean{
         try {
              loadBaseModel(modelFileName)

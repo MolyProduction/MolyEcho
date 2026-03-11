@@ -71,6 +71,17 @@ actual class Transcriber{
         return true
     }
 
+    actual fun deleteModel(modelFileName: String): Boolean {
+        val path = getModelPath(modelFileName)
+        return NSFileManager.defaultManager.removeItemAtPath(path, null)
+    }
+
+    actual fun getModelFileSizeBytes(modelFileName: String): Long {
+        val path = getModelPath(modelFileName)
+        val attrs = NSFileManager.defaultManager.attributesOfItemAtPath(path, null) ?: return 0L
+        return (attrs[platform.Foundation.NSFileSize] as? platform.Foundation.NSNumber)?.longValue ?: 0L
+    }
+
     actual suspend fun stop() {
         isTranscribing = false
         whisperContext?.stopTranscribing()
