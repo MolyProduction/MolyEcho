@@ -68,6 +68,9 @@ actual class Transcriber(
         try {
             debugPrintln{"Loading model: $modelFileName\n"}
             val modelFile = File(modelsPath, modelFileName)
+            if (!modelFile.exists()) {
+                extractFromAssets(modelFileName, modelFile)
+            }
             whisperContext = WhisperContext.createContextFromFile(modelFile.absolutePath)
             canTranscribe = true
         } catch (e: OutOfMemoryError) {
@@ -77,9 +80,27 @@ actual class Transcriber(
         }
     }
 
+    private fun extractFromAssets(modelFileName: String, targetFile: File) {
+        try {
+            context.assets.open(modelFileName).use { input ->
+                targetFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            debugPrintln { "Extracted bundled model $modelFileName from assets" }
+        } catch (e: Exception) {
+            // Not a bundled model, ignore
+        }
+    }
+
     actual fun doesModelExists(modelFileName: String) : Boolean{
         val modelFile = File(modelsPath, modelFileName)
-        return modelFile.exists()
+        if (modelFile.exists()) return true
+        return try {
+            context.assets.open(modelFileName).use { true }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     actual fun isValidModel(modelFileName: String) : Boolean{
