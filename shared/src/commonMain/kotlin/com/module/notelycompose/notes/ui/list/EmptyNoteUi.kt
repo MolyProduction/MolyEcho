@@ -39,7 +39,7 @@ fun EmptyNoteUi(
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_empty_notes),
-            contentDescription = "No Notes",
+            contentDescription = stringResource(Res.string.empty_list_title),
             modifier = Modifier.size(250.dp),
             tint = Color(0xFFD18B60)
         )

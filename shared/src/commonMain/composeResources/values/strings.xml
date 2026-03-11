@@ -193,6 +193,9 @@
     <string name="batch_export_settings_no_folder_selected">Folder selection cancelled</string>
     <!-- Import -->
     <string name="import_failed_title">Import Failed</string>
+    <string name="version_string">Version %1$s</string>
+    <string name="preparing">Preparing...</string>
+    <string name="downloading_model">Downloading %1$s</string>
     <!-- model selection -->
     <string name="question_mark">question mark</string>
     <string name="ai_model_title">What is an AI model?</string>

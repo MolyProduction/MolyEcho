@@ -79,6 +79,12 @@ import com.module.notelycompose.resources.ic_export_selections
 import com.module.notelycompose.resources.navigate
 import org.jetbrains.compose.resources.painterResource
 import com.module.notelycompose.resources.transcription_model_selection
+import com.module.notelycompose.resources.optimized_model_title
+import com.module.notelycompose.resources.optimized_model_setting_desc
+import com.module.notelycompose.resources.optimized_model_setting_size
+import com.module.notelycompose.resources.standard_model_title
+import com.module.notelycompose.resources.standard_model_setting_desc
+import com.module.notelycompose.resources.standard_model_setting_size
 
 @Composable
 fun SettingsScreen(
@@ -805,19 +811,16 @@ private fun LanguageModelSelectionSection(
             model = when (modelSavedSelection) {
                 OPTIMIZED_MODEL_SELECTION -> {
                     ModelOption(
-                        title = "Optimized model (multilingual)",
-                        description = "Highest accuracy available\n" +
-                                "Supports all languages except Hindi & Gujarati\n" +
-                                "Larger file size, slower performance",
-                        size = "468 MB"
+                        title = stringResource(Res.string.optimized_model_title),
+                        description = stringResource(Res.string.optimized_model_setting_desc),
+                        size = stringResource(Res.string.optimized_model_setting_size)
                     )
                 }
                 else -> {
                     ModelOption(
-                        title = "Standard model (multilingual)",
-                        description = "Faster performance and smaller file size\n" +
-                                "Supports all languages",
-                        size = "142 MB"
+                        title = stringResource(Res.string.standard_model_title),
+                        description = stringResource(Res.string.standard_model_setting_desc),
+                        size = stringResource(Res.string.standard_model_setting_size)
                     )
                 }
             },

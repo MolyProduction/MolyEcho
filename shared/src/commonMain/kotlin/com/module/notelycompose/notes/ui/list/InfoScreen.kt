@@ -38,6 +38,7 @@ import com.module.notelycompose.resources.faq
 import com.module.notelycompose.resources.about
 import com.module.notelycompose.resources.support
 import com.module.notelycompose.resources.privacy
+import com.module.notelycompose.resources.version_string
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.getKoin
 import org.koin.compose.koinInject
@@ -72,7 +73,7 @@ fun InfoScreen(
     val aboutUrl  = infoBaseUrl + stringResource(Res.string.about_url)
     val supportUrl  = infoBaseUrl + stringResource(Res.string.support_url)
     val privacyUrl  = infoBaseUrl + stringResource(Res.string.privacy_url)
-    val appVersionStr = "Version $appVersion"
+    val appVersionStr = stringResource(Res.string.version_string, appVersion)
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -122,7 +123,7 @@ fun InfoScreen(
             // List of menu items
             SettingsMenuItem(
                 icon = Images.Icons.IcFaq,
-                title = "FAQ",
+                title = faq,
                 onClick = {
                     currentPageTitle = faq
                     currentPageUrl = faqUrl
@@ -138,7 +139,7 @@ fun InfoScreen(
 
             SettingsMenuItem(
                 icon = Icons.Default.Info,
-                title = "About Us",
+                title = about,
                 onClick = {
                     currentPageTitle = about
                     currentPageUrl = aboutUrl
@@ -154,7 +155,7 @@ fun InfoScreen(
 
             SettingsMenuItem(
                 icon = Icons.Default.Star,
-                title = "Support",
+                title = support,
                 onClick = {
                     currentPageTitle = support
                     currentPageUrl = supportUrl
@@ -170,7 +171,7 @@ fun InfoScreen(
 
             SettingsMenuItem(
                 icon = Icons.Default.Lock,
-                title = "Privacy Policy",
+                title = privacy,
                 onClick = {
                     currentPageTitle =  privacy
                     currentPageUrl = privacyUrl

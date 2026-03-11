@@ -20,13 +20,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
+import com.module.notelycompose.resources.Res
+import com.module.notelycompose.resources.preparing
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PreparingLoadingDialog(
     modifier: Modifier = Modifier,
-    text: String = "Preparing...",
+    text: String? = null,
     onDismissRequest: (() -> Unit)? = null
 ) {
+    val displayText = text ?: stringResource(Res.string.preparing)
     Dialog(
         onDismissRequest = { onDismissRequest?.invoke() },
         properties = DialogProperties(
@@ -50,7 +54,7 @@ fun PreparingLoadingDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = text,
+                    text = displayText,
                     color = LocalCustomColors.current.bodyContentColor
                 )
             }

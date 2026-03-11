@@ -193,6 +193,9 @@
     <string name="batch_export_settings_no_folder_selected">Ordnerauswahl abgebrochen</string>
     <!-- Import -->
     <string name="import_failed_title">Import fehlgeschlagen</string>
+    <string name="version_string">Version %1$s</string>
+    <string name="preparing">Bitte warten…</string>
+    <string name="downloading_model">Wird heruntergeladen: %1$s</string>
     <!-- model selection -->
     <string name="question_mark">Fragezeichen</string>
     <string name="ai_model_title">Was ist ein KI-Modell?</string>
