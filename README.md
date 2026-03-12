@@ -2,7 +2,7 @@
 
 Ein Fork von [NotelyVoice](https://github.com/tosinonikute/NotelyVoice), optimiert für deutsche Spracherkennung mit eingebettetem Offline-Modell.
 
-**Paketname:** `de.molyecho.notlyvoic.android`  
+**Paketname:** `de.molyecho.notlyvoice.android`  
 **Version:** 1.2.6  
 **Lizenz:** GPL-3.0
 
@@ -78,8 +78,15 @@ Das APK liegt anschließend unter `androidApp/build/outputs/apk/debug/`.
 ## Credits
 
 - **NotelyVoice** – Originale App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice)
-- **Deutsches Whisper-Modell** – [primeline/whisper-large-v3-turbo-german](https://huggingface.co/primeline/whisper-large-v3-turbo-german) auf HuggingFace
+- **Deutsches Tiny-Modell (Standard)** – [primeline/whisper-tiny-german-1224](https://huggingface.co/primeline/whisper-tiny-german-1224) auf HuggingFace (eingebettetes Standard-Modell, ~75 MB)
+- **Deutsches Turbo-Modell** – [primeline/whisper-large-v3-turbo-german](https://huggingface.co/primeline/whisper-large-v3-turbo-german) auf HuggingFace
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp) für GGML-Inferenz
+
+---
+
+## Changelog
+
+- Standardmodell auf primeline/whisper-tiny-german-1224 aktualisiert (bessere Genauigkeit, gleiche Größe)
 
 ---
 
