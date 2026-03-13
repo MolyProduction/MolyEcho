@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.modelDownloader.GERMAN_MODEL
+import com.module.notelycompose.modelDownloader.MULTILINGUAL_EXTENDED_SELECTION
+import com.module.notelycompose.modelDownloader.MULTILINGUAL_STANDARD_SELECTION
 import com.module.notelycompose.modelDownloader.NO_MODEL_SELECTION
 import com.module.notelycompose.modelDownloader.OPTIMIZED_MODEL_SELECTION
 import com.module.notelycompose.notes.extension.TEXT_SIZE_BODY
@@ -50,45 +52,46 @@ import com.module.notelycompose.platform.Theme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.jetbrains.compose.resources.stringResource
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.settings
-import com.module.notelycompose.resources.customize_your_experience
-import com.module.notelycompose.resources.language_and_region
-import com.module.notelycompose.resources.transcription_language
-import com.module.notelycompose.resources.language_used_for_voice_transcription
-import com.module.notelycompose.resources.select_language
-import com.module.notelycompose.resources.appearance
-import com.module.notelycompose.resources.body_text_pt
-import com.module.notelycompose.resources.theme
-import com.module.notelycompose.resources.choose_how_the_app_looks
-import com.module.notelycompose.resources.close
-import com.module.notelycompose.resources.accessibility
-import com.module.notelycompose.resources.batch_export_settings_how_to
-import com.module.notelycompose.resources.batch_export_settings_how_to_1
-import com.module.notelycompose.resources.batch_export_settings_how_to_2
-import com.module.notelycompose.resources.batch_export_settings_how_to_3
-import com.module.notelycompose.resources.batch_export_settings_how_to_description_1
-import com.module.notelycompose.resources.batch_export_settings_how_to_description_2
-import com.module.notelycompose.resources.batch_export_settings_how_to_description_3
-import com.module.notelycompose.resources.batch_export_settings_how_to_description_4
-import com.module.notelycompose.resources.batch_export_settings_title
-import com.module.notelycompose.resources.body_text_default
-import com.module.notelycompose.resources.body_text_preferred_text
-import com.module.notelycompose.resources.body_text_size
-import com.module.notelycompose.resources.export
-import com.module.notelycompose.resources.ic_export_selections
-import com.module.notelycompose.resources.navigate
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.settings
+import de.molyecho.notlyvoice.resources.customize_your_experience
+import de.molyecho.notlyvoice.resources.language_and_region
+import de.molyecho.notlyvoice.resources.transcription_language
+import de.molyecho.notlyvoice.resources.language_used_for_voice_transcription
+import de.molyecho.notlyvoice.resources.select_language
+import de.molyecho.notlyvoice.resources.appearance
+import de.molyecho.notlyvoice.resources.body_text_pt
+import de.molyecho.notlyvoice.resources.theme
+import de.molyecho.notlyvoice.resources.choose_how_the_app_looks
+import de.molyecho.notlyvoice.resources.close
+import de.molyecho.notlyvoice.resources.accessibility
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_1
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_2
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_3
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_description_1
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_description_2
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_description_3
+import de.molyecho.notlyvoice.resources.batch_export_settings_how_to_description_4
+import de.molyecho.notlyvoice.resources.batch_export_settings_title
+import de.molyecho.notlyvoice.resources.body_text_default
+import de.molyecho.notlyvoice.resources.body_text_preferred_text
+import de.molyecho.notlyvoice.resources.body_text_size
+import de.molyecho.notlyvoice.resources.export
+import de.molyecho.notlyvoice.resources.ic_export_selections
+import de.molyecho.notlyvoice.resources.navigate
 import org.jetbrains.compose.resources.painterResource
-import com.module.notelycompose.resources.transcription_model_selection
-import com.module.notelycompose.resources.optimized_model_title
-import com.module.notelycompose.resources.optimized_model_setting_desc
-import com.module.notelycompose.resources.optimized_model_setting_size
-import com.module.notelycompose.resources.standard_model_title
-import com.module.notelycompose.resources.standard_model_setting_desc
-import com.module.notelycompose.resources.standard_model_setting_size
-import com.module.notelycompose.resources.speech_mode_german_quick_title
-import com.module.notelycompose.resources.speech_mode_german_accurate_title
-import com.module.notelycompose.resources.speech_mode_multilingual_title
+import de.molyecho.notlyvoice.resources.transcription_model_selection
+import de.molyecho.notlyvoice.resources.optimized_model_title
+import de.molyecho.notlyvoice.resources.optimized_model_setting_desc
+import de.molyecho.notlyvoice.resources.optimized_model_setting_size
+import de.molyecho.notlyvoice.resources.standard_model_title
+import de.molyecho.notlyvoice.resources.standard_model_setting_desc
+import de.molyecho.notlyvoice.resources.standard_model_setting_size
+import de.molyecho.notlyvoice.resources.model_label_german_accurate
+import de.molyecho.notlyvoice.resources.model_label_german_quick
+import de.molyecho.notlyvoice.resources.model_label_multilingual_extended
+import de.molyecho.notlyvoice.resources.model_label_multilingual_standard
 
 @Composable
 fun SettingsScreen(
@@ -143,8 +146,7 @@ fun SettingsScreen(
             item {
                 LanguageModelSelectionSection(
                     navigateToModelSelection = navigateToModelSelection,
-                    modelSavedSelection = modelSavedSelection,
-                    currentLanguage = language
+                    modelSavedSelection = modelSavedSelection
                 )
             }
 
@@ -797,23 +799,21 @@ fun ExportSettingSection() {
 @Composable
 private fun LanguageModelSelectionSection(
     navigateToModelSelection: () -> Unit,
-    modelSavedSelection: Int,
-    currentLanguage: String = GERMAN_MODEL
+    modelSavedSelection: Int
 ) {
-    val isGerman = currentLanguage == GERMAN_MODEL
-    val isOptimized = modelSavedSelection == OPTIMIZED_MODEL_SELECTION
-
-    val currentTitle = when {
-        isGerman && isOptimized -> "🇩🇪 " + stringResource(Res.string.speech_mode_german_accurate_title)
-        isGerman -> "🇩🇪 " + stringResource(Res.string.speech_mode_german_quick_title)
-        isOptimized -> "🌐 " + stringResource(Res.string.speech_mode_multilingual_title) + " – Erweitert"
-        else -> "🌐 " + stringResource(Res.string.speech_mode_multilingual_title) + " – Standard"
+    // Label is derived from modelSelection alone — decoupled from the language pref
+    // so multilingual models show correctly even when transcription language stays "de".
+    val currentTitle = when (modelSavedSelection) {
+        OPTIMIZED_MODEL_SELECTION                       -> stringResource(Res.string.model_label_german_accurate)
+        MULTILINGUAL_STANDARD_SELECTION,
+        MULTILINGUAL_EXTENDED_SELECTION                 -> stringResource(Res.string.model_label_multilingual_extended)
+        else                                            -> stringResource(Res.string.model_label_german_quick)
     }
-    val currentDesc = when {
-        isGerman && isOptimized -> stringResource(Res.string.optimized_model_setting_desc)
-        isGerman -> stringResource(Res.string.standard_model_setting_desc)
-        isOptimized -> stringResource(Res.string.optimized_model_setting_desc)
-        else -> stringResource(Res.string.standard_model_setting_desc)
+    val currentDesc = when (modelSavedSelection) {
+        OPTIMIZED_MODEL_SELECTION                       -> stringResource(Res.string.optimized_model_setting_desc)
+        MULTILINGUAL_STANDARD_SELECTION,
+        MULTILINGUAL_EXTENDED_SELECTION                 -> stringResource(Res.string.optimized_model_setting_desc)
+        else                                            -> stringResource(Res.string.standard_model_setting_desc)
     }
 
     Column(modifier = Modifier.clickable { navigateToModelSelection() }) {
