@@ -46,14 +46,14 @@ import com.module.notelycompose.platform.HandlePlatformBackNavigation
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.resources.vectors.IcChevronLeft
 import com.module.notelycompose.resources.vectors.Images
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.top_bar_back
-import com.module.notelycompose.resources.transcription_dialog_append
-import com.module.notelycompose.resources.transcription_dialog_original
-import com.module.notelycompose.resources.transcription_dialog_summarize
-import com.module.notelycompose.resources.transcription_dialog_error_got_it
-import com.module.notelycompose.resources.transcription_dialog_error_audio_file_title
-import com.module.notelycompose.resources.transcription_dialog_error_audio_file_desc
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.top_bar_back
+import de.molyecho.notlyvoice.resources.transcription_dialog_append
+import de.molyecho.notlyvoice.resources.transcription_dialog_original
+import de.molyecho.notlyvoice.resources.transcription_dialog_summarize
+import de.molyecho.notlyvoice.resources.transcription_dialog_error_got_it
+import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_title
+import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_desc
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -74,7 +74,9 @@ fun TranscriptionScreen(
     }
     DisposableEffect(Unit) {
         viewModel.requestAudioPermission()
-        viewModel.initRecognizer()
+        // initRecognizer is no longer called separately here; model initialization
+        // now happens sequentially inside startRecognizer before transcription begins,
+        // eliminating the race condition where start() ran before the model was loaded.
         viewModel.startRecognizer(editorState.recording.recordingPath)
         onDispose {
             viewModel.stopRecognizer()

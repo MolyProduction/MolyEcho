@@ -42,15 +42,22 @@ class TranscriptionViewModel(
 
     fun startRecognizer(filePath: String) {
         debugPrintln{"startRecognizer ========================="}
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             if (transcriber.hasRecordingPermission()) {
+                // Show loading indicator immediately so the user sees feedback.
                 _uiState.update { current ->
                     current.copy(inTranscription = true)
                 }
+                // Initialize the correct model sequentially before transcribing.
+                // This prevents the race condition where start() runs before the model is loaded.
+                val modelFileName = modelSelection.getSelectedModel()
+                transcriber.initialize(modelFileName.name)
+
                 val transcriptionLanguage = preferencesRepository.getDefaultTranscriptionLanguage().first()
+                    .ifBlank { "de" } // defensive: ensure non-empty language code
                 val segmenter = getSegmenter(transcriptionLanguage)
                 transcriber.start(
-                    filePath, preferencesRepository.getDefaultTranscriptionLanguage().first(), onProgress = { progress ->
+                    filePath, transcriptionLanguage, onProgress = { progress ->
                         debugPrintln{"progress ========================= $progress"}
                         _uiState.update { current ->
                             current.copy(

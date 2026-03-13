@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.audio.ui.recorder.RecordingSuccessScreen
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.import_failed_title
-import com.module.notelycompose.resources.ok
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.import_failed_title
+import de.molyecho.notlyvoice.resources.ok
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 

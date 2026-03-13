@@ -38,13 +38,22 @@ class ModelDownloaderViewModel(
     fun checkTranscriptionAvailability() {
         viewModelScope.launch(Dispatchers.IO) {
             _effects.emit(DownloaderEffect.CheckingEffect())
-            
+
             if (downloader.hasRunningDownload()) {
                 trackDownload()
             } else {
-                if (!transcriber.doesModelExists(uiState.value.selectedModel.name)
-                    || !transcriber.isValidModel(uiState.value.selectedModel.name)) {
-                    _effects.emit(DownloaderEffect.AskForUserAcceptance())
+                // Read the current model selection fresh from DataStore to avoid using
+                // a stale default from the ViewModel's initial state before init completes.
+                val currentModel = modelSelection.getSelectedModel()
+                if (!transcriber.doesModelExists(currentModel.name)) {
+                    if (currentModel.url == null) {
+                        // Bundled model (no URL) — treat as always available, no download needed
+                        _effects.emit(DownloaderEffect.ModelsAreReady())
+                    } else {
+                        // Update uiState so the download dialog shows the correct model info.
+                        _uiState.value = DownloaderUiState(currentModel)
+                        _effects.emit(DownloaderEffect.AskForUserAcceptance())
+                    }
                 } else {
                     _effects.emit(DownloaderEffect.ModelsAreReady())
                 }
@@ -54,13 +63,13 @@ class ModelDownloaderViewModel(
 
     fun startDownload() {
         viewModelScope.launch(Dispatchers.IO) {
-                val modelUrl = uiState.value.selectedModel.url
-//            if (modelUrl != null) {
-                downloader.startDownload(modelUrl, uiState.value.selectedModel.name)
-                trackDownload()
-//            } else {
-//                _effects.emit(DownloaderEffect.ErrorEffect())
-//            }
+            val modelUrl = uiState.value.selectedModel.url
+            if (modelUrl == null) {
+                _effects.emit(DownloaderEffect.ErrorEffect())
+                return@launch
+            }
+            downloader.startDownload(modelUrl, uiState.value.selectedModel.name)
+            trackDownload()
         }
     }
 
@@ -78,8 +87,8 @@ class ModelDownloaderViewModel(
             }
         }, onSuccess = {
             viewModelScope.launch {
-                transcriber.initialize(uiState.value.selectedModel.name)
-                _effects.emit(DownloaderEffect.ModelsAreReady()) }
+                _effects.emit(DownloaderEffect.ModelsAreReady())
+            }
 
         }, onFailed = {
             viewModelScope.launch { _effects.emit(DownloaderEffect.ErrorEffect()) }

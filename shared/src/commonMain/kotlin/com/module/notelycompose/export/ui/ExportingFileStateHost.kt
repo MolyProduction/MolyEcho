@@ -1,6 +1,7 @@
 package com.module.notelycompose.export.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -24,11 +25,11 @@ import androidx.compose.ui.unit.sp
 import com.module.notelycompose.audio.ui.recorder.RecordingSuccessScreen
 import com.module.notelycompose.export.presentation.model.ExportingFileState
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.batch_export_settings_error_occurred
-import com.module.notelycompose.resources.batch_export_settings_no_folder_selected
-import com.module.notelycompose.resources.batch_export_ok
-import com.module.notelycompose.resources.error
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.batch_export_settings_error_occurred
+import de.molyecho.notlyvoice.resources.batch_export_settings_no_folder_selected
+import de.molyecho.notlyvoice.resources.batch_export_ok
+import de.molyecho.notlyvoice.resources.error
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,7 +61,9 @@ internal fun ExportingFileStateHost(
                 AlertDialog(
                     onDismissRequest = onDismiss,
                     confirmButton = {
-                        TextButton(onClick = {
+                        TextButton(
+                            shape = RoundedCornerShape(50),
+                            onClick = {
                             shouldShowDialog = false
                             onDismiss()
                         }) {
@@ -78,7 +81,9 @@ internal fun ExportingFileStateHost(
                 AlertDialog(
                     onDismissRequest = onDismiss,
                     confirmButton = {
-                        TextButton(onClick = {
+                        TextButton(
+                            shape = RoundedCornerShape(50),
+                            onClick = {
                             shouldShowDialog = false
                             onDismiss()
                         }) {

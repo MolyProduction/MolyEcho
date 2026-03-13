@@ -18,8 +18,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.modelDownloader.ModelSelection
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.downloading_model
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.downloading_model
 import org.jetbrains.compose.resources.stringResource
 
 

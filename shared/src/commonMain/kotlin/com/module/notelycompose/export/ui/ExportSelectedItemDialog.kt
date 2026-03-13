@@ -1,6 +1,7 @@
 package com.module.notelycompose.export.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,14 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.batch_export_audio_files
-import com.module.notelycompose.resources.batch_export_options
-import com.module.notelycompose.resources.batch_export_select_at_least_one_option
-import com.module.notelycompose.resources.batch_export_select_formats
-import com.module.notelycompose.resources.batch_export_title
-import com.module.notelycompose.resources.batch_export_txt_files
-import com.module.notelycompose.resources.cancel
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.batch_export_audio_files
+import de.molyecho.notlyvoice.resources.batch_export_options
+import de.molyecho.notlyvoice.resources.batch_export_select_at_least_one_option
+import de.molyecho.notlyvoice.resources.batch_export_select_formats
+import de.molyecho.notlyvoice.resources.batch_export_title
+import de.molyecho.notlyvoice.resources.batch_export_txt_files
+import de.molyecho.notlyvoice.resources.cancel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -118,6 +119,7 @@ fun ExportSelectedItemConfirmationDialog(
                         disabledBackgroundColor = LocalCustomColors.current.shareDialogBackgroundColor,
                         disabledContentColor = LocalCustomColors.current.bodyContentColor.copy(alpha = 0.4f)
                     ),
+                    shape = RoundedCornerShape(50),
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
@@ -133,6 +135,7 @@ fun ExportSelectedItemConfirmationDialog(
                         backgroundColor = LocalCustomColors.current.shareDialogBackgroundColor,
                         contentColor = LocalCustomColors.current.bodyContentColor
                     ),
+                    shape = RoundedCornerShape(50),
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(text = stringResource(Res.string.cancel))

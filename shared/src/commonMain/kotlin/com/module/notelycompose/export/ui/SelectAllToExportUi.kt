@@ -24,10 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.cancel
-import com.module.notelycompose.resources.ic_cancel_all
-import com.module.notelycompose.resources.select_deselect_all
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.cancel
+import de.molyecho.notlyvoice.resources.ic_cancel_all
+import de.molyecho.notlyvoice.resources.select_deselect_all
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

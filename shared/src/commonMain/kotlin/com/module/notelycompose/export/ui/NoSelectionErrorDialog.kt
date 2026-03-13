@@ -1,6 +1,7 @@
 package com.module.notelycompose.export.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -8,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.batch_export_no_selection_made
-import com.module.notelycompose.resources.cancel
-import com.module.notelycompose.resources.error
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.batch_export_no_selection_made
+import de.molyecho.notlyvoice.resources.cancel
+import de.molyecho.notlyvoice.resources.error
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -41,6 +42,7 @@ fun NoSelectionErrorDialog(
                         backgroundColor = LocalCustomColors.current.shareDialogBackgroundColor,
                         contentColor = LocalCustomColors.current.bodyContentColor
                     ),
+                    shape = RoundedCornerShape(50),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     androidx.compose.material.Text(text = stringResource(Res.string.cancel))
