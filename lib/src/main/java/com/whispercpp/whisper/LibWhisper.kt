@@ -16,9 +16,8 @@ private const val LOG_TAG = "LibWhisper"
 
 class WhisperContext private constructor(private var ptr: Long) {
     // Meet Whisper C++ constraint: Don't access from more than one thread at a time.
-    val scope: CoroutineScope = CoroutineScope(
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    )
+    private val executor = Executors.newSingleThreadExecutor()
+    val scope: CoroutineScope = CoroutineScope(executor.asCoroutineDispatcher())
     fun stopTranscription(){
         WhisperLib.stopTranscription()
     }
@@ -73,6 +72,7 @@ class WhisperContext private constructor(private var ptr: Long) {
             WhisperLib.freeContext(ptr)
             ptr = 0
         }
+        executor.shutdown()
     }
 
     protected fun finalize() {
