@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -22,9 +25,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.module.notelycompose.notes.ui.common.TopBarLogo
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.top_bar_notes
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.top_bar_notes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -68,12 +72,18 @@ fun TopBar(
                     )
                 }
             }
-            Text(
+            Row(
                 modifier = Modifier.align(Alignment.Center),
-                text = title,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 24.sp
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TopBarLogo(size = 32.dp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 24.sp
+                )
+            }
 
             if (isRightIconVisible) {
                 Icon(

@@ -34,14 +34,14 @@ import com.module.notelycompose.notes.presentation.list.NoteListViewModel
 import com.module.notelycompose.notes.ui.share.ShareDialog
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.presentation.PlatformUiState
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.cancel
-import com.module.notelycompose.resources.export
-import com.module.notelycompose.resources.ic_cancel_all
-import com.module.notelycompose.resources.note_list_add_note
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.cancel
+import de.molyecho.notlyvoice.resources.export
+import de.molyecho.notlyvoice.resources.ic_cancel_all
+import de.molyecho.notlyvoice.resources.note_list_add_note
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.module.notelycompose.resources.ic_export_selections
+import de.molyecho.notlyvoice.resources.ic_export_selections
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

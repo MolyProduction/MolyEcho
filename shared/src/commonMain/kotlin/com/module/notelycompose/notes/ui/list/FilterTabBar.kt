@@ -11,11 +11,11 @@ import com.module.notelycompose.resources.vectors.IcFolder
 import com.module.notelycompose.resources.vectors.IcStar
 import com.module.notelycompose.resources.vectors.IcRecorderSmall
 import com.module.notelycompose.resources.vectors.Images
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.date_tab_bar_all
-import com.module.notelycompose.resources.date_tab_bar_starred
-import com.module.notelycompose.resources.date_tab_bar_voices
-import com.module.notelycompose.resources.date_tab_bar_recent
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.date_tab_bar_all
+import de.molyecho.notlyvoice.resources.date_tab_bar_starred
+import de.molyecho.notlyvoice.resources.date_tab_bar_voices
+import de.molyecho.notlyvoice.resources.date_tab_bar_recent
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

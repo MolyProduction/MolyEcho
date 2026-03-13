@@ -1,29 +1,26 @@
 package com.module.notelycompose.notes.ui.list
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.ic_empty_notes
-import org.jetbrains.compose.resources.painterResource
-import com.module.notelycompose.resources.empty_list_title
-import com.module.notelycompose.resources.empty_list_description
-import com.module.notelycompose.resources.empty_list_description_tablet
+import com.module.notelycompose.notes.ui.common.EmptyStateView
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.empty_list_description
+import de.molyecho.notlyvoice.resources.empty_list_description_tablet
+import de.molyecho.notlyvoice.resources.empty_list_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EmptyNoteUi(
     isTablet: Boolean
 ) {
-    val emptyNoteDescStr = if(isTablet) {
+    val descriptionText = if (isTablet) {
         stringResource(Res.string.empty_list_description_tablet)
     } else {
         stringResource(Res.string.empty_list_description)
@@ -37,29 +34,17 @@ fun EmptyNoteUi(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_empty_notes),
-            contentDescription = stringResource(Res.string.empty_list_title),
-            modifier = Modifier.size(250.dp),
-            tint = Color(0xFFD18B60)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
+        EmptyStateView(
             text = stringResource(Res.string.empty_list_title),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = LocalCustomColors.current.bodyContentColor,
-            textAlign = TextAlign.Center
+            imageSize = if (isTablet) 160.dp else 140.dp
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = emptyNoteDescStr,
+            text = descriptionText,
             fontSize = 16.sp,
-            color = Color(0xFF6B6B6B),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 22.sp,
             modifier = Modifier.padding(horizontal = 16.dp)
