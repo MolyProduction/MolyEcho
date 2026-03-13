@@ -135,8 +135,7 @@
     <string name="speech_mode_multilingual_subtitle">50+ languages · Download required</string>
     <string name="speech_mode_status_ready">✓ Ready</string>
     <string name="speech_mode_status_download">⬇ Download</string>
-    <string name="speech_mode_multilingual_standard_option">Standard (Tiny) · ~142 MB</string>
-    <string name="speech_mode_multilingual_extended_option">Extended (Small) · ~465 MB</string>
+
     <string name="manage_models">Manage Downloaded Models</string>
     <string name="manage_models_desc">Delete models to free up storage</string>
     <string name="model_cannot_delete">Built-in (cannot be deleted)</string>
@@ -239,6 +238,6 @@
     <string name="section_label_multilingual">🌐 Multilingual</string>
     <string name="model_label_german_quick">🇩🇪 German – Quick</string>
     <string name="model_label_german_accurate">🇩🇪 German – Accurate</string>
-    <string name="model_label_multilingual_standard">🌐 Multilingual Standard</string>
+
     <string name="model_label_multilingual_extended">🌐 Multilingual Extended</string>
 </resources>

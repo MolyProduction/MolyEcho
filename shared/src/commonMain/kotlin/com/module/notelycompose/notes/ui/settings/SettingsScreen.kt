@@ -91,7 +91,6 @@ import de.molyecho.notlyvoice.resources.standard_model_setting_size
 import de.molyecho.notlyvoice.resources.model_label_german_accurate
 import de.molyecho.notlyvoice.resources.model_label_german_quick
 import de.molyecho.notlyvoice.resources.model_label_multilingual_extended
-import de.molyecho.notlyvoice.resources.model_label_multilingual_standard
 
 @Composable
 fun SettingsScreen(
