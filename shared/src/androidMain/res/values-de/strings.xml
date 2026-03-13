@@ -3,4 +3,6 @@
     <string name="app_name">MolyEcho</string>
     <string name="notification_recording_title">Aufnahme läuft</string>
     <string name="notification_recording_text">Tippen zum Beenden der Aufnahme</string>
+    <string name="notification_transcription_title">Transkription läuft</string>
+    <string name="notification_transcription_text">MolyEcho transkribiert deine Aufnahme</string>
 </resources>

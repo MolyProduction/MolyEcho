@@ -15,6 +15,8 @@ import com.module.notelycompose.platform.PlatformUtils
 import com.module.notelycompose.platform.Transcriber
 import com.module.notelycompose.platform.dataStore
 import com.module.notelycompose.platform.pdf.IOSPdfGenerator
+import com.module.notelycompose.transcription.IosTranscriptionServiceController
+import com.module.notelycompose.transcription.TranscriptionServiceController
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
 import org.koin.core.qualifier.named
@@ -45,6 +47,8 @@ actual val platformModule = module {
     single { Downloader() }
 
     single { Transcriber() }
+
+    single<TranscriptionServiceController> { IosTranscriptionServiceController() }
 
     // domain
     single<AudioRecorderInteractor> { AudioRecorderInteractorImpl(get(), get()) }

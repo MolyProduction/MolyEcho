@@ -3,4 +3,6 @@
     <string name="app_name">MolyEcho</string>
     <string name="notification_recording_title">Recording Note</string>
     <string name="notification_recording_text">Tap to stop recording</string>
+    <string name="notification_transcription_title">Transcription in progress</string>
+    <string name="notification_transcription_text">MolyEcho is transcribing your recording</string>
 </resources>

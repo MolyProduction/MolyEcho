@@ -21,6 +21,8 @@ import com.module.notelycompose.platform.PlatformUtils
 import com.module.notelycompose.modelDownloader.ModelDownloaderViewModel
 import com.module.notelycompose.platform.Transcriber
 import com.module.notelycompose.platform.dataStore
+import com.module.notelycompose.transcription.AndroidTranscriptionServiceController
+import com.module.notelycompose.transcription.TranscriptionServiceController
 import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
@@ -55,6 +57,7 @@ actual val platformModule = module {
 
     single { Transcriber(get(), get()) }
 
+    single<TranscriptionServiceController> { AndroidTranscriptionServiceController(get()) }
 
     // domain
     single<AudioRecorderInteractor> { AudioRecorderInteractorImpl(get(), get(), get()) }
