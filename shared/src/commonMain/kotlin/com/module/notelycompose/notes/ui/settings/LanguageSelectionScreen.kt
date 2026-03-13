@@ -1,6 +1,7 @@
 package com.module.notelycompose.notes.ui.settings
 
 import androidx.compose.foundation.background
+import com.module.notelycompose.notes.ui.common.EmptyStateView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,11 +53,11 @@ import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.getPlatform
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.language_selection_no_languages_found
-import com.module.notelycompose.resources.language_selection_supported_languages
-import com.module.notelycompose.resources.language_selection_search
-import com.module.notelycompose.resources.language_selection_select_language
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.language_selection_no_languages_found
+import de.molyecho.notlyvoice.resources.language_selection_supported_languages
+import de.molyecho.notlyvoice.resources.language_selection_search
+import de.molyecho.notlyvoice.resources.language_selection_select_language
 import org.jetbrains.compose.resources.stringResource
 
 val languageCodeMap = mapOf(
@@ -101,7 +102,7 @@ fun LanguageSelectionScreen(
 ) {
     // TODO: move this implementation to a ViewModel
     val previousSelectedLanguage by preferencesRepository.getDefaultTranscriptionLanguage()
-        .collectAsState(languageCodeMap.entries.first().key)
+        .collectAsState("de")
     val coroutineScope = rememberCoroutineScope()
     var searchText by remember { mutableStateOf("") }
     val filteredLanguages by derivedStateOf {
@@ -217,14 +218,12 @@ fun LanguageSelectionScreen(
                         shape = RoundedCornerShape(12.dp))
             ) {
                 if (filteredLanguages.isEmpty()) {
-                    Text(
+                    EmptyStateView(
                         text = stringResource(Res.string.language_selection_no_languages_found),
+                        imageSize = 100.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(LocalCustomColors.current.languageListBackgroundColor),
-                        textAlign = TextAlign.Center,
-                        color = LocalCustomColors.current.languageListTextColor
+                            .padding(vertical = 24.dp, horizontal = 16.dp)
                     )
                 } else {
                     LazyColumn(

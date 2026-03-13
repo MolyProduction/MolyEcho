@@ -12,11 +12,11 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.share_options
-import com.module.notelycompose.resources.share_text
-import com.module.notelycompose.resources.share_audio_recording
-import com.module.notelycompose.resources.close
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.share_options
+import de.molyecho.notlyvoice.resources.share_text
+import de.molyecho.notlyvoice.resources.share_audio_recording
+import de.molyecho.notlyvoice.resources.close
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import org.jetbrains.compose.resources.stringResource
 

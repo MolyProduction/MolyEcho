@@ -12,16 +12,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.close
-import com.module.notelycompose.resources.settings_light_theme
-import com.module.notelycompose.resources.settings_dark_theme
-import com.module.notelycompose.resources.settings_system_default
-import com.module.notelycompose.resources.settings_change_language
-import com.module.notelycompose.resources.settings_change_default
-import com.module.notelycompose.resources.settings_transcription_language
-import com.module.notelycompose.resources.settings_themes
-import com.module.notelycompose.resources.settings_title
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.close
+import de.molyecho.notlyvoice.resources.settings_light_theme
+import de.molyecho.notlyvoice.resources.settings_dark_theme
+import de.molyecho.notlyvoice.resources.settings_system_default
+import de.molyecho.notlyvoice.resources.settings_change_language
+import de.molyecho.notlyvoice.resources.settings_change_default
+import de.molyecho.notlyvoice.resources.settings_transcription_language
+import de.molyecho.notlyvoice.resources.settings_themes
+import de.molyecho.notlyvoice.resources.settings_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

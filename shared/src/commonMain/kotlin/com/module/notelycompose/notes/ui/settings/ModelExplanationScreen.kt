@@ -12,13 +12,13 @@ import com.module.notelycompose.notes.ui.detail.AndroidNoteTopBar
 import com.module.notelycompose.notes.ui.detail.IOSNoteTopBar
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.getPlatform
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.ai_model_description
-import com.module.notelycompose.resources.ai_model_title
-import com.module.notelycompose.resources.optimized_model_description
-import com.module.notelycompose.resources.optimized_model_title
-import com.module.notelycompose.resources.standard_model_description
-import com.module.notelycompose.resources.standard_model_title
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.ai_model_description
+import de.molyecho.notlyvoice.resources.ai_model_title
+import de.molyecho.notlyvoice.resources.optimized_model_description
+import de.molyecho.notlyvoice.resources.optimized_model_title
+import de.molyecho.notlyvoice.resources.standard_model_description
+import de.molyecho.notlyvoice.resources.standard_model_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
