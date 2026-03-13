@@ -96,7 +96,7 @@
     <!-- Download Dialog -->
     <string name="download_dialog_error">Fehler beim Herunterladen</string>
     <!-- Information UI -->
-    <string name="information_base_url">https://tosinonikute.com/notely/</string>
+    <string name="information_base_url">https://github.com/MolyProduction/NotelyVoice/</string>
     <string name="faq">FAQ</string>
     <string name="about">Über uns</string>
     <string name="support">Support</string>
@@ -128,9 +128,9 @@
     <string name="speech_recognition">Spracherkennung</string>
     <string name="speech_recognition_desc">Wähle dein Spracherkennungsmodell</string>
     <string name="speech_mode_german_quick_title">Deutsch – Schnell</string>
-    <string name="speech_mode_german_quick_subtitle">Eingebettetes Modell · Sofort einsatzbereit · ~75 MB</string>
+    <string name="speech_mode_german_quick_subtitle">~574 MB Download · Schnell &amp; präzise</string>
     <string name="speech_mode_german_accurate_title">Deutsch – Genau</string>
-    <string name="speech_mode_german_accurate_subtitle">Hohe Erkennungsqualität · Download ~1,6 GB</string>
+    <string name="speech_mode_german_accurate_subtitle">Höchste Genauigkeit · Download ~1,6 GB</string>
     <string name="speech_mode_multilingual_title">Mehrsprachig</string>
     <string name="speech_mode_multilingual_subtitle">50+ Sprachen · Download erforderlich</string>
     <string name="speech_mode_status_ready">✓ Bereit</string>
@@ -166,10 +166,10 @@
     <string name="onboarding_screen_one_desc">Schreibe und teile deine Notizen\nmühelos und sofort</string>
     <string name="onboarding_screen_two_title">Sprachnotiz aufnehmen\nund teilen</string>
     <string name="onboarding_screen_two_desc">Nimm Sprachnotizen auf\nund teile sie unterwegs</string>
-    <string name="onboarding_screen_three_title">Sofort\neinsatzbereit</string>
-    <string name="onboarding_screen_three_desc">Deutsches Sprachmodell ist eingebettet –\nTranskription ohne Download und ohne Internet</string>
+    <string name="onboarding_screen_three_title">Internet\nerforderlich</string>
+    <string name="onboarding_screen_three_desc">Das Sprachmodell (~574 MB) wird beim ersten Start automatisch heruntergeladen. Du benötigst eine aktive Internetverbindung.</string>
     <string name="onboarding_screen_four_title">Noch\npräziser?</string>
-    <string name="onboarding_screen_four_desc">Lade das Deutsche Turbo-Modell in den\nEinstellungen für höchste Genauigkeit herunter</string>
+    <string name="onboarding_screen_four_desc">Für maximale Genauigkeit: Lade das Turbo-Modell (~1,6 GB) in den Einstellungen herunter</string>
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Helles Design</string>
     <string name="settings_dark_theme">Dunkles Design</string>
@@ -234,4 +234,11 @@
     <string name="settings_model_selection">Modellauswahl</string>
     <string name="settings_model_selection_text">KI-Modell</string>
     <string name="settings_model_selection_description">Wähle das Modell, das am besten zu deinen Anforderungen passt</string>
+    <!-- Model section labels and full model labels (replaces hardcoded strings in Kotlin) -->
+    <string name="section_label_german">🇩🇪 Deutsch</string>
+    <string name="section_label_multilingual">🌐 Mehrsprachig</string>
+    <string name="model_label_german_quick">🇩🇪 Deutsch – Schnell</string>
+    <string name="model_label_german_accurate">🇩🇪 Deutsch – Genau</string>
+    <string name="model_label_multilingual_standard">🌐 Mehrsprachig Standard</string>
+    <string name="model_label_multilingual_extended">🌐 Mehrsprachig Erweitert</string>
 </resources>

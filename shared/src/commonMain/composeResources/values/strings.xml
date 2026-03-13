@@ -10,7 +10,7 @@
     <string name="copy">Copy</string>
     <!-- TopBar -->
     <string name="top_bar_back">Back</string>
-    <string name="top_bar_notes">Notely Voice</string>
+    <string name="top_bar_notes">MolyEcho</string>
     <string name="top_bar_menu">Menu</string>
     <string name="top_bar_my_note">My Note</string>
     <string name="top_bar_export_audio_folder">Export Audio to Folder</string>
@@ -96,7 +96,7 @@
     <!-- Download Dialog -->
     <string name="download_dialog_error">Error while downloading</string>
     <!-- Information UI -->
-    <string name="information_base_url">https://tosinonikute.com/notely/</string>
+    <string name="information_base_url">https://github.com/MolyProduction/NotelyVoice/</string>
     <string name="faq">FAQ</string>
     <string name="about">About Us</string>
     <string name="support">Support</string>
@@ -128,9 +128,9 @@
     <string name="speech_recognition">Speech Recognition</string>
     <string name="speech_recognition_desc">Choose your speech recognition model</string>
     <string name="speech_mode_german_quick_title">German – Quick</string>
-    <string name="speech_mode_german_quick_subtitle">Bundled model · Instant · ~75 MB</string>
+    <string name="speech_mode_german_quick_subtitle">~574 MB download · Fast &amp; precise</string>
     <string name="speech_mode_german_accurate_title">German – Accurate</string>
-    <string name="speech_mode_german_accurate_subtitle">High accuracy · Download ~1.6 GB</string>
+    <string name="speech_mode_german_accurate_subtitle">Highest accuracy · Download ~1.6 GB</string>
     <string name="speech_mode_multilingual_title">Multilingual</string>
     <string name="speech_mode_multilingual_subtitle">50+ languages · Download required</string>
     <string name="speech_mode_status_ready">✓ Ready</string>
@@ -166,10 +166,10 @@
     <string name="onboarding_screen_one_desc">Write and share your notes\ninstantly with ease</string>
     <string name="onboarding_screen_two_title">Record Voice\nNote and Share</string>
     <string name="onboarding_screen_two_desc">Capture and share voice notes\non the go</string>
-    <string name="onboarding_screen_three_title">Transcribe\nand Summarise</string>
-    <string name="onboarding_screen_three_desc">Convert voice notes to text and\nsummaries without internet</string>
+    <string name="onboarding_screen_three_title">Internet\nRequired</string>
+    <string name="onboarding_screen_three_desc">The speech model (~574 MB) is downloaded automatically on first launch. An active internet connection is required.</string>
     <string name="onboarding_screen_four_title">Supports\nOver 50 languages</string>
-    <string name="onboarding_screen_four_desc">Create and transcribe notes in\nyour preferred language</string>
+    <string name="onboarding_screen_four_desc">For maximum accuracy: download the Turbo model (~1.6 GB) in Settings</string>
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Light Theme</string>
     <string name="settings_dark_theme">Dark Theme</string>
@@ -234,4 +234,11 @@
     <string name="settings_model_selection">Model Selection</string>
     <string name="settings_model_selection_text">AI Model</string>
     <string name="settings_model_selection_description">Choose the model that best fits your needs</string>
+    <!-- Model section labels and full model labels (replaces hardcoded strings in Kotlin) -->
+    <string name="section_label_german">🇩🇪 German</string>
+    <string name="section_label_multilingual">🌐 Multilingual</string>
+    <string name="model_label_german_quick">🇩🇪 German – Quick</string>
+    <string name="model_label_german_accurate">🇩🇪 German – Accurate</string>
+    <string name="model_label_multilingual_standard">🌐 Multilingual Standard</string>
+    <string name="model_label_multilingual_extended">🌐 Multilingual Extended</string>
 </resources>
