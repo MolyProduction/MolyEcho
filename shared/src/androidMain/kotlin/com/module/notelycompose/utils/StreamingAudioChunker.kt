@@ -16,7 +16,7 @@ class StreamingAudioChunker {
     companion object {
         // 10MB chunks (approximately 10 minutes of audio at 16kHz mono)
         const val CHUNK_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
-        const val OVERLAP_SIZE_BYTES = 1 * 1024 * 1024 // 1MB overlap (10% overlap)
+        const val OVERLAP_SIZE_BYTES = 2 * 1024 * 1024 // 2MB overlap (20% overlap)
         
         // Minimum chunk size to ensure quality transcription
         const val MIN_CHUNK_SIZE_BYTES = 5 * 1024 * 1024 // 5MB minimum
