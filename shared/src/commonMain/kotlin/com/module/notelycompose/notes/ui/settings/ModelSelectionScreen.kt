@@ -20,7 +20,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.module.notelycompose.modelDownloader.GERMAN_MODEL
 import com.module.notelycompose.modelDownloader.MULTILINGUAL_EXTENDED_SELECTION
 import com.module.notelycompose.modelDownloader.MULTILINGUAL_STANDARD_SELECTION
 import com.module.notelycompose.modelDownloader.NO_MODEL_SELECTION
@@ -38,7 +37,6 @@ import de.molyecho.notlyvoice.resources.manage_models
 import de.molyecho.notlyvoice.resources.model_label_german_accurate
 import de.molyecho.notlyvoice.resources.model_label_german_quick
 import de.molyecho.notlyvoice.resources.model_label_multilingual_extended
-import de.molyecho.notlyvoice.resources.model_label_multilingual_standard
 import de.molyecho.notlyvoice.resources.section_label_german
 import de.molyecho.notlyvoice.resources.section_label_multilingual
 import de.molyecho.notlyvoice.resources.manage_models_desc
@@ -48,8 +46,6 @@ import de.molyecho.notlyvoice.resources.speech_mode_german_accurate_subtitle
 import de.molyecho.notlyvoice.resources.speech_mode_german_accurate_title
 import de.molyecho.notlyvoice.resources.speech_mode_german_quick_subtitle
 import de.molyecho.notlyvoice.resources.speech_mode_german_quick_title
-import de.molyecho.notlyvoice.resources.speech_mode_multilingual_extended_option
-import de.molyecho.notlyvoice.resources.speech_mode_multilingual_standard_option
 import de.molyecho.notlyvoice.resources.speech_mode_multilingual_subtitle
 import de.molyecho.notlyvoice.resources.speech_mode_multilingual_title
 import de.molyecho.notlyvoice.resources.speech_mode_status_download
@@ -65,7 +61,6 @@ import org.koin.compose.koinInject
 
 private const val MODE_GERMAN_QUICK = 0
 private const val MODE_GERMAN_ACCURATE = 1
-private const val MODE_MULTILINGUAL_STANDARD = 2
 private const val MODE_MULTILINGUAL_EXTENDED = 3
 
 data class ModelOption(
@@ -88,27 +83,26 @@ fun ModelSelectionScreen(
     // language so that multilingual models can also produce German output.
     val currentMode = when (modelSelection) {
         OPTIMIZED_MODEL_SELECTION       -> MODE_GERMAN_ACCURATE
-        MULTILINGUAL_STANDARD_SELECTION -> MODE_MULTILINGUAL_STANDARD
         MULTILINGUAL_EXTENDED_SELECTION -> MODE_MULTILINGUAL_EXTENDED
         else                            -> MODE_GERMAN_QUICK
     }
 
-    var turboReady by remember { mutableStateOf(false) }
-    var multiStandardReady by remember { mutableStateOf(false) }
+    var schnellReady by remember { mutableStateOf(false) }
+    var genauReady by remember { mutableStateOf(false) }
     var multiExtendedReady by remember { mutableStateOf(false) }
-    var turboSizeMB by remember { mutableStateOf(0L) }
-    var multiStandardSizeMB by remember { mutableStateOf(0L) }
+    var schnellSizeMB by remember { mutableStateOf(0L) }
+    var genauSizeMB by remember { mutableStateOf(0L) }
     var multiExtendedSizeMB by remember { mutableStateOf(0L) }
     var showManageModels by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            turboReady = transcriber.doesModelExists("ggml-large-v3-turbo-german-q5_0.bin")
-            multiStandardReady = transcriber.doesModelExists("ggml-base-en.bin")
+            schnellReady = transcriber.doesModelExists("ggml-large-v3-turbo-german-q5_0.bin")
+            genauReady = transcriber.doesModelExists("ggml-large-v3-turbo-german.bin")
             multiExtendedReady = transcriber.doesModelExists("ggml-small.bin")
-            turboSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german-q5_0.bin") / 1024 / 1024
-            multiStandardSizeMB = transcriber.getModelFileSizeBytes("ggml-base-en.bin") / 1024 / 1024
+            schnellSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german-q5_0.bin") / 1024 / 1024
+            genauSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german.bin") / 1024 / 1024
             multiExtendedSizeMB = transcriber.getModelFileSizeBytes("ggml-small.bin") / 1024 / 1024
         }
     }
@@ -122,9 +116,8 @@ fun ModelSelectionScreen(
             // support German transcription when given language="de".
             // Only the modelSelection value determines which model file is loaded.
             when (mode) {
-                MODE_GERMAN_QUICK       -> preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
-                MODE_GERMAN_ACCURATE    -> preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
-                MODE_MULTILINGUAL_STANDARD -> preferencesRepository.setModelSelection(MULTILINGUAL_STANDARD_SELECTION)
+                MODE_GERMAN_QUICK          -> preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
+                MODE_GERMAN_ACCURATE       -> preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
                 MODE_MULTILINGUAL_EXTENDED -> preferencesRepository.setModelSelection(MULTILINGUAL_EXTENDED_SELECTION)
             }
             // Navigate only after the preference is fully saved to DataStore.
@@ -169,8 +162,9 @@ fun ModelSelectionScreen(
             SpeechModeCard(
                 title = stringResource(Res.string.speech_mode_german_quick_title),
                 subtitle = stringResource(Res.string.speech_mode_german_quick_subtitle),
-                statusText = stringResource(Res.string.speech_mode_status_ready),
-                statusReady = true,
+                statusText = if (schnellReady) stringResource(Res.string.speech_mode_status_ready)
+                             else stringResource(Res.string.speech_mode_status_download),
+                statusReady = schnellReady,
                 isSelected = currentMode == MODE_GERMAN_QUICK,
                 accentColor = Color(0xFF1565C0),
                 onClick = { selectMode(MODE_GERMAN_QUICK) },
@@ -180,9 +174,9 @@ fun ModelSelectionScreen(
             SpeechModeCard(
                 title = stringResource(Res.string.speech_mode_german_accurate_title),
                 subtitle = stringResource(Res.string.speech_mode_german_accurate_subtitle),
-                statusText = if (turboReady) stringResource(Res.string.speech_mode_status_ready)
+                statusText = if (genauReady) stringResource(Res.string.speech_mode_status_ready)
                              else stringResource(Res.string.speech_mode_status_download),
-                statusReady = turboReady,
+                statusReady = genauReady,
                 isSelected = currentMode == MODE_GERMAN_ACCURATE,
                 accentColor = Color(0xFF1565C0),
                 onClick = { selectMode(MODE_GERMAN_ACCURATE) },
@@ -195,61 +189,43 @@ fun ModelSelectionScreen(
             SpeechModeCard(
                 title = stringResource(Res.string.speech_mode_multilingual_title),
                 subtitle = stringResource(Res.string.speech_mode_multilingual_subtitle),
-                statusText = if (multiStandardReady || multiExtendedReady)
-                                 stringResource(Res.string.speech_mode_status_ready)
+                statusText = if (multiExtendedReady) stringResource(Res.string.speech_mode_status_ready)
                              else stringResource(Res.string.speech_mode_status_download),
-                statusReady = multiStandardReady || multiExtendedReady,
-                isSelected = currentMode == MODE_MULTILINGUAL_STANDARD || currentMode == MODE_MULTILINGUAL_EXTENDED,
+                statusReady = multiExtendedReady,
+                isSelected = currentMode == MODE_MULTILINGUAL_EXTENDED,
                 accentColor = Color(0xFF546E7A),
-                onClick = null, // expands sub-options, not a direct selection
-                expandedContent = {
-                    Column(modifier = Modifier.padding(top = 8.dp)) {
-                        SubOptionRow(
-                            label = stringResource(Res.string.speech_mode_multilingual_standard_option),
-                            isSelected = currentMode == MODE_MULTILINGUAL_STANDARD,
-                            isReady = multiStandardReady,
-                            onClick = { selectMode(MODE_MULTILINGUAL_STANDARD) }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        SubOptionRow(
-                            label = stringResource(Res.string.speech_mode_multilingual_extended_option),
-                            isSelected = currentMode == MODE_MULTILINGUAL_EXTENDED,
-                            isReady = multiExtendedReady,
-                            onClick = { selectMode(MODE_MULTILINGUAL_EXTENDED) }
-                        )
-                    }
-                },
+                onClick = { selectMode(MODE_MULTILINGUAL_EXTENDED) },
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
             // ── Model management ──────────────────────────────────────────
-            val anyDeletable = turboReady || multiStandardReady || multiExtendedReady
+            val anyDeletable = schnellReady || genauReady || multiExtendedReady
             if (anyDeletable) {
                 ManageModelsSection(
                     showManageModels = showManageModels,
                     onToggle = { showManageModels = !showManageModels },
-                    turboReady = turboReady,
-                    turboSizeMB = turboSizeMB,
-                    multiStandardReady = multiStandardReady,
-                    multiStandardSizeMB = multiStandardSizeMB,
+                    schnellReady = schnellReady,
+                    schnellSizeMB = schnellSizeMB,
+                    genauReady = genauReady,
+                    genauSizeMB = genauSizeMB,
                     multiExtendedReady = multiExtendedReady,
                     multiExtendedSizeMB = multiExtendedSizeMB,
-                    onDeleteTurbo = {
+                    onDeleteSchnell = {
                         coroutineScope.launch {
                             transcriber.deleteModel("ggml-large-v3-turbo-german-q5_0.bin")
-                            turboReady = false
-                            turboSizeMB = 0L
-                            if (currentMode == MODE_GERMAN_ACCURATE) {
+                            schnellReady = false
+                            schnellSizeMB = 0L
+                            if (currentMode == MODE_GERMAN_QUICK) {
                                 preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
                             }
                         }
                     },
-                    onDeleteMultiStandard = {
+                    onDeleteGenau = {
                         coroutineScope.launch {
-                            transcriber.deleteModel("ggml-base-en.bin")
-                            multiStandardReady = false
-                            multiStandardSizeMB = 0L
-                            if (currentMode == MODE_MULTILINGUAL_STANDARD) {
+                            transcriber.deleteModel("ggml-large-v3-turbo-german.bin")
+                            genauReady = false
+                            genauSizeMB = 0L
+                            if (currentMode == MODE_GERMAN_ACCURATE) {
                                 preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
                             }
                         }
@@ -413,14 +389,14 @@ private fun SubOptionRow(
 private fun ManageModelsSection(
     showManageModels: Boolean,
     onToggle: () -> Unit,
-    turboReady: Boolean,
-    turboSizeMB: Long,
-    multiStandardReady: Boolean,
-    multiStandardSizeMB: Long,
+    schnellReady: Boolean,
+    schnellSizeMB: Long,
+    genauReady: Boolean,
+    genauSizeMB: Long,
     multiExtendedReady: Boolean,
     multiExtendedSizeMB: Long,
-    onDeleteTurbo: () -> Unit,
-    onDeleteMultiStandard: () -> Unit,
+    onDeleteSchnell: () -> Unit,
+    onDeleteGenau: () -> Unit,
     onDeleteMultiExtended: () -> Unit
 ) {
     Column {
@@ -462,27 +438,20 @@ private fun ManageModelsSection(
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Bundled model — cannot delete
-                ModelManagementRow(
-                    name = stringResource(Res.string.model_label_german_quick),
-                    sizeMB = 75L,
-                    isDeletable = false,
-                    onDelete = {}
-                )
-                if (turboReady) {
+                if (schnellReady) {
                     ModelManagementRow(
-                        name = stringResource(Res.string.model_label_german_accurate),
-                        sizeMB = turboSizeMB,
+                        name = stringResource(Res.string.model_label_german_quick),
+                        sizeMB = schnellSizeMB,
                         isDeletable = true,
-                        onDelete = onDeleteTurbo
+                        onDelete = onDeleteSchnell
                     )
                 }
-                if (multiStandardReady) {
+                if (genauReady) {
                     ModelManagementRow(
-                        name = stringResource(Res.string.model_label_multilingual_standard),
-                        sizeMB = multiStandardSizeMB,
+                        name = stringResource(Res.string.model_label_german_accurate),
+                        sizeMB = genauSizeMB,
                         isDeletable = true,
-                        onDelete = onDeleteMultiStandard
+                        onDelete = onDeleteGenau
                     )
                 }
                 if (multiExtendedReady) {
