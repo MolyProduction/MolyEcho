@@ -9,3 +9,12 @@ captures
 local.properties
 xcuserdata
 .kotlin
+
+# Claude Code local configuration
+.claude/
+
+# Loose design/asset source files (not part of the app)
+MolyEcho.png
+ic_launcher_foreground.png
+ic_notification.png
+ic_topbar_logo.png
