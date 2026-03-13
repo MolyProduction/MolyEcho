@@ -1,6 +1,6 @@
 //
 //  SettingScreenController.swift
-//  Notely Voice
+//  MolyEcho
 //
 //  Created by Tosin Onikute on 07/06/2025.
 //  Copyright © 2025 orgName. All rights reserved.

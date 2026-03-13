@@ -68,7 +68,7 @@ interface WhisperCallback{
                 cValue<whisper_full_params> {
                     memcpy(this.ptr, params.ptr, sizeOf<whisper_full_params>().toULong())
 
-                    print_realtime = true
+                    print_realtime = false  // Fix: consistent with Android, avoid stdout noise
                     print_progress = false
                     print_timestamps = false
                     print_special = false
@@ -78,6 +78,10 @@ interface WhisperCallback{
                     offset_ms = 0
                     no_context = true
                     single_segment = false
+                    suppress_nst = true     // suppress non-speech tokens (music, applause, etc.)
+                    temperature = 0.0f      // explicit greedy temperature
+                    temperature_inc = 0.2f  // fallback increment – explicit (same as whisper default)
+                    entropy_thold = 2.8f    // slightly above default (2.4f) to reduce retry frequency
 
                     // Set callbacks with user_data support
                     progress_callback = staticCFunction { ctx: CPointer<whisper_context>?,

@@ -100,6 +100,7 @@ actual class Transcriber{
     ) {
         if (!canTranscribe) {
             debugPrintln{"Model not loaded yet"}
+            onError()
             return
         }
 
