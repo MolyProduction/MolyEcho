@@ -20,8 +20,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.module.notelycompose.modelDownloader.BUNDLED_GERMAN_MODEL_FILENAME
 import com.module.notelycompose.modelDownloader.GERMAN_MODEL
+import com.module.notelycompose.modelDownloader.MULTILINGUAL_EXTENDED_SELECTION
+import com.module.notelycompose.modelDownloader.MULTILINGUAL_STANDARD_SELECTION
 import com.module.notelycompose.modelDownloader.NO_MODEL_SELECTION
 import com.module.notelycompose.modelDownloader.OPTIMIZED_MODEL_SELECTION
 import com.module.notelycompose.modelDownloader.STANDARD_MODEL_SELECTION
@@ -31,26 +32,34 @@ import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.getPlatform
 import com.module.notelycompose.platform.Transcriber
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.delete_model
-import com.module.notelycompose.resources.manage_models
-import com.module.notelycompose.resources.manage_models_desc
-import com.module.notelycompose.resources.model_cannot_delete
-import com.module.notelycompose.resources.model_info_size
-import com.module.notelycompose.resources.speech_mode_german_accurate_subtitle
-import com.module.notelycompose.resources.speech_mode_german_accurate_title
-import com.module.notelycompose.resources.speech_mode_german_quick_subtitle
-import com.module.notelycompose.resources.speech_mode_german_quick_title
-import com.module.notelycompose.resources.speech_mode_multilingual_extended_option
-import com.module.notelycompose.resources.speech_mode_multilingual_standard_option
-import com.module.notelycompose.resources.speech_mode_multilingual_subtitle
-import com.module.notelycompose.resources.speech_mode_multilingual_title
-import com.module.notelycompose.resources.speech_mode_status_download
-import com.module.notelycompose.resources.speech_mode_status_ready
-import com.module.notelycompose.resources.speech_recognition
-import com.module.notelycompose.resources.speech_recognition_desc
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.delete_model
+import de.molyecho.notlyvoice.resources.manage_models
+import de.molyecho.notlyvoice.resources.model_label_german_accurate
+import de.molyecho.notlyvoice.resources.model_label_german_quick
+import de.molyecho.notlyvoice.resources.model_label_multilingual_extended
+import de.molyecho.notlyvoice.resources.model_label_multilingual_standard
+import de.molyecho.notlyvoice.resources.section_label_german
+import de.molyecho.notlyvoice.resources.section_label_multilingual
+import de.molyecho.notlyvoice.resources.manage_models_desc
+import de.molyecho.notlyvoice.resources.model_cannot_delete
+import de.molyecho.notlyvoice.resources.model_info_size
+import de.molyecho.notlyvoice.resources.speech_mode_german_accurate_subtitle
+import de.molyecho.notlyvoice.resources.speech_mode_german_accurate_title
+import de.molyecho.notlyvoice.resources.speech_mode_german_quick_subtitle
+import de.molyecho.notlyvoice.resources.speech_mode_german_quick_title
+import de.molyecho.notlyvoice.resources.speech_mode_multilingual_extended_option
+import de.molyecho.notlyvoice.resources.speech_mode_multilingual_standard_option
+import de.molyecho.notlyvoice.resources.speech_mode_multilingual_subtitle
+import de.molyecho.notlyvoice.resources.speech_mode_multilingual_title
+import de.molyecho.notlyvoice.resources.speech_mode_status_download
+import de.molyecho.notlyvoice.resources.speech_mode_status_ready
+import de.molyecho.notlyvoice.resources.speech_recognition
+import de.molyecho.notlyvoice.resources.speech_recognition_desc
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -72,15 +81,16 @@ fun ModelSelectionScreen(
     preferencesRepository: PreferencesRepository = koinInject(),
     transcriber: Transcriber = koinInject()
 ) {
-    val language by preferencesRepository.getDefaultTranscriptionLanguage().collectAsState("de")
     val modelSelection by preferencesRepository.getModelSelection().collectAsState(NO_MODEL_SELECTION)
     val coroutineScope = rememberCoroutineScope()
 
-    val currentMode = when {
-        language == GERMAN_MODEL && modelSelection == OPTIMIZED_MODEL_SELECTION -> MODE_GERMAN_ACCURATE
-        language == GERMAN_MODEL -> MODE_GERMAN_QUICK
-        modelSelection == OPTIMIZED_MODEL_SELECTION -> MODE_MULTILINGUAL_EXTENDED
-        else -> MODE_MULTILINGUAL_STANDARD
+    // currentMode is derived solely from modelSelection — decoupled from the transcription
+    // language so that multilingual models can also produce German output.
+    val currentMode = when (modelSelection) {
+        OPTIMIZED_MODEL_SELECTION       -> MODE_GERMAN_ACCURATE
+        MULTILINGUAL_STANDARD_SELECTION -> MODE_MULTILINGUAL_STANDARD
+        MULTILINGUAL_EXTENDED_SELECTION -> MODE_MULTILINGUAL_EXTENDED
+        else                            -> MODE_GERMAN_QUICK
     }
 
     var turboReady by remember { mutableStateOf(false) }
@@ -90,38 +100,36 @@ fun ModelSelectionScreen(
     var multiStandardSizeMB by remember { mutableStateOf(0L) }
     var multiExtendedSizeMB by remember { mutableStateOf(0L) }
     var showManageModels by remember { mutableStateOf(false) }
+    var isNavigating by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        turboReady = transcriber.doesModelExists("ggml-large-v3-turbo-german.bin")
-        multiStandardReady = transcriber.doesModelExists("ggml-base-en.bin")
-        multiExtendedReady = transcriber.doesModelExists("ggml-small.bin")
-        turboSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german.bin") / 1024 / 1024
-        multiStandardSizeMB = transcriber.getModelFileSizeBytes("ggml-base-en.bin") / 1024 / 1024
-        multiExtendedSizeMB = transcriber.getModelFileSizeBytes("ggml-small.bin") / 1024 / 1024
+        withContext(Dispatchers.IO) {
+            turboReady = transcriber.doesModelExists("ggml-large-v3-turbo-german-q5_0.bin")
+            multiStandardReady = transcriber.doesModelExists("ggml-base-en.bin")
+            multiExtendedReady = transcriber.doesModelExists("ggml-small.bin")
+            turboSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german-q5_0.bin") / 1024 / 1024
+            multiStandardSizeMB = transcriber.getModelFileSizeBytes("ggml-base-en.bin") / 1024 / 1024
+            multiExtendedSizeMB = transcriber.getModelFileSizeBytes("ggml-small.bin") / 1024 / 1024
+        }
     }
 
     fun selectMode(mode: Int) {
+        if (isNavigating) return
+        isNavigating = true
         coroutineScope.launch {
+            // Model selection and transcription language are decoupled.
+            // The language pref stays "de" for all modes — multilingual Whisper models
+            // support German transcription when given language="de".
+            // Only the modelSelection value determines which model file is loaded.
             when (mode) {
-                MODE_GERMAN_QUICK -> {
-                    preferencesRepository.setDefaultTranscriptionLanguage(GERMAN_MODEL)
-                    preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
-                }
-                MODE_GERMAN_ACCURATE -> {
-                    preferencesRepository.setDefaultTranscriptionLanguage(GERMAN_MODEL)
-                    preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
-                }
-                MODE_MULTILINGUAL_STANDARD -> {
-                    preferencesRepository.setDefaultTranscriptionLanguage("en")
-                    preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
-                }
-                MODE_MULTILINGUAL_EXTENDED -> {
-                    preferencesRepository.setDefaultTranscriptionLanguage("en")
-                    preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
-                }
+                MODE_GERMAN_QUICK       -> preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
+                MODE_GERMAN_ACCURATE    -> preferencesRepository.setModelSelection(OPTIMIZED_MODEL_SELECTION)
+                MODE_MULTILINGUAL_STANDARD -> preferencesRepository.setModelSelection(MULTILINGUAL_STANDARD_SELECTION)
+                MODE_MULTILINGUAL_EXTENDED -> preferencesRepository.setModelSelection(MULTILINGUAL_EXTENDED_SELECTION)
             }
+            // Navigate only after the preference is fully saved to DataStore.
+            navigateBack()
         }
-        navigateBack()
     }
 
     Column(
@@ -156,7 +164,7 @@ fun ModelSelectionScreen(
             )
 
             // ── German models section ──────────────────────────────────────
-            SectionLabel(text = "🇩🇪 Deutsch")
+            SectionLabel(text = stringResource(Res.string.section_label_german))
 
             SpeechModeCard(
                 title = stringResource(Res.string.speech_mode_german_quick_title),
@@ -182,7 +190,7 @@ fun ModelSelectionScreen(
             )
 
             // ── Multilingual section ───────────────────────────────────────
-            SectionLabel(text = "🌐 Mehrsprachig")
+            SectionLabel(text = stringResource(Res.string.section_label_multilingual))
 
             SpeechModeCard(
                 title = stringResource(Res.string.speech_mode_multilingual_title),
@@ -228,7 +236,7 @@ fun ModelSelectionScreen(
                     multiExtendedSizeMB = multiExtendedSizeMB,
                     onDeleteTurbo = {
                         coroutineScope.launch {
-                            transcriber.deleteModel("ggml-large-v3-turbo-german.bin")
+                            transcriber.deleteModel("ggml-large-v3-turbo-german-q5_0.bin")
                             turboReady = false
                             turboSizeMB = 0L
                             if (currentMode == MODE_GERMAN_ACCURATE) {
@@ -242,7 +250,6 @@ fun ModelSelectionScreen(
                             multiStandardReady = false
                             multiStandardSizeMB = 0L
                             if (currentMode == MODE_MULTILINGUAL_STANDARD) {
-                                preferencesRepository.setDefaultTranscriptionLanguage(GERMAN_MODEL)
                                 preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
                             }
                         }
@@ -253,7 +260,6 @@ fun ModelSelectionScreen(
                             multiExtendedReady = false
                             multiExtendedSizeMB = 0L
                             if (currentMode == MODE_MULTILINGUAL_EXTENDED) {
-                                preferencesRepository.setDefaultTranscriptionLanguage(GERMAN_MODEL)
                                 preferencesRepository.setModelSelection(STANDARD_MODEL_SELECTION)
                             }
                         }
@@ -287,17 +293,12 @@ private fun SpeechModeCard(
     expandedContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val isExpandable = onClick == null && expandedContent != null
-    val isExpanded = isSelected || isExpandable
-
     Card(
         modifier = modifier
             .fillMaxWidth()
             .then(
                 if (onClick != null) {
                     Modifier.selectable(selected = isSelected, onClick = onClick, role = Role.RadioButton)
-                } else if (isExpandable && expandedContent != null) {
-                    Modifier.clickable { /* expand handled by parent state */ }
                 } else Modifier
             ),
         shape = RoundedCornerShape(12.dp),
@@ -463,14 +464,14 @@ private fun ManageModelsSection(
             ) {
                 // Bundled model — cannot delete
                 ModelManagementRow(
-                    name = "🇩🇪 Deutsch – Schnell",
+                    name = stringResource(Res.string.model_label_german_quick),
                     sizeMB = 75L,
                     isDeletable = false,
                     onDelete = {}
                 )
                 if (turboReady) {
                     ModelManagementRow(
-                        name = "🇩🇪 Deutsch – Genau",
+                        name = stringResource(Res.string.model_label_german_accurate),
                         sizeMB = turboSizeMB,
                         isDeletable = true,
                         onDelete = onDeleteTurbo
@@ -478,7 +479,7 @@ private fun ManageModelsSection(
                 }
                 if (multiStandardReady) {
                     ModelManagementRow(
-                        name = "🌐 Mehrsprachig Standard",
+                        name = stringResource(Res.string.model_label_multilingual_standard),
                         sizeMB = multiStandardSizeMB,
                         isDeletable = true,
                         onDelete = onDeleteMultiStandard
@@ -486,7 +487,7 @@ private fun ManageModelsSection(
                 }
                 if (multiExtendedReady) {
                     ModelManagementRow(
-                        name = "🌐 Mehrsprachig Erweitert",
+                        name = stringResource(Res.string.model_label_multilingual_extended),
                         sizeMB = multiExtendedSizeMB,
                         isDeletable = true,
                         onDelete = onDeleteMultiExtended

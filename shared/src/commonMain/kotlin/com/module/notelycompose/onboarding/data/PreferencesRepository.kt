@@ -26,7 +26,6 @@ class PreferencesRepository(
         private val KEY_MODEL_DOWNLOAD_ID = longPreferencesKey("model_download_id")
         private val KEY_BODY_TEXT_SIZE = floatPreferencesKey("body_text_size")
         private val KEY_MODEL_SELECTION = intPreferencesKey("model_selection")
-        private val KEY_BUNDLED_MODEL_EXTRACTED = booleanPreferencesKey("bundled_model_extracted")
     }
 
     suspend fun hasCompletedOnboarding(): Boolean {
@@ -91,14 +90,6 @@ class PreferencesRepository(
         }
     }
 
-    fun isBundledModelExtracted(): Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[KEY_BUNDLED_MODEL_EXTRACTED] ?: false
-    }
-
-    suspend fun setBundledModelExtracted(extracted: Boolean) {
-        dataStore.edit { prefs ->
-            prefs[KEY_BUNDLED_MODEL_EXTRACTED] = extracted
-        }
-    }
 }
+
 
