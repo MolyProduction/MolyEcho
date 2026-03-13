@@ -26,34 +26,35 @@ import com.module.notelycompose.notes.ui.theme.PoppingsFontFamily
 import com.module.notelycompose.platform.presentation.PlatformUiState
 import com.module.notelycompose.platform.presentation.PlatformViewModel
 import kotlinx.coroutines.launch
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.onboarding_ios_one
-import com.module.notelycompose.resources.onboarding_ios_three
-import com.module.notelycompose.resources.onboarding_ios_two
-import com.module.notelycompose.resources.onboarding_ios_four
-import com.module.notelycompose.resources.onboarding_android_one
-import com.module.notelycompose.resources.onboarding_android_tablet_one
-import com.module.notelycompose.resources.onboarding_android_tablet_two
-import com.module.notelycompose.resources.onboarding_android_tablet_three
-import com.module.notelycompose.resources.onboarding_android_tablet_four
-import com.module.notelycompose.resources.onboarding_ios_tablet_one
-import com.module.notelycompose.resources.onboarding_ios_tablet_two
-import com.module.notelycompose.resources.onboarding_ios_tablet_three
-import com.module.notelycompose.resources.onboarding_ios_tablet_four
-import com.module.notelycompose.resources.onboarding_android_three
-import com.module.notelycompose.resources.onboarding_android_four
-import com.module.notelycompose.resources.onboarding_android_two
-import com.module.notelycompose.resources.onboarding_get_started
-import com.module.notelycompose.resources.onboarding_next
-import com.module.notelycompose.resources.onboarding_skip
-import com.module.notelycompose.resources.onboarding_screen_one_title
-import com.module.notelycompose.resources.onboarding_screen_one_desc
-import com.module.notelycompose.resources.onboarding_screen_two_title
-import com.module.notelycompose.resources.onboarding_screen_two_desc
-import com.module.notelycompose.resources.onboarding_screen_three_title
-import com.module.notelycompose.resources.onboarding_screen_three_desc
-import com.module.notelycompose.resources.onboarding_screen_four_title
-import com.module.notelycompose.resources.onboarding_screen_four_desc
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.onboarding_ios_one
+import de.molyecho.notlyvoice.resources.onboarding_ios_three
+import de.molyecho.notlyvoice.resources.onboarding_ios_two
+import de.molyecho.notlyvoice.resources.onboarding_ios_four
+import de.molyecho.notlyvoice.resources.onboarding_android_one
+import de.molyecho.notlyvoice.resources.onboarding_android_tablet_one
+import de.molyecho.notlyvoice.resources.onboarding_android_tablet_two
+import de.molyecho.notlyvoice.resources.onboarding_android_tablet_three
+import de.molyecho.notlyvoice.resources.onboarding_android_tablet_four
+import de.molyecho.notlyvoice.resources.onboarding_ios_tablet_one
+import de.molyecho.notlyvoice.resources.onboarding_ios_tablet_two
+import de.molyecho.notlyvoice.resources.onboarding_ios_tablet_three
+import de.molyecho.notlyvoice.resources.onboarding_ios_tablet_four
+import de.molyecho.notlyvoice.resources.onboarding_android_three
+import de.molyecho.notlyvoice.resources.molyecho_logo
+import de.molyecho.notlyvoice.resources.onboarding_android_four
+import de.molyecho.notlyvoice.resources.onboarding_android_two
+import de.molyecho.notlyvoice.resources.onboarding_get_started
+import de.molyecho.notlyvoice.resources.onboarding_next
+import de.molyecho.notlyvoice.resources.onboarding_skip
+import de.molyecho.notlyvoice.resources.onboarding_screen_one_title
+import de.molyecho.notlyvoice.resources.onboarding_screen_one_desc
+import de.molyecho.notlyvoice.resources.onboarding_screen_two_title
+import de.molyecho.notlyvoice.resources.onboarding_screen_two_desc
+import de.molyecho.notlyvoice.resources.onboarding_screen_three_title
+import de.molyecho.notlyvoice.resources.onboarding_screen_three_desc
+import de.molyecho.notlyvoice.resources.onboarding_screen_four_title
+import de.molyecho.notlyvoice.resources.onboarding_screen_four_desc
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -155,7 +156,8 @@ fun OnboardingWalkthrough(
                     onClick = onFinish,
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = Color.Black
-                    )
+                    ),
+                    shape = RoundedCornerShape(50)
                 ) {
                     Text(
                         text = stringResource(Res.string.onboarding_skip),
@@ -173,11 +175,15 @@ fun OnboardingWalkthrough(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(0.dp)
             ) { page ->
-                OnboardingPageContent(
-                    page = pages[page],
-                    isTablet = platformState.isTablet,
-                    isAndroid = platformState.isAndroid
-                )
+                if (page == 0) {
+                    MolyEchoWelcomePage(textColor = pages[0].textColor)
+                } else {
+                    OnboardingPageContent(
+                        page = pages[page],
+                        isTablet = platformState.isTablet,
+                        isAndroid = platformState.isAndroid
+                    )
+                }
             }
 
             // Bottom Navigation Row
@@ -210,7 +216,7 @@ fun OnboardingWalkthrough(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = pages[pagerState.currentPage].textColor
                     ),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(50),
                     contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp)
                 ) {
                     Text(
@@ -224,6 +230,33 @@ fun OnboardingWalkthrough(
 
             Spacer(modifier = Modifier.height(28.dp))
         }
+    }
+}
+
+@Composable
+fun MolyEchoWelcomePage(textColor: Color) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.molyecho_logo),
+            contentDescription = "MolyEcho Logo",
+            modifier = Modifier.size(200.dp),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(36.dp))
+        Text(
+            text = "MolyEcho",
+            fontSize = 44.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = PoppingsFontFamily(),
+            color = textColor,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

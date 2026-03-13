@@ -16,16 +16,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// UI-Anpassung: Wärmere Akzente (Erdtöne / warmes Grün / gedämpftes Gold)
+// Light – primary:          #6200EE → #5C6B35 (Olive-Grün)
+// Light – primaryVariant:   #3700B3 → #3D4A22 (Dunkel-Olive)
+// Light – secondary:        #03DAC5 → #7A6835 (gedämpftes Gold-Braun)
+// Dark  – primary:          #BB86FC → #A5C47A (Salbei-Grün)
+// Dark  – primaryVariant:   #3700B3 → #3D4A22 (Dunkel-Olive)
+// Dark  – secondary:        #03DAC5 → #C9A95C (warmes Gold)
 private val LightColorPalette = lightColors(
-    primary = Color(0xFF6200EE),
-    primaryVariant = Color(0xFF3700B3),
-    secondary = Color(0xFF03DAC5)
+    primary = Color(0xFF5C6B35),
+    primaryVariant = Color(0xFF3D4A22),
+    secondary = Color(0xFF7A6835)
 )
 
 private val DarkColorPalette = darkColors(
-    primary = Color(0xFFBB86FC),
-    primaryVariant = Color(0xFF3700B3),
-    secondary = Color(0xFF03DAC5)
+    primary = Color(0xFFA5C47A),
+    primaryVariant = Color(0xFF3D4A22),
+    secondary = Color(0xFFC9A95C)
 )
 
 @Composable

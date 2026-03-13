@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.poppins_bold
-import com.module.notelycompose.resources.poppins_regular
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.poppins_bold
+import de.molyecho.notlyvoice.resources.poppins_regular
 
 @Composable
 fun PoppingsFontFamily() = FontFamily(

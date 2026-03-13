@@ -3,13 +3,16 @@ package com.module.notelycompose.notes.ui.theme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.compositionLocalOf
 
+// UI-Anpassung: Wärmere Akzente
+// Dark – sortAscendingIconColor: #8514CB → #5E8040 (warmes Wald-Grün)
+// Dark – bottomBarIconColor:     #8514CB → #5E8040
 val DarkCustomColors = CustomColors(
-    sortAscendingIconColor = Color(0xFF8514CB),
+    sortAscendingIconColor = Color(0xFF5E8040),
     backgroundViewColor = Color.Black, // // Color(0xFF181818),
     dateContentColorViewColor = Color.White,
     dateContentIconColor = Color(0xFFCCCCCC),
     bottomBarBackgroundColor = Color.White,
-    bottomBarIconColor = Color(0xFF8514CB),
+    bottomBarIconColor = Color(0xFF5E8040),
     noteListBackgroundColor = Color(0xFFEEEEEE),
     bodyBackgroundColor = Color.Black,  // Color(0xFF181818),
     onBodyColor = Color(0xFFF5F5F5),
@@ -51,8 +54,11 @@ val DarkCustomColors = CustomColors(
     modelSelectionBgColor = Color.Black
 )
 
+// UI-Anpassung: Wärmere Akzente
+// Light – sortAscendingIconColor: #A260CC → #7A9A50 (sanftes Olive-Grün)
+// Light – bottomBarIconColor:     Color.White (unverändert)
 val LightCustomColors = CustomColors(
-    sortAscendingIconColor = Color(0xFFA260CC),
+    sortAscendingIconColor = Color(0xFF7A9A50),
     backgroundViewColor = Color(0xFFFFFFFF),
     dateContentColorViewColor = Color.Black,
     dateContentIconColor = Color(0xFF1E1E24),
