@@ -8,6 +8,7 @@ import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Transcriber
 import com.module.notelycompose.summary.Text2Summary
 import com.module.notelycompose.transcription.textAnalysis.getSegmenter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -145,5 +146,9 @@ class TranscriptionViewModel(
 
     override fun onCleared() {
         stopRecognizer()
+        // viewModelScope is already cancelled at this point — use a fresh scope for cleanup
+        CoroutineScope(Dispatchers.IO).launch {
+            transcriber.finish()
+        }
     }
 }
