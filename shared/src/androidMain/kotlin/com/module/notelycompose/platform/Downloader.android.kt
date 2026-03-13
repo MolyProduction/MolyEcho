@@ -81,9 +81,9 @@ actual class Downloader(
 
         registerDownloadReceiver(downloadId, onSuccess, onFailed)
         val downloadManager = mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            while (true) {
-                val query = DownloadManager.Query().setFilterById(downloadId)
-                val cursor: Cursor = downloadManager.query(query)
+        while (true) {
+            val query = DownloadManager.Query().setFilterById(downloadId)
+            val shouldBreak = downloadManager.query(query).use { cursor ->
                 if (cursor.moveToFirst()) {
                     val bytesDownloaded =
                         cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
@@ -92,27 +92,19 @@ actual class Downloader(
 
                     if (bytesTotal > 0) {
                         val progress = (bytesDownloaded * 100L / bytesTotal).toInt()
-
-                        // Convert to MB
-                        val downloadedMB =
-                            String.format("%.2f MB", bytesDownloaded / 1024.0 / 1024.0)
+                        val downloadedMB = String.format("%.2f MB", bytesDownloaded / 1024.0 / 1024.0)
                         val totalMB = String.format("%.2f MB", bytesTotal / 1024.0 / 1024.0)
-
                         onProgressUpdated(progress, downloadedMB, totalMB)
                     }
 
-                    val status =
-                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                    cursor.close()
-
-                    if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
-                        break
-                    }
+                    val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                    status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED
                 } else {
-                    cursor.close()
-                    break
+                    true // Cursor leer → abbrechen
                 }
-                delay(1000)
+            }
+            if (shouldBreak) break
+            delay(1000)
         }
     }
 
@@ -134,28 +126,25 @@ actual class Downloader(
                             val downloadManager =
                                 context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                             val query = DownloadManager.Query().setFilterById(downloadId)
-                            val cursor = downloadManager.query(query)
-
-                            if (cursor.moveToFirst()) {
-                                val status =
-                                    cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                                if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                    // Get the downloaded file URI
-                                    val uriString = cursor.getString(
-                                        cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI)
-                                    )
-                                    val uri = uriString.toUri()
-                                    debugPrintln {"Download complete: $uri"}
-                                    onSuccess()
-                                } else {
-                                    // Handle failed download
-                                    val reason =
-                                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
-                                    debugPrintln{"Download failed: $reason"}
-                                    onFailed(getErrorTextFromReason(reason))
+                            downloadManager.query(query).use { cursor ->
+                                if (cursor.moveToFirst()) {
+                                    val status =
+                                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                        val uriString = cursor.getString(
+                                            cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI)
+                                        )
+                                        val uri = uriString.toUri()
+                                        debugPrintln {"Download complete: $uri"}
+                                        onSuccess()
+                                    } else {
+                                        val reason =
+                                            cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
+                                        debugPrintln {"Download failed: $reason"}
+                                        onFailed(getErrorTextFromReason(reason))
+                                    }
                                 }
                             }
-                            cursor.close()
                         }
 
                         DownloadManager.ACTION_NOTIFICATION_CLICKED -> {
