@@ -139,6 +139,37 @@ Line 241 auto-sets `OPTIMIZED_MODEL_SELECTION` when the user selects Farsi. Afte
 
 ---
 
+### 8. Remove small multilingual model (`ggml-base-en.bin`, 142 MB)
+
+The multilingual standard option is removed entirely. Only `ggml-small.bin` (465 MB) remains as the multilingual model.
+
+**`ModelSelection.kt`:**
+- Remove `ggml-base-en.bin` entry from `models[]`.
+- `MULTILINGUAL_STANDARD_SELECTION (2)` constant stays (for migration of existing users) but its `getSelectedModel()` branch remaps to `ggml-small.bin`.
+- Final model array (combined with §1 changes): `[0:ggml-small.bin, 1:ggml-base-hi.bin, 2:q5_0, 3:cstr]`
+
+**`ModelSelectionScreen.kt`:**
+- Remove `multiStandardReady`, `multiStandardSizeMB` state variables and `LaunchedEffect` checks.
+- `currentMode` derivation: `MULTILINGUAL_STANDARD_SELECTION -> MODE_MULTILINGUAL_EXTENDED` (migration fallback).
+- `selectMode`: remove `MODE_MULTILINGUAL_STANDARD` case (was `setModelSelection(MULTILINGUAL_STANDARD_SELECTION)`); multilingual card now calls `selectMode(MODE_MULTILINGUAL_EXTENDED)` directly.
+- Multilingual `SpeechModeCard`: change `onClick = null` → `onClick = { selectMode(MODE_MULTILINGUAL_EXTENDED) }`, remove `expandedContent` lambda (no sub-options).
+- Card `statusReady = multiExtendedReady`, `isSelected = currentMode == MODE_MULTILINGUAL_EXTENDED`.
+- Remove `multiStandard*` params from `ManageModelsSection` call and its function signature.
+- Remove the `onDeleteMultiStandard` callback and its `if (multiStandardReady)` row inside the section.
+- `anyDeletable = schnellReady || genauReady || multiExtendedReady`.
+- Remove unused imports: `speech_mode_multilingual_standard_option`, `model_label_multilingual_standard`, `MULTILINGUAL_STANDARD_SELECTION` (if no longer referenced in this file).
+
+**`SettingsScreen.kt`:**
+- `MULTILINGUAL_STANDARD_SELECTION` `when` branch for `currentTitle` → remap to `model_label_multilingual_extended`.
+- `MULTILINGUAL_STANDARD_SELECTION` `when` branch for `currentDesc` → remap to `optimized_model_setting_desc`.
+- Keep import of `MULTILINGUAL_STANDARD_SELECTION` (still used in the `when` branches for migration).
+
+**String resources (orphaned — leave in place):**
+- `speech_mode_multilingual_standard_option` — no longer shown in UI.
+- `model_label_multilingual_standard` — still referenced in `SettingsScreen.kt` `when` branch (keep).
+
+---
+
 ## What Does NOT Change
 
 - `TranscriptionViewModel`, `DownloaderDialog`, `ModelDownloaderViewModel` — no code changes.
