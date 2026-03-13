@@ -5,9 +5,10 @@ import java.io.BufferedReader
 import java.io.FileReader
 
 object WhisperCpuConfig {
-    val preferredThreadCount: Int
-        // Always use at least 2 threads:
-        get() = CpuInfo.getHighPerfCpuCount().coerceAtLeast(2)
+    // Cache the thread count – CPU topology doesn't change at runtime.
+    val preferredThreadCount: Int by lazy {
+        CpuInfo.getHighPerfCpuCount().coerceAtLeast(2)
+    }
 }
 
 private class CpuInfo(private val lines: List<String>) {
