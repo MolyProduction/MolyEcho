@@ -5,16 +5,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.confirmation
-import com.module.notelycompose.resources.recording_replace_continue
-import com.module.notelycompose.resources.confirmation_cancel
-import com.module.notelycompose.resources.recording_replace_error
-import com.module.notelycompose.resources.recording_import_error
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.confirmation
+import de.molyecho.notlyvoice.resources.recording_replace_continue
+import de.molyecho.notlyvoice.resources.confirmation_cancel
+import de.molyecho.notlyvoice.resources.recording_replace_error
+import de.molyecho.notlyvoice.resources.recording_import_error
 import org.jetbrains.compose.resources.stringResource
 
 sealed class RecordingConfirmationUiModel {
@@ -59,7 +60,7 @@ fun ReplaceRecordingConfirmationDialog(
                         containerColor = Color(0xFF38761D),
                         contentColor = LocalCustomColors.current.bodyContentColor
                     ),
-                    shape = RectangleShape
+                    shape = RoundedCornerShape(50)
                 ) {
                     Text(
                         text = stringResource(Res.string.recording_replace_continue),
@@ -70,7 +71,7 @@ fun ReplaceRecordingConfirmationDialog(
             dismissButton = {
                 TextButton(
                     onClick = onDismiss,
-                    shape = RectangleShape
+                    shape = RoundedCornerShape(50)
                 ) {
                     Text(
                         text = stringResource(Res.string.confirmation_cancel),

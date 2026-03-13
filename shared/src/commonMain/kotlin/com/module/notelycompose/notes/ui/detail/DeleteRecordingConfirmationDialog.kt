@@ -5,14 +5,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.confirmation
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.recording_confirmation_text
-import com.module.notelycompose.resources.confirmation_delete
-import com.module.notelycompose.resources.confirmation_cancel
+import de.molyecho.notlyvoice.resources.confirmation
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.recording_confirmation_text
+import de.molyecho.notlyvoice.resources.confirmation_delete
+import de.molyecho.notlyvoice.resources.confirmation_cancel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -45,7 +46,8 @@ fun DeleteRecordingConfirmationDialog(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFC23636),
                         contentColor = LocalCustomColors.current.bodyContentColor
-                    )
+                    ),
+                    shape = RoundedCornerShape(50)
                 ) {
                     Text(
                         text = stringResource(Res.string.confirmation_delete),
@@ -55,7 +57,8 @@ fun DeleteRecordingConfirmationDialog(
             },
             dismissButton = {
                 TextButton(
-                    onClick = onDismiss
+                    onClick = onDismiss,
+                    shape = RoundedCornerShape(50)
                 ) {
                     Text(
                         text = stringResource(Res.string.confirmation_cancel),

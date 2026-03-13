@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.copied
-import com.module.notelycompose.resources.search_bar_search_description
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.copied
+import de.molyecho.notlyvoice.resources.search_bar_search_description
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

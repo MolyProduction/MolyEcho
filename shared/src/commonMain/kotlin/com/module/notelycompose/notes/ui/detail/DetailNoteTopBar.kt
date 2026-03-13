@@ -28,20 +28,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.module.notelycompose.notes.ui.common.TopBarLogo
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.getPlatform
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.cancel
-import com.module.notelycompose.resources.copy
-import com.module.notelycompose.resources.ic_cancel_all
-import com.module.notelycompose.resources.ic_copy
-import com.module.notelycompose.resources.top_bar_back
-import com.module.notelycompose.resources.top_bar_export_audio_folder
-import com.module.notelycompose.resources.top_bar_import_audio
-import com.module.notelycompose.resources.top_bar_my_note
-import com.module.notelycompose.resources.top_bar_export_as_txt
-import com.module.notelycompose.resources.top_bar_export_as_pdf
-import com.module.notelycompose.resources.top_bar_import_video
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.cancel
+import de.molyecho.notlyvoice.resources.copy
+import de.molyecho.notlyvoice.resources.ic_cancel_all
+import de.molyecho.notlyvoice.resources.ic_copy
+import de.molyecho.notlyvoice.resources.top_bar_back
+import de.molyecho.notlyvoice.resources.top_bar_export_audio_folder
+import de.molyecho.notlyvoice.resources.top_bar_import_audio
+import de.molyecho.notlyvoice.resources.top_bar_my_note
+import de.molyecho.notlyvoice.resources.top_bar_export_as_txt
+import de.molyecho.notlyvoice.resources.top_bar_export_as_pdf
+import de.molyecho.notlyvoice.resources.top_bar_import_video
 import com.module.notelycompose.resources.vectors.IcChevronLeft
 import com.module.notelycompose.resources.vectors.Images
 import org.jetbrains.compose.resources.painterResource
@@ -148,7 +149,13 @@ fun DetailAndroidNoteTopBar(
     elevation: Dp = AppBarDefaults.TopAppBarElevation
 ) {
     TopAppBar(
-        title = { Text(title) },
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TopBarLogo(size = 28.dp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(title)
+            }
+        },
         navigationIcon = {
             IconButton(onClick = { onNavigateBack() }) {
                 Icon(
@@ -202,16 +209,14 @@ fun DetailIOSNoteTopBar(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
-                    onNavigateBack()
-                }
+                modifier = Modifier.clickable { onNavigateBack() }
             ) {
                 Icon(
                     imageVector = Images.Icons.IcChevronLeft,
                     contentDescription = stringResource(Res.string.top_bar_back),
                     modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(Res.string.top_bar_back),
                     style = MaterialTheme.typography.body1,

@@ -21,9 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.format_bar_text
-import com.module.notelycompose.resources.format_bar_close
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.format_bar_text
+import de.molyecho.notlyvoice.resources.format_bar_close
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

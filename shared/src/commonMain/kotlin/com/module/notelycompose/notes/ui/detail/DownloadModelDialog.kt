@@ -15,19 +15,19 @@ import androidx.compose.ui.unit.dp
 import com.module.notelycompose.modelDownloader.GERMAN_MODEL
 import com.module.notelycompose.modelDownloader.HINDI_MODEL
 import org.jetbrains.compose.resources.stringResource
-import com.module.notelycompose.resources.Res
-import com.module.notelycompose.resources.download_required
-import com.module.notelycompose.resources.download_required_for_hindi
-import com.module.notelycompose.resources.download_required_for_german
-import com.module.notelycompose.resources.for_accurate_transcription
-import com.module.notelycompose.resources.take_few_minutes
-import com.module.notelycompose.resources.download
-import com.module.notelycompose.resources.cancel
+import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.download_required
+import de.molyecho.notlyvoice.resources.download_required_for_hindi
+import de.molyecho.notlyvoice.resources.download_required_for_german
+import de.molyecho.notlyvoice.resources.for_accurate_transcription
+import de.molyecho.notlyvoice.resources.take_few_minutes
+import de.molyecho.notlyvoice.resources.download
+import de.molyecho.notlyvoice.resources.cancel
 import com.module.notelycompose.modelDownloader.TranscriptionModel
-import com.module.notelycompose.resources.file_size_approx
-import com.module.notelycompose.resources.file_model_english
-import com.module.notelycompose.resources.file_model_hindi
-import com.module.notelycompose.resources.file_model_german_turbo
+import de.molyecho.notlyvoice.resources.file_size_approx
+import de.molyecho.notlyvoice.resources.file_model_english
+import de.molyecho.notlyvoice.resources.file_model_hindi
+import de.molyecho.notlyvoice.resources.file_model_german_turbo
 
 @Composable
 fun DownloadModelDialog(
