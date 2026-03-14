@@ -38,7 +38,7 @@ Beim ersten Start wählt ihr ein Modell aus – es wird einmalig heruntergeladen
 | **Deutsch – Genau** | ggml-large-v3-turbo-german | ~1,62 GB | Lange Texte, hohe Genauigkeit |
 | **Mehrsprachig** | ggml-small (multilingual) | ~465 MB | 50+ Sprachen |
 
-Die deutschen Modelle wurden von der Community auf HuggingFace feingetunt und sind speziell für deutsche Spracherkennung optimiert – deutlich besser als generische Multilingual-Modelle.
+> **Hinweis zum Standardmodell:** Das Modell *Deutsch – Schnell* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht. Mit ~574 MB ist es aktuell die genaueste deutsche Whisper-Variante unter 1,4 GB – präzise genug für den Alltag, kompakt genug für jedes Smartphone.
 
 ---
 
@@ -76,7 +76,7 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 ## Credits
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
-- **Deutsches Turbo-Modell (Schnell)** – [F1sk/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/F1sk/whisper-large-v3-turbo-german-ggml-q5_0)
+- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [F1sk/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/F1sk/whisper-large-v3-turbo-german-ggml-q5_0)
 - **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
