@@ -86,7 +86,8 @@ class TranscriptionViewModel(
                         debugPrintln{"\n completed ========================= "}
                         _uiState.update {current ->
                             current.copy(
-                                inTranscription = false
+                                inTranscription = false,
+                                progress = 100
                             )
                         }
                     },
@@ -128,7 +129,8 @@ class TranscriptionViewModel(
                 originalText = "",
                 finalText = "",
                 partialText = "",
-                summarizedText = ""
+                summarizedText = "",
+                progress = 0
             )
         }
         viewModelScope.launch {

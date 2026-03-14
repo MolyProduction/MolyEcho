@@ -5,17 +5,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
-import android.database.Cursor
 import android.os.Environment
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -79,8 +75,9 @@ actual class Downloader(
         val downloadId = preferencesRepository.getModelDownloadId().first()
         if (downloadId == -1L) return
 
-        registerDownloadReceiver(downloadId, onSuccess, onFailed)
+        registerDownloadReceiver(downloadId)
         val downloadManager = mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        var finalStatus = -1
         while (true) {
             val query = DownloadManager.Query().setFilterById(downloadId)
             val shouldBreak = downloadManager.query(query).use { cursor ->
@@ -98,7 +95,12 @@ actual class Downloader(
                     }
 
                     val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                    status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED
+                    if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
+                        finalStatus = status
+                        true
+                    } else {
+                        false
+                    }
                 } else {
                     true // Cursor leer → abbrechen
                 }
@@ -106,54 +108,37 @@ actual class Downloader(
             if (shouldBreak) break
             delay(1000)
         }
+
+        // Resolve outcome directly from polling result — no BroadcastReceiver race
+        coroutineScope.launch {
+            preferencesRepository.setModelDownloadId(-1)
+        }
+        when (finalStatus) {
+            DownloadManager.STATUS_SUCCESSFUL -> onSuccess()
+            DownloadManager.STATUS_FAILED -> {
+                val reason = downloadManager.query(DownloadManager.Query().setFilterById(downloadId)).use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
+                    } else DownloadManager.ERROR_UNKNOWN
+                }
+                onFailed(getErrorTextFromReason(reason))
+            }
+        }
     }
 
-    private fun registerDownloadReceiver(downloadId: Long, onSuccess: () -> Unit, onFailed: (String) -> Unit) {
-        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE).apply {
-            addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED)
-        }
+    private fun registerDownloadReceiver(downloadId: Long) {
+        val filter = IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED)
 
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 if (id == downloadId) {
                     when (intent.action) {
-                        DownloadManager.ACTION_DOWNLOAD_COMPLETE -> {
-                            coroutineScope.launch {
-                                preferencesRepository.setModelDownloadId(-1)
-                            }
-                            // Download completed
-                            val downloadManager =
-                                context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                            val query = DownloadManager.Query().setFilterById(downloadId)
-                            downloadManager.query(query).use { cursor ->
-                                if (cursor.moveToFirst()) {
-                                    val status =
-                                        cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                        val uriString = cursor.getString(
-                                            cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI)
-                                        )
-                                        val uri = uriString.toUri()
-                                        debugPrintln {"Download complete: $uri"}
-                                        onSuccess()
-                                    } else {
-                                        val reason =
-                                            cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
-                                        debugPrintln {"Download failed: $reason"}
-                                        onFailed(getErrorTextFromReason(reason))
-                                    }
-                                }
-                            }
-                        }
-
                         DownloadManager.ACTION_NOTIFICATION_CLICKED -> {
-                            // User clicked on download notification
                             debugPrintln{"Opening downloads..."}
                         }
                     }
                     mainContext.unregisterReceiver(this)
-                    coroutineScope.cancel()
                 }
             }
         }
@@ -162,7 +147,7 @@ actual class Downloader(
             mainContext,
             receiver,
             filter,
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
     }
 

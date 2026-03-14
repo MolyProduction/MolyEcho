@@ -118,12 +118,12 @@ fun TranscriptionScreen(
                         style = TextStyle(fontSize = editorState.bodyTextSize.sp)
                     )
                 }
-                if(transcriptionUiState.progress == 0){
+                if(transcriptionUiState.inTranscription && transcriptionUiState.progress == 0){
                     LinearProgressIndicator(
                         modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(),
                         strokeCap = StrokeCap.Round
                     )
-                } else if(transcriptionUiState.progress in 1..99){
+                } else if(transcriptionUiState.inTranscription && transcriptionUiState.progress in 1..99){
                    SmoothLinearProgressBar((transcriptionUiState.progress / 100f))
                 }
 //                FloatingActionButton(
