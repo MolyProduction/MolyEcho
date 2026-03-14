@@ -14,23 +14,10 @@ plugins {
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    applyDefaultHierarchyTemplate()
-
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-            isStatic = true
         }
     }
 
@@ -89,12 +76,6 @@ kotlin {
             implementation(project(":core:audio"))
         }
 
-        iosMain.dependencies {
-            implementation(libs.sqldelight.native.driver)
-            compileOnly(libs.jetbrains.atomicfu)
-            api(libs.jetbrains.atomicfu)
-        }
-
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
@@ -120,41 +101,6 @@ kotlin {
         }
     }
 
-    val whisperFrameworkPath = file("${projectDir}/../iosApp/whisper.xcframework")
-    iosSimulatorArm64 {
-        compilations.getByName("main") {
-            cinterops.create("whisperSimArm64") {
-                defFile(project.file("src/nativeInterop/cinterop/whisper.def"))
-                compilerOpts(
-                    "-I${whisperFrameworkPath}/ios-arm64_x86_64-simulator/whisper.framework/Headers",
-                    "-F${whisperFrameworkPath}"
-                )
-            }
-        }
-    }
-    iosArm64 {
-        compilations.getByName("main") {
-            cinterops.create("whisperArm64") {
-                defFile(project.file("src/nativeInterop/cinterop/whisper.def"))
-                compilerOpts(
-                    "-I${whisperFrameworkPath}/ios-arm64/whisper.framework/Headers",
-                    "-F$whisperFrameworkPath"
-                )
-            }
-        }
-    }
-
-    iosX64 {
-        compilations.getByName("main") {
-            cinterops.create("whisperX64") {
-                defFile(project.file("src/nativeInterop/cinterop/whisper.def"))
-                compilerOpts(
-                    "-I${whisperFrameworkPath}/ios-arm64_x86_64-simulator/whisper.framework/Headers",
-                    "-F$whisperFrameworkPath"
-                )
-            }
-        }
-    }
 }
 
 compose.resources {
