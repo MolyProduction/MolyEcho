@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MolyEcho – FAQ</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff; color: #1a1a1a; max-width: 700px;
+            margin: 0 auto; padding: 20px 16px 48px; line-height: 1.65;
+        }
+        .lang-toggle { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 28px; }
+        .lang-btn {
+            padding: 5px 14px; border: 2px solid #5e8040; border-radius: 20px;
+            background: transparent; color: #5e8040; cursor: pointer;
+            font-size: 14px; font-weight: 600; font-family: inherit;
+        }
+        .lang-btn.active { background: #5e8040; color: #fff; }
+        h1 { color: #5e8040; font-size: 26px; margin-bottom: 6px; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+        h2 { color: #5e8040; font-size: 18px; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #e8f0e0; }
+        p { margin-bottom: 12px; color: #333; }
+        ul, ol { padding-left: 20px; margin-bottom: 12px; color: #333; }
+        li { margin-bottom: 6px; }
+        a { color: #5e8040; }
+        .btn {
+            display: inline-block; background: #5e8040; color: #fff;
+            padding: 10px 22px; border-radius: 8px; text-decoration: none;
+            font-weight: 600; margin: 6px 0;
+        }
+        .btn:hover { background: #4a6632; }
+        .lang { display: none; }
+        .lang.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="lang-toggle">
+        <button class="lang-btn" id="btn-de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+
+    <!-- DEUTSCH -->
+    <div class="lang lang-de">
+        <h1>FAQ</h1>
+        <p class="subtitle">Häufig gestellte Fragen zu MolyEcho</p>
+
+        <h2>Was ist MolyEcho?</h2>
+        <p>MolyEcho ist eine kostenlose, quelloffene KI-Spracherkennungs-App für Android. Sie wandelt gesprochene Sprache offline in Text um – ohne Cloud-Upload, ohne Konto, ohne Kosten.</p>
+
+        <h2>Wie fange ich an?</h2>
+        <ol>
+            <li>Öffne MolyEcho und gehe zu den Einstellungen.</li>
+            <li>Wähle ein Sprachmodell und tippe auf <strong>Herunterladen</strong>.</li>
+            <li>Nach dem Download: Tippe auf das Mikrofon-Symbol, um eine Aufnahme zu starten.</li>
+            <li>Tippe erneut auf das Symbol, um die Aufnahme zu stoppen – der Text erscheint automatisch.</li>
+        </ol>
+
+        <h2>Welche Modelle gibt es?</h2>
+        <p>MolyEcho bietet drei Modelle zur Wahl:</p>
+        <ul>
+            <li><strong>Deutsch – Schnell (~574 MB):</strong> Optimiert für Geschwindigkeit. Ideal für Alltagsnotizen und kurze Texte.</li>
+            <li><strong>Deutsch – Genau (~1,6 GB):</strong> Höchste Erkennungsgenauigkeit für anspruchsvolle oder fachliche Texte.</li>
+            <li><strong>Mehrsprachig (~465 MB):</strong> Unterstützt über 50 Sprachen. Geringere Genauigkeit als die deutschen Modelle, aber universell einsetzbar.</li>
+        </ul>
+
+        <h2>Brauche ich eine Internetverbindung?</h2>
+        <p>Nur einmalig zum Herunterladen des Sprachmodells. Danach funktioniert MolyEcho vollständig offline – auf Wunsch sogar im Flugzeugmodus.</p>
+
+        <h2>Werden meine Aufnahmen gespeichert oder übertragen?</h2>
+        <p>Nein. Alle Aufnahmen und Transkripte verbleiben ausschließlich auf deinem Gerät. Es werden keinerlei Daten an externe Server übertragen.</p>
+
+        <h2>Auf welchen Geräten läuft MolyEcho?</h2>
+        <p>MolyEcho ist eine reine Android-App.</p>
+
+        <h2>Wie erhalte ich Support?</h2>
+        <p>Besuche die <a href="support.html">Support-Seite</a> für GitHub Issues und Community-Links.</p>
+    </div>
+
+    <!-- ENGLISH -->
+    <div class="lang lang-en">
+        <h1>FAQ</h1>
+        <p class="subtitle">Frequently Asked Questions about MolyEcho</p>
+
+        <h2>What is MolyEcho?</h2>
+        <p>MolyEcho is a free, open-source AI speech recognition app for Android. It converts spoken language to text fully offline — no cloud uploads, no account, no cost.</p>
+
+        <h2>How do I get started?</h2>
+        <ol>
+            <li>Open MolyEcho and go to Settings.</li>
+            <li>Choose a speech model and tap <strong>Download</strong>.</li>
+            <li>After downloading: tap the microphone icon to start a recording.</li>
+            <li>Tap again to stop — the transcript appears automatically.</li>
+        </ol>
+
+        <h2>What models are available?</h2>
+        <p>MolyEcho offers three models:</p>
+        <ul>
+            <li><strong>German – Fast (~574 MB):</strong> Optimized for speed. Great for everyday notes and short texts.</li>
+            <li><strong>German – Accurate (~1.6 GB):</strong> Highest recognition accuracy for complex or technical content.</li>
+            <li><strong>Multilingual (~465 MB):</strong> Supports 50+ languages. Lower accuracy than German models, but universally usable.</li>
+        </ul>
+
+        <h2>Do I need an internet connection?</h2>
+        <p>Only once to download the speech model. After that, MolyEcho works completely offline — even in airplane mode.</p>
+
+        <h2>Are my recordings stored or transmitted?</h2>
+        <p>No. All recordings and transcripts stay exclusively on your device. No data is ever sent to external servers.</p>
+
+        <h2>Which devices are supported?</h2>
+        <p>MolyEcho is an Android-only app.</p>
+
+        <h2>How do I get support?</h2>
+        <p>Visit the <a href="support.html">Support page</a> for GitHub Issues and community links.</p>
+    </div>
+
+    <script>
+        function setLang(l) {
+            document.querySelectorAll('.lang').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.lang-' + l).forEach(el => el.classList.add('active'));
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + l).classList.add('active');
+        }
+        setLang('de');
+    </script>
+</body>
+</html>
