@@ -83,11 +83,23 @@ fun TranscriptionScreen(
     LaunchedEffect(transcriptionUiState.originalText) {
         scrollState.animateScrollTo(scrollState.maxValue)
     }
+    // When the app process is killed while TranscriptionScreen is in the back stack and
+    // the user taps the completion notification, Android recreates MainActivity and restores
+    // the nav back stack. At that moment NoteDetailScreen (which sits below in the stack)
+    // has not yet been composed, so onGetNoteById() hasn't been called and recordingPath
+    // is still the default empty string. Calling startRecognizer("") would trigger a
+    // FileNotFoundException caught as a generic Exception, showing the misleading
+    // "audio file too large" error. Guard against this by navigating back immediately;
+    // the user will land on NoteDetailScreen which will load the note data normally.
+    LaunchedEffect(Unit) {
+        val path = editorState.recording.recordingPath
+        if (path.isBlank()) {
+            navigateBack()
+            return@LaunchedEffect
+        }
+        viewModel.startRecognizer(path)
+    }
     DisposableEffect(Unit) {
-        // initRecognizer is no longer called separately here; model initialization
-        // now happens sequentially inside startRecognizer before transcription begins,
-        // eliminating the race condition where start() ran before the model was loaded.
-        viewModel.startRecognizer(editorState.recording.recordingPath)
         onDispose {
             viewModel.stopRecognizer()
             viewModel.finishRecognizer()

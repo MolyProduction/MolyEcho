@@ -84,6 +84,13 @@ actual class Transcriber(
     actual suspend fun initialize(modelFileName: String) {
         if (currentLoadedModelName == modelFileName && whisperContext != null) {
             debugPrintln { "speech: model $modelFileName already loaded, skipping re-init" }
+            // Ensure canTranscribe is true whenever the model is confirmed loaded.
+            // Without this, a previous early-return from start() (canTranscribe = false
+            // path) would leave canTranscribe stuck as false even though the model is
+            // ready, causing every subsequent transcription attempt to fail immediately.
+            if (!isTranscribing) {
+                canTranscribe = true
+            }
             resetInactivityTimer()
             return
         }
