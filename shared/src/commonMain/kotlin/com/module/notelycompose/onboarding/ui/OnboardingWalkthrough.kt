@@ -87,6 +87,8 @@ data class OnboardingPage(
 @Composable
 fun OnboardingWalkthrough(
     onFinish: () -> Unit = {},
+    onFinishToModelSelection: () -> Unit = {},
+    permissionHandler: PermissionHandler? = null,
     platformState: PlatformUiState
 ) {
     val featurePages = listOf(
@@ -116,7 +118,7 @@ fun OnboardingWalkthrough(
         )
     )
 
-    val pageCount = 4
+    val pageCount = 5
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val coroutineScope = rememberCoroutineScope()
 
@@ -161,6 +163,7 @@ fun OnboardingWalkthrough(
             ) { page ->
                 when (page) {
                     0 -> MolyEchoWelcomePage()
+                    3 -> permissionHandler?.let { PermissionsOnboardingPage(it) } ?: ModelOverviewPage()
                     pageCount - 1 -> ModelOverviewPage()
                     else -> OnboardingPageContent(
                         page = featurePages[page - 1],
@@ -187,7 +190,7 @@ fun OnboardingWalkthrough(
                 Button(
                     onClick = {
                         if (pagerState.currentPage == pageCount - 1) {
-                            onFinish()
+                            onFinishToModelSelection()
                         } else {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
