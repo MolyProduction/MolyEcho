@@ -84,7 +84,6 @@ fun TranscriptionScreen(
         scrollState.animateScrollTo(scrollState.maxValue)
     }
     DisposableEffect(Unit) {
-        viewModel.requestAudioPermission()
         // initRecognizer is no longer called separately here; model initialization
         // now happens sequentially inside startRecognizer before transcription begins,
         // eliminating the race condition where start() ran before the model was loaded.
