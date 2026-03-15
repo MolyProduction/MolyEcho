@@ -26,6 +26,9 @@ import com.module.notelycompose.transcription.TranscriptionServiceController
 import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
+import com.module.notelycompose.permissions.PermissionLauncherHolder
+import com.module.notelycompose.permissions.PermissionViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -80,4 +83,8 @@ actual val platformModule = module {
             folderPickerHandler = get()
         )
     }
+
+    // permissions
+    single { PermissionLauncherHolder() }
+    viewModel { PermissionViewModel(get(), get()) }
 }

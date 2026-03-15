@@ -176,7 +176,7 @@
     <string name="onboarding_screen_four_desc">Für maximale Genauigkeit: Lade das Turbo-Modell (~1,6 GB) in den Einstellungen herunter</string>
     <string name="onboarding_welcome_tagline">Dein persönlicher Schreiberling</string>
     <string name="onboarding_models_title">Sprachmodelle</string>
-    <string name="onboarding_models_subtitle">Wähle in den Einstellungen das Modell, das zu dir passt.</string>
+    <string name="onboarding_models_subtitle">Wähle jetzt gleich dein Modell aus – du wirst direkt zur Modellauswahl weitergeleitet.</string>
     <string name="onboarding_model_german_quick_title">Deutsch –\nMoly Optimiert</string>
     <string name="onboarding_model_german_quick_desc">Unser optimiertes Modell für Deutsch. Hochpräzise Transkription – ideal für den Alltag. Ca. 574 MB Download.</string>
     <string name="onboarding_model_german_accurate_title">Deutsch –\nMaximale Genauigkeit</string>
@@ -257,4 +257,14 @@
     <string name="model_label_multilingual_extended">🌐 Mehrsprachig Erweitert</string>
     <!-- Transcription Screen Loading State -->
     <string name="transcription_loading_model">Spracherkennungsmodell wird geladen…</string>
+    <string name="onboarding_permissions_title">Im Hintergrund aktiv</string>
+    <string name="onboarding_permissions_desc">Transkriptionen können je nach Aufnahmelänge einige Minuten dauern. MolyEcho kann dabei im Hintergrund weiterarbeiten – du wirst benachrichtigt, sobald das Ergebnis bereit ist.</string>
+    <string name="onboarding_permission_notifications_title">Benachrichtigungen</string>
+    <string name="onboarding_permission_notifications_desc">Damit du informiert wirst, wenn eine Transkription abgeschlossen ist.</string>
+    <string name="onboarding_permission_battery_title">Akku-Optimierung</string>
+    <string name="onboarding_permission_battery_desc">Verhindert, dass Android MolyEcho im Hintergrund stoppt.</string>
+    <string name="onboarding_permission_allow">Erlauben</string>
+    <string name="onboarding_permission_granted">Erteilt ✓</string>
+    <string name="onboarding_permission_battery_settings">Einstellungen</string>
+    <string name="onboarding_permission_disabled">Deaktiviert ✓</string>
 </resources>
