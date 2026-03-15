@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -43,6 +46,7 @@ import com.module.notelycompose.platform.Theme
 import com.module.notelycompose.platform.presentation.PlatformUiState
 import com.module.notelycompose.platform.presentation.PlatformViewModel
 import com.module.notelycompose.transcription.TranscriptionScreen
+import com.module.notelycompose.permissions.rememberPermissionHandler
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -77,6 +81,8 @@ fun App(
             val platformViewModel = koinViewModel<PlatformViewModel>()
             val onboardingState by viewmodel.onboardingState.collectAsState()
             val platformUiState by platformViewModel.state.collectAsState()
+            val permissionHandler = rememberPermissionHandler()
+            var openModelSelectionOnLaunch by remember { mutableStateOf(false) }
 
             when (onboardingState) {
                 is OnboardingState.Initial -> Unit
@@ -85,11 +91,16 @@ fun App(
                         onFinish = {
                             viewmodel.onCompleteOnboarding()
                         },
+                        onFinishToModelSelection = {
+                            openModelSelectionOnLaunch = true
+                            viewmodel.onCompleteOnboarding()
+                        },
+                        permissionHandler = permissionHandler,
                         platformState = platformUiState
                     )
                 }
 
-                is OnboardingState.Completed -> NoteAppRoot(platformUiState)
+                is OnboardingState.Completed -> NoteAppRoot(platformUiState, openModelSelection = openModelSelectionOnLaunch)
             }
         }
     }
@@ -97,8 +108,13 @@ fun App(
 
 
 @Composable
-fun NoteAppRoot(platformUiState: PlatformUiState) {
+fun NoteAppRoot(platformUiState: PlatformUiState, openModelSelection: Boolean = false) {
     val navController = rememberNavController()
+    LaunchedEffect(Unit) {
+        if (openModelSelection) {
+            navController.navigate(Routes.LanguageModelSelection)
+        }
+    }
     NavHost(
         navController,
         startDestination = Routes.Home::class,
@@ -161,6 +177,17 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                     navigateBack = { navController.popBackStack() }
                 )
             }
+            composableWithVerticalSlide<Routes.LanguageModelSelection> {
+                ModelSelectionScreen(
+                    navigateBack = { navController.popBackStack() },
+                    navigateToModelExplanation = { navController.navigateSingleTop(Routes.LanguageModelExplanation) }
+                )
+            }
+            composableWithVerticalSlide<Routes.LanguageModelExplanation> {
+                ModelExplanationScreen(
+                    navigateBack = { navController.popBackStack() }
+                )
+            }
         }
         navigation<Routes.DetailsGraph>(startDestination = Routes.Details::class) {
             composableWithHorizontalSlide<Routes.Details> { backStackEntry ->
@@ -210,17 +237,6 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                 ExportNotesScreen(
                     navigateBack = { navController.popBackStack() },
                     viewModel = koinViewModel(viewModelStoreOwner = parentEntry)
-                )
-            }
-            composableWithVerticalSlide<Routes.LanguageModelSelection> {
-                ModelSelectionScreen(
-                    navigateBack = { navController.popBackStack() },
-                    navigateToModelExplanation = { navController.navigateSingleTop(Routes.LanguageModelExplanation) }
-                )
-            }
-            composableWithVerticalSlide<Routes.LanguageModelExplanation> {
-                ModelExplanationScreen(
-                    navigateBack = { navController.popBackStack() }
                 )
             }
         }

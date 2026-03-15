@@ -10,4 +10,7 @@
     <string name="notification_transcription_done_title">Transkription abgeschlossen</string>
     <string name="notification_transcription_done_text">Tippe um das Ergebnis in MolyEcho anzusehen</string>
     <string name="notification_transcription_done_channel_name">Transkription abgeschlossen</string>
+    <string name="notification_download_done_title">Modell heruntergeladen</string>
+    <string name="notification_download_done_text">MolyEcho ist bereit zur Transkription</string>
+    <string name="notification_download_done_channel_name">Download abgeschlossen</string>
 </resources>

@@ -34,7 +34,7 @@ actual class Transcriber(
     private var whisperContext: WhisperContext? = null
     private var permissionContinuation: ((Boolean) -> Unit)? = null
     private val streamingChunker = StreamingAudioChunker()
-    private var currentLoadedModelName: String? = null
+    @Volatile private var currentLoadedModelName: String? = null
     private val inactivityScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var inactivityJob: Job? = null
 
@@ -84,10 +84,16 @@ actual class Transcriber(
     actual suspend fun initialize(modelFileName: String) {
         if (currentLoadedModelName == modelFileName && whisperContext != null) {
             debugPrintln { "speech: model $modelFileName already loaded, skipping re-init" }
+            // Ensure canTranscribe is true whenever the model is confirmed loaded.
+            // Without this, a previous early-return from start() (canTranscribe = false
+            // path) would leave canTranscribe stuck as false even though the model is
+            // ready, causing every subsequent transcription attempt to fail immediately.
+            if (!isTranscribing) {
+                canTranscribe = true
+            }
             resetInactivityTimer()
             return
         }
-        isCancelled = false // reset for new initialization
         cancelInactivityTimer()
         debugPrintln { "speech: initialize model $modelFileName" }
         whisperContext?.release()
@@ -103,7 +109,11 @@ actual class Transcriber(
 
     private suspend fun loadBaseModel(modelFileName: String) {
         modelLoadMutex.withLock {
-            if (isCancelled) return@withLock
+            // Reset isCancelled inside the lock so a stale finish() from a previous
+            // session (which sets isCancelled = true before acquiring the lock) cannot
+            // abort a new loading request. The post-JNI check below still catches a
+            // finish() that fires *during* the long-running JNI call.
+            isCancelled = false
             try {
                 debugPrintln { "Loading model: $modelFileName\n" }
                 val targetDir = modelsPath ?: run {
@@ -182,16 +192,25 @@ actual class Transcriber(
     }
 
     actual suspend fun finish() {
+        // Capture the model name before signalling cancellation. Inside the mutex we
+        // compare against the current value: if a new session has already loaded a
+        // different model (or started a fresh load that reset the name to null), this
+        // finish() belongs to a stale ViewModel and must not destroy the new session.
+        val modelAtFinish = currentLoadedModelName
         isCancelled = true
         cancelInactivityTimer()
         // Wait for any in-progress loadBaseModel() JNI call to complete before releasing
         // the context. This prevents the foreground service from being stopped while the
         // JNI thread is still executing.
         modelLoadMutex.withLock {
-            whisperContext?.release()
-            whisperContext = null
-            currentLoadedModelName = null
-            canTranscribe = false
+            if (currentLoadedModelName == modelAtFinish) {
+                whisperContext?.release()
+                whisperContext = null
+                currentLoadedModelName = null
+                canTranscribe = false
+            }
+            // If currentLoadedModelName differs, a new session loaded a different model
+            // after this finish() was initiated — leave the new session's state intact.
         }
     }
 

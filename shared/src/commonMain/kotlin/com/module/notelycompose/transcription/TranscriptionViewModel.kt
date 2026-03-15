@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 const val SPACE_STR = " "
 
@@ -27,12 +28,6 @@ class TranscriptionViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TranscriptionUiState())
     val uiState: StateFlow<TranscriptionUiState> = _uiState
-
-    fun requestAudioPermission() {
-        viewModelScope.launch {
-            transcriber.requestRecordingPermission()
-        }
-    }
 
     fun initRecognizer() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,70 +41,68 @@ class TranscriptionViewModel(
         debugPrintln{"startRecognizer ========================="}
         serviceController.startTranscriptionService()
         viewModelScope.launch(Dispatchers.IO) {
-            if (transcriber.hasRecordingPermission()) {
-                // Show loading indicator immediately so the user sees feedback.
-                _uiState.update { current ->
-                    current.copy(inTranscription = true, isModelLoading = true)
-                }
-                // Initialize the correct model sequentially before transcribing.
-                // This prevents the race condition where start() runs before the model is loaded.
-                val modelFileName = modelSelection.getSelectedModel()
-                transcriber.initialize(modelFileName.name)
-
-                // Model is loaded (or was already cached) — update notification and UI
-                serviceController.notifyTranscriptionPhaseTranscribing()
-                _uiState.update { it.copy(isModelLoading = false) }
-
-                val transcriptionLanguage = preferencesRepository.getDefaultTranscriptionLanguage().first()
-                    .ifBlank { "de" } // defensive: ensure non-empty language code
-                val segmenter = getSegmenter(transcriptionLanguage)
-                transcriber.start(
-                    filePath, transcriptionLanguage, onProgress = { progress ->
-                        debugPrintln{"progress ========================= $progress"}
-                        _uiState.update { current ->
-                            current.copy(
-                                progress = progress
-                            )
-                        }
-                    }, onNewSegment = { _, _, text ->
-
-                        val delimiter = if(_uiState.value.originalText.endsWith(".")) "\n\n" else SPACE_STR
-                        debugPrintln{"\n text ========================= $text"}
-                        _uiState.update { current ->
-                            current.copy(
-                                originalText = segmenter.segmentText("${_uiState.value.originalText.trim()}$delimiter${text.trim()}".trim()).joinToString("\n\n"),
-                                partialText = text
-                            )
-                        }
-
-                    },
-                    onComplete = {
-                        // Signal service to post completion notification and stop itself
-                        serviceController.notifyTranscriptionComplete()
-                        debugPrintln{"\n completed ========================= "}
-                        _uiState.update {current ->
-                            current.copy(
-                                inTranscription = false,
-                                progress = 100
-                            )
-                        }
-                    },
-                    onError = {
-                        serviceController.stopTranscriptionService()
-                        debugPrintln{"\n error ========================= "}
-                        _uiState.update {current ->
-                            current.copy(
-                                inTranscription = false,
-                                isModelLoading = false,
-                                progress = 100,
-                                hasError = true
-                            )
-                        }
-                    })
-            } else {
-                // No permission — service was started optimistically, stop it immediately
-                serviceController.stopTranscriptionService()
+            // Show loading indicator immediately so the user sees feedback.
+            _uiState.update { current ->
+                current.copy(inTranscription = true, isModelLoading = true)
             }
+            // Yield so the Main thread has a chance to render the loading state before
+            // initialize() returns (which may be instant if model is already cached).
+            yield()
+            // Initialize the correct model sequentially before transcribing.
+            // This prevents the race condition where start() runs before the model is loaded.
+            val modelFileName = modelSelection.getSelectedModel()
+            transcriber.initialize(modelFileName.name)
+
+            // Model is loaded (or was already cached) — update notification and UI
+            serviceController.notifyTranscriptionPhaseTranscribing()
+            _uiState.update { it.copy(isModelLoading = false) }
+
+            val transcriptionLanguage = preferencesRepository.getDefaultTranscriptionLanguage().first()
+                .ifBlank { "de" } // defensive: ensure non-empty language code
+            val segmenter = getSegmenter(transcriptionLanguage)
+            transcriber.start(
+                filePath, transcriptionLanguage, onProgress = { progress ->
+                    debugPrintln{"progress ========================= $progress"}
+                    _uiState.update { current ->
+                        current.copy(
+                            progress = progress
+                        )
+                    }
+                }, onNewSegment = { _, _, text ->
+
+                    val delimiter = if(_uiState.value.originalText.endsWith(".")) "\n\n" else SPACE_STR
+                    debugPrintln{"\n text ========================= $text"}
+                    _uiState.update { current ->
+                        current.copy(
+                            originalText = segmenter.segmentText("${_uiState.value.originalText.trim()}$delimiter${text.trim()}".trim()).joinToString("\n\n"),
+                            partialText = text
+                        )
+                    }
+
+                },
+                onComplete = {
+                    // Signal service to post completion notification and stop itself
+                    serviceController.notifyTranscriptionComplete()
+                    debugPrintln{"\n completed ========================= "}
+                    _uiState.update {current ->
+                        current.copy(
+                            inTranscription = false,
+                            progress = 100
+                        )
+                    }
+                },
+                onError = {
+                    serviceController.stopTranscriptionService()
+                    debugPrintln{"\n error ========================= "}
+                    _uiState.update {current ->
+                        current.copy(
+                            inTranscription = false,
+                            isModelLoading = false,
+                            progress = 100,
+                            hasError = true
+                        )
+                    }
+                })
         }
 
     }

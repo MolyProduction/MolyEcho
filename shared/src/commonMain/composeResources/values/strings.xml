@@ -176,7 +176,7 @@
     <string name="onboarding_screen_four_desc">For maximum accuracy: download the Turbo model (~1.6 GB) in Settings</string>
     <string name="onboarding_welcome_tagline">Your personal scribe</string>
     <string name="onboarding_models_title">Speech Models</string>
-    <string name="onboarding_models_subtitle">Choose the model that fits you best in Settings.</string>
+    <string name="onboarding_models_subtitle">Choose your model right now – you\'ll be taken directly to the model selection.</string>
     <string name="onboarding_model_german_quick_title">German –\nMoly Optimized</string>
     <string name="onboarding_model_german_quick_desc">Our optimized model for German. Highly precise transcription – ideal for everyday use. Approx. 574 MB download.</string>
     <string name="onboarding_model_german_accurate_title">German –\nMaximum Accuracy</string>
@@ -257,4 +257,14 @@
     <string name="model_label_multilingual_extended">🌐 Multilingual Extended</string>
     <!-- Transcription Screen Loading State -->
     <string name="transcription_loading_model">Loading speech recognition model…</string>
+    <string name="onboarding_permissions_title">Background Operation</string>
+    <string name="onboarding_permissions_desc">Transcriptions can take a few minutes depending on recording length. MolyEcho can continue working in the background – you\'ll be notified when the result is ready.</string>
+    <string name="onboarding_permission_notifications_title">Notifications</string>
+    <string name="onboarding_permission_notifications_desc">So you\'re informed when a transcription is complete.</string>
+    <string name="onboarding_permission_battery_title">Battery Optimization</string>
+    <string name="onboarding_permission_battery_desc">Prevents Android from stopping MolyEcho in the background.</string>
+    <string name="onboarding_permission_allow">Allow</string>
+    <string name="onboarding_permission_granted">Granted ✓</string>
+    <string name="onboarding_permission_battery_settings">Settings</string>
+    <string name="onboarding_permission_disabled">Disabled ✓</string>
 </resources>

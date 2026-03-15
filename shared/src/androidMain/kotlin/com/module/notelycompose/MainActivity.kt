@@ -16,16 +16,19 @@ import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Theme
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
+import com.module.notelycompose.permissions.PermissionLauncherHolder
 
 class MainActivity : AppCompatActivity() {
     private val fileSaverLauncherHolder by inject<FileSaverLauncherHolder>()
     private val folderPickerLauncherHolder by inject<FolderPickerLauncherHolder>()
+    private val permissionLauncherHolder by inject<PermissionLauncherHolder>()
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         injectLauncher()
         setupFileSaverLauncher()
         setupFolderPickerLauncher()
+        setupNotificationPermissionLauncher()
         enableEdgeToEdge()
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -65,6 +68,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 // Always invoke callback, even if uri is null
                 folderPickerLauncherHolder.onFolderSelected?.invoke(uri)
+            }
+    }
+
+    private fun setupNotificationPermissionLauncher() {
+        permissionLauncherHolder.notificationLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
+                // Result handled via PermissionViewModel.refresh() on ON_RESUME
             }
     }
 

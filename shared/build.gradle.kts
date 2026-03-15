@@ -73,6 +73,8 @@ kotlin {
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
 
+            implementation(libs.androidx.lifecycle.runtime.compose)
+
             implementation(project(":core:audio"))
         }
 

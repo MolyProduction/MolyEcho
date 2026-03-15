@@ -1,13 +1,22 @@
 package com.module.notelycompose.platform
 
+import android.Manifest
 import android.app.DownloadManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Environment
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import com.module.notelycompose.MainActivity
+import de.molyecho.notlyvoice.android.R
 import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import kotlinx.coroutines.CoroutineScope
@@ -114,7 +123,10 @@ actual class Downloader(
             preferencesRepository.setModelDownloadId(-1)
         }
         when (finalStatus) {
-            DownloadManager.STATUS_SUCCESSFUL -> onSuccess()
+            DownloadManager.STATUS_SUCCESSFUL -> {
+                postDownloadCompleteNotification()
+                onSuccess()
+            }
             DownloadManager.STATUS_FAILED -> {
                 val reason = downloadManager.query(DownloadManager.Query().setFilterById(downloadId)).use { cursor ->
                     if (cursor.moveToFirst()) {
@@ -151,6 +163,39 @@ actual class Downloader(
         )
     }
 
+    private fun postDownloadCompleteNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(mainContext, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        val nm = mainContext.getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(
+            NotificationChannel(
+                CHANNEL_DOWNLOAD_DONE_ID,
+                mainContext.getString(R.string.notification_download_done_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+        )
+        val pendingIntent = PendingIntent.getActivity(
+            mainContext,
+            0,
+            Intent(mainContext, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val notification = NotificationCompat.Builder(mainContext, CHANNEL_DOWNLOAD_DONE_ID)
+            .setContentTitle(mainContext.getString(R.string.notification_download_done_title))
+            .setContentText(mainContext.getString(R.string.notification_download_done_text))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+        nm.notify(NOTIFICATION_DOWNLOAD_DONE_ID, notification)
+    }
+
     private fun getErrorTextFromReason(reason: Int) = when (reason) {
             DownloadManager.ERROR_CANNOT_RESUME -> "ERROR_CANNOT_RESUME"
             DownloadManager.ERROR_DEVICE_NOT_FOUND -> "ERROR_DEVICE_NOT_FOUND"
@@ -164,5 +209,8 @@ actual class Downloader(
         else -> "DOWNLOAD_ERROR"
     }
 
-
+    companion object {
+        private const val CHANNEL_DOWNLOAD_DONE_ID = "download_done_channel"
+        private const val NOTIFICATION_DOWNLOAD_DONE_ID = 4
+    }
 }
