@@ -1,4 +1,4 @@
-# MolyEcho
+# <p align="center">MolyEcho</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/MolyProduction/MolyEcho/main/shared/src/commonMain/composeResources/drawable/molyecho_logo.png" width="220" alt="MolyEcho Logo">
@@ -128,8 +128,9 @@ GNU General Public License v3.0 – siehe [LICENSE](LICENSE).
 
 ```
 MolyEcho
-Copyright (C) 2024  Contributors
-
+Copyright (C) 2026  Contributors
+Based on NotelyVoice
+Copyright (C) 2025 NotelyVoice (Tosin Onikute)
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
