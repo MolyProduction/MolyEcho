@@ -257,6 +257,7 @@
     <string name="model_label_multilingual_extended">🌐 Multilingual Extended</string>
     <!-- Transcription Screen Loading State -->
     <string name="transcription_loading_model">Loading speech recognition model…</string>
+    <string name="transcription_long_running_hint">Your text is being created. You will receive a notification when it\'s ready – the app can be minimized in the meantime.</string>
     <string name="onboarding_permissions_title">Background Operation</string>
     <string name="onboarding_permissions_desc">Transcriptions can take a few minutes depending on recording length. MolyEcho can continue working in the background – you\'ll be notified when the result is ready.</string>
     <string name="onboarding_permission_notifications_title">Notifications</string>

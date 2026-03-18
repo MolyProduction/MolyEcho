@@ -41,9 +41,10 @@ class TranscriptionViewModel(
         debugPrintln{"startRecognizer ========================="}
         serviceController.startTranscriptionService()
         viewModelScope.launch(Dispatchers.IO) {
+            val audioDurationSeconds = transcriber.getAudioDurationSeconds(filePath)
             // Show loading indicator immediately so the user sees feedback.
             _uiState.update { current ->
-                current.copy(inTranscription = true, isModelLoading = true)
+                current.copy(inTranscription = true, isModelLoading = true, showLongRunningHint = audioDurationSeconds > 20)
             }
             // Yield so the Main thread has a chance to render the loading state before
             // initialize() returns (which may be instant if model is already cached).

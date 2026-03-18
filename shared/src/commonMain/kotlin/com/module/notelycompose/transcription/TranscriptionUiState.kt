@@ -11,7 +11,8 @@ data class TranscriptionUiState(
     val progress: Int = 0,
     val downloaded: String = "0 MB ",
     val total: String = "0 MB",
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val showLongRunningHint: Boolean = false
 )
 
 sealed class TranscriptionEffect() {

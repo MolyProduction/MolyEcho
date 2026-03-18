@@ -174,6 +174,25 @@ actual class Transcriber(
         return if (modelFile.exists()) modelFile.length() else 0L
     }
 
+    actual fun getAudioDurationSeconds(filePath: String): Int {
+        return try {
+            val file = java.io.RandomAccessFile(filePath, "r")
+            val header = ByteArray(44)
+            file.read(header)
+            file.close()
+            val buffer = java.nio.ByteBuffer.wrap(header)
+            buffer.order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            val channels = buffer.getShort(22).toInt()
+            val sampleRate = buffer.getInt(24)
+            val bitsPerSample = buffer.getShort(34).toInt()
+            val dataSize = buffer.getInt(40)
+            if (sampleRate <= 0 || channels <= 0 || bitsPerSample <= 0) return 0
+            (dataSize / (sampleRate * channels * (bitsPerSample / 8.0))).toInt()
+        } catch (e: Exception) {
+            0
+        }
+    }
+
     actual fun isValidModel(modelFileName: String): Boolean {
         // Check on-disk file
         val modelFile = modelsPath?.let { File(it, modelFileName) }

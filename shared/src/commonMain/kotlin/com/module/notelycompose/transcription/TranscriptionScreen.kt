@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +66,7 @@ import de.molyecho.notlyvoice.resources.transcription_dialog_error_got_it
 import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_title
 import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_desc
 import de.molyecho.notlyvoice.resources.transcription_loading_model
+import de.molyecho.notlyvoice.resources.transcription_long_running_hint
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -183,6 +186,14 @@ fun TranscriptionScreen(
                 } else if (transcriptionUiState.inTranscription && transcriptionUiState.progress in 1..99) {
                     SmoothLinearProgressBar((transcriptionUiState.progress / 100f))
                 }
+
+                if (transcriptionUiState.showLongRunningHint
+                    && transcriptionUiState.inTranscription
+                    && !transcriptionUiState.isModelLoading
+                ) {
+                    LongRunningHintCard()
+                }
+
 //                FloatingActionButton(
 //                    modifier = Modifier.padding(vertical = 8.dp),
 //                    shape = CircleShape,
@@ -320,6 +331,41 @@ fun BackButton(
     }
 }
 
+
+@Composable
+private fun LongRunningHintCard() {
+    androidx.compose.material3.Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = LocalCustomColors.current.bodyBackgroundColor
+        ),
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.molyecho_logo),
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(Res.string.transcription_long_running_hint),
+                color = LocalCustomColors.current.bodyContentColor,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
 
 @Composable
 fun SmoothLinearProgressBar(progress: Float) {

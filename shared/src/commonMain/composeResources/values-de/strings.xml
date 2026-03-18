@@ -257,6 +257,7 @@
     <string name="model_label_multilingual_extended">🌐 Mehrsprachig Erweitert</string>
     <!-- Transcription Screen Loading State -->
     <string name="transcription_loading_model">Spracherkennungsmodell wird geladen…</string>
+    <string name="transcription_long_running_hint">Dein Text wird gerade erstellt. Du erhältst eine Benachrichtigung, sobald er fertig ist – die App kann in der Zwischenzeit minimiert werden.</string>
     <string name="onboarding_permissions_title">Im Hintergrund aktiv</string>
     <string name="onboarding_permissions_desc">Transkriptionen können je nach Aufnahmelänge einige Minuten dauern. MolyEcho kann dabei im Hintergrund weiterarbeiten – du wirst benachrichtigt, sobald das Ergebnis bereit ist.</string>
     <string name="onboarding_permission_notifications_title">Benachrichtigungen</string>

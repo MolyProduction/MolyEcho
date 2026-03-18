@@ -17,4 +17,5 @@ expect class Transcriber {
     fun isValidModel(modelFileName: String): Boolean
     fun deleteModel(modelFileName: String): Boolean
     fun getModelFileSizeBytes(modelFileName: String): Long
+    fun getAudioDurationSeconds(filePath: String): Int
 }
