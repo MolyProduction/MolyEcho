@@ -10,6 +10,8 @@ import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.utils.StreamingAudioChunker
 import com.module.notelycompose.utils.StreamingAudioChunk
 import com.module.notelycompose.utils.ChunkTranscriptionResult
+import com.module.notelycompose.modelDownloader.ModelFormat
+import com.whispercpp.whisper.SherpaWhisperContext
 import com.whispercpp.whisper.WhisperCallback
 import com.whispercpp.whisper.WhisperContext
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +34,8 @@ actual class Transcriber(
     private var isTranscribing = false
     private val modelsPath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
     private var whisperContext: WhisperContext? = null
+    private var sherpaContext: SherpaWhisperContext? = null
+    @Volatile private var currentLoadedModelFormat: ModelFormat? = null
     private var permissionContinuation: ((Boolean) -> Unit)? = null
     private val streamingChunker = StreamingAudioChunker()
     @Volatile private var currentLoadedModelName: String? = null
@@ -47,6 +51,11 @@ actual class Transcriber(
 
     companion object {
         private const val INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000L // 10 Minuten
+        val ONNX_REQUIRED_FILES = listOf(
+            SherpaWhisperContext.ENCODER_FILE,
+            SherpaWhisperContext.DECODER_FILE,
+            SherpaWhisperContext.TOKENS_FILE
+        )
     }
 
 
@@ -81,33 +90,29 @@ actual class Transcriber(
     }
 
 
-    actual suspend fun initialize(modelFileName: String) {
-        if (currentLoadedModelName == modelFileName && whisperContext != null) {
+    actual suspend fun initialize(modelFileName: String, modelFormat: ModelFormat) {
+        if (currentLoadedModelName == modelFileName && currentLoadedModelFormat == modelFormat
+            && (whisperContext != null || sherpaContext != null)) {
             debugPrintln { "speech: model $modelFileName already loaded, skipping re-init" }
-            // Ensure canTranscribe is true whenever the model is confirmed loaded.
-            // Without this, a previous early-return from start() (canTranscribe = false
-            // path) would leave canTranscribe stuck as false even though the model is
-            // ready, causing every subsequent transcription attempt to fail immediately.
-            if (!isTranscribing) {
-                canTranscribe = true
-            }
+            if (!isTranscribing) canTranscribe = true
             resetInactivityTimer()
             return
         }
         cancelInactivityTimer()
-        debugPrintln { "speech: initialize model $modelFileName" }
+        debugPrintln { "speech: initialize model $modelFileName (format=$modelFormat)" }
         whisperContext?.release()
         whisperContext = null
+        sherpaContext?.release()
+        sherpaContext = null
         currentLoadedModelName = null
+        currentLoadedModelFormat = null
         canTranscribe = false
-        loadBaseModel(modelFileName)
+        loadBaseModel(modelFileName, modelFormat)
         if (isCancelled) return
-        if (whisperContext != null) {
-            resetInactivityTimer()
-        }
+        if (whisperContext != null || sherpaContext != null) resetInactivityTimer()
     }
 
-    private suspend fun loadBaseModel(modelFileName: String) {
+    private suspend fun loadBaseModel(modelFileName: String, modelFormat: ModelFormat) {
         modelLoadMutex.withLock {
             // Reset isCancelled inside the lock so a stale finish() from a previous
             // session (which sets isCancelled = true before acquiring the lock) cannot
@@ -115,24 +120,33 @@ actual class Transcriber(
             // finish() that fires *during* the long-running JNI call.
             isCancelled = false
             try {
-                debugPrintln { "Loading model: $modelFileName\n" }
+                debugPrintln { "Loading model: $modelFileName (format=$modelFormat)" }
                 val targetDir = modelsPath ?: run {
-                    debugPrintln { "External storage unavailable — cannot load model $modelFileName" }
+                    debugPrintln { "External storage unavailable — cannot load $modelFileName" }
                     return@withLock
                 }
-                val modelFile = File(targetDir, modelFileName)
-                if (!modelFile.exists()) {
-                    extractFromAssets(modelFileName, modelFile)
+
+                if (modelFormat == ModelFormat.ONNX) {
+                    val modelDir = File(targetDir, modelFileName)
+                    if (!modelDir.isDirectory) {
+                        debugPrintln { "ONNX model directory not found: ${modelDir.absolutePath}" }
+                        return@withLock
+                    }
+                    sherpaContext = SherpaWhisperContext.createContext(modelDir.absolutePath)
+                } else {
+                    val modelFile = File(targetDir, modelFileName)
+                    if (!modelFile.exists()) extractFromAssets(modelFileName, modelFile)
+                    whisperContext = WhisperContext.createContextFromFile(modelFile.absolutePath)
                 }
-                whisperContext = WhisperContext.createContextFromFile(modelFile.absolutePath)
+
                 if (isCancelled) {
-                    // finish() was called while JNI ran – release immediately
-                    whisperContext?.release()
-                    whisperContext = null
+                    whisperContext?.release(); whisperContext = null
+                    sherpaContext?.release(); sherpaContext = null
                     return@withLock
                 }
                 canTranscribe = true
                 currentLoadedModelName = modelFileName
+                currentLoadedModelFormat = modelFormat
             } catch (e: OutOfMemoryError) {
                 e.printStackTrace()
             } catch (e: Throwable) {
@@ -154,24 +168,32 @@ actual class Transcriber(
         }
     }
 
-    actual fun doesModelExists(modelFileName: String) : Boolean{
-        val modelFile = modelsPath?.let { File(it, modelFileName) }
-        if (modelFile?.exists() == true) return true
-        return try {
-            context.assets.open(modelFileName).use { true }
-        } catch (e: Exception) {
-            false
+    actual fun doesModelExists(modelFileName: String): Boolean {
+        val target = modelsPath?.let { File(it, modelFileName) }
+        return when {
+            target == null -> false
+            target.isDirectory -> ONNX_REQUIRED_FILES.all { File(target, it).exists() }
+            target.exists() -> true
+            else -> try { context.assets.open(modelFileName).use { true } } catch (e: Exception) { false }
         }
     }
 
     actual fun deleteModel(modelFileName: String): Boolean {
-        val modelFile = modelsPath?.let { File(it, modelFileName) } ?: return false
-        return if (modelFile.exists()) modelFile.delete() else false
+        val target = modelsPath?.let { File(it, modelFileName) } ?: return false
+        return when {
+            target.isDirectory -> target.deleteRecursively()
+            target.exists() -> target.delete()
+            else -> false
+        }
     }
 
     actual fun getModelFileSizeBytes(modelFileName: String): Long {
-        val modelFile = modelsPath?.let { File(it, modelFileName) } ?: return 0L
-        return if (modelFile.exists()) modelFile.length() else 0L
+        val target = modelsPath?.let { File(it, modelFileName) } ?: return 0L
+        return when {
+            target.isDirectory -> target.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+            target.exists() -> target.length()
+            else -> 0L
+        }
     }
 
     actual fun getAudioDurationSeconds(filePath: String): Int {
@@ -194,20 +216,18 @@ actual class Transcriber(
     }
 
     actual fun isValidModel(modelFileName: String): Boolean {
-        // Check on-disk file
-        val modelFile = modelsPath?.let { File(it, modelFileName) }
-        if (modelFile?.exists() == true && modelFile.length() > 0) return true
-        // Check bundled asset
-        return try {
-            context.assets.open(modelFileName).use { true }
-        } catch (e: Exception) {
-            false
+        val target = modelsPath?.let { File(it, modelFileName) } ?: return false
+        return when {
+            target.isDirectory -> ONNX_REQUIRED_FILES.all { File(target, it).exists() }
+            target.exists() -> target.length() > 0
+            else -> try { context.assets.open(modelFileName).use { true } } catch (e: Exception) { false }
         }
     }
 
     actual suspend fun stop() {
         isTranscribing = false
         whisperContext?.stopTranscription()
+        sherpaContext?.stopTranscription()
     }
 
     actual suspend fun finish() {
@@ -225,7 +245,10 @@ actual class Transcriber(
             if (currentLoadedModelName == modelAtFinish) {
                 whisperContext?.release()
                 whisperContext = null
+                sherpaContext?.release()
+                sherpaContext = null
                 currentLoadedModelName = null
+                currentLoadedModelFormat = null
                 canTranscribe = false
             }
             // If currentLoadedModelName differs, a new session loaded a different model
@@ -240,6 +263,9 @@ actual class Transcriber(
             debugPrintln { "speech: inactivity timeout — releasing model $currentLoadedModelName" }
             whisperContext?.release()
             whisperContext = null
+            sherpaContext?.release()
+            sherpaContext = null
+            currentLoadedModelFormat = null
             currentLoadedModelName = null
             canTranscribe = false
         }
@@ -299,49 +325,78 @@ actual class Transcriber(
                     val startProgress = (completedChunks * chunkProgress).toInt().coerceIn(0, 100)
                     onProgress(startProgress)
 
-                    val result = whisperContext?.transcribeData(
-                        chunkData,
-                        language,
-                        initialPrompt = previousChunkPrompt,
-                        callback = object : WhisperCallback {
-                        override fun onNewSegment(startMs: Long, endMs: Long, text: String) {
-                            // Adjust timing to account for chunk position in original audio
-                            val chunkStartTimeMs = (streamingChunk.startOffset - 44) / (streamingChunk.header.sampleRate * streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)
-                            val adjustedStartMs = startMs + chunkStartTimeMs.toLong()
-                            val adjustedEndMs = endMs + chunkStartTimeMs.toLong()
+                    if (currentLoadedModelFormat == ModelFormat.ONNX) {
+                        // ONNX path: synchronous, no segment-level callbacks
+                        val text = sherpaContext?.transcribeData(chunkData) ?: ""
+                        chunkText = text
+
+                        if (text.isNotBlank()) {
+                            val chunkStartMs = ((streamingChunk.startOffset - 44).toDouble() /
+                                (streamingChunk.header.sampleRate * streamingChunk.header.channels *
+                                 (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)).toLong()
+                            val chunkEndMs = ((streamingChunk.endOffset - 44).toDouble() /
+                                (streamingChunk.header.sampleRate * streamingChunk.header.channels *
+                                 (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)).toLong()
 
                             chunkSegments.add(com.module.notelycompose.utils.TranscriptionSegment(
-                                adjustedStartMs, adjustedEndMs, text
+                                chunkStartMs, chunkEndMs, text
                             ))
-
-                            // Call the original callback with adjusted timing
-                            onNewSegment(adjustedStartMs, adjustedEndMs, text)
+                            onNewSegment(chunkStartMs, chunkEndMs, text)
                         }
 
-                        override fun onProgress(progress: Int) {
-                            // Simple chunk-based progress: each chunk represents equal progress
-                            val totalChunks = streamingChunks.size
-                            val chunkProgress = 100.0 / totalChunks
+                        completedChunks++
+                        val overallProgress = (completedChunks * 100.0 / streamingChunks.size).toInt().coerceIn(0, 100)
+                        onProgress(overallProgress)
 
-                            // Progress = completed chunks + current chunk progress
-                            val overallProgress = ((completedChunks * chunkProgress) + (progress * chunkProgress / 100.0)).toInt().coerceIn(0, 100)
+                        val rawText = chunkSegments.joinToString(" ") { it.text.trim() }
+                        previousChunkPrompt = if (rawText.length > 100) rawText.takeLast(100) else rawText.ifBlank { null }
 
-                            debugPrintln{"Transcription: Chunk $chunkIndex progress: $progress%, Overall: $overallProgress%"}
-                            onProgress(overallProgress)
-                        }
+                    } else {
+                        // GGML path (original whisperContext code)
+                        val result = whisperContext?.transcribeData(
+                            chunkData,
+                            language,
+                            initialPrompt = previousChunkPrompt,
+                            callback = object : WhisperCallback {
+                            override fun onNewSegment(startMs: Long, endMs: Long, text: String) {
+                                // Adjust timing to account for chunk position in original audio
+                                val chunkStartTimeMs = (streamingChunk.startOffset - 44) / (streamingChunk.header.sampleRate * streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)
+                                val adjustedStartMs = startMs + chunkStartTimeMs.toLong()
+                                val adjustedEndMs = endMs + chunkStartTimeMs.toLong()
 
-                        override fun onComplete() {
-                            // This will be called for each chunk
-                            completedChunks++
-                            debugPrintln{"Transcription: Transcription completed for chunk $chunkIndex (${completedChunks}/${streamingChunks.size} completed)"}
-                        }
-                    })
+                                chunkSegments.add(com.module.notelycompose.utils.TranscriptionSegment(
+                                    adjustedStartMs, adjustedEndMs, text
+                                ))
 
-                    chunkText = result ?: ""
+                                // Call the original callback with adjusted timing
+                                onNewSegment(adjustedStartMs, adjustedEndMs, text)
+                            }
 
-                    // Letzten Teil des Chunks als Prompt für nächsten Chunk speichern
-                    val rawText = chunkSegments.joinToString(" ") { it.text.trim() }
-                    previousChunkPrompt = if (rawText.length > 100) rawText.takeLast(100) else rawText.ifBlank { null }
+                            override fun onProgress(progress: Int) {
+                                // Simple chunk-based progress: each chunk represents equal progress
+                                val totalChunks = streamingChunks.size
+                                val chunkProgress = 100.0 / totalChunks
+
+                                // Progress = completed chunks + current chunk progress
+                                val overallProgress = ((completedChunks * chunkProgress) + (progress * chunkProgress / 100.0)).toInt().coerceIn(0, 100)
+
+                                debugPrintln{"Transcription: Chunk $chunkIndex progress: $progress%, Overall: $overallProgress%"}
+                                onProgress(overallProgress)
+                            }
+
+                            override fun onComplete() {
+                                // This will be called for each chunk
+                                completedChunks++
+                                debugPrintln{"Transcription: Transcription completed for chunk $chunkIndex (${completedChunks}/${streamingChunks.size} completed)"}
+                            }
+                        })
+
+                        chunkText = result ?: ""
+
+                        // Letzten Teil des Chunks als Prompt für nächsten Chunk speichern
+                        val rawText = chunkSegments.joinToString(" ") { it.text.trim() }
+                        previousChunkPrompt = if (rawText.length > 100) rawText.takeLast(100) else rawText.ifBlank { null }
+                    }
 
                     // Create a temporary AudioChunk for compatibility with existing merge logic
                     val tempAudioChunk = com.module.notelycompose.utils.AudioChunk(

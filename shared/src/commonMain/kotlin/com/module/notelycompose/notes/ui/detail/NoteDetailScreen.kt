@@ -144,7 +144,7 @@ fun NoteDetailScreen(
             withContext(Dispatchers.IO) {
                 runCatching {
                     val model = modelSelection.getSelectedModel()
-                    transcriber.initialize(model.name)
+                    transcriber.initialize(model.name, model.format)
                 }
             }
         }

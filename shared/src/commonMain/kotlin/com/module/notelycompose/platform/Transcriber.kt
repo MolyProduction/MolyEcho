@@ -1,8 +1,10 @@
 package com.module.notelycompose.platform
 
+import com.module.notelycompose.modelDownloader.ModelFormat
+
 expect class Transcriber {
     fun doesModelExists(modelFileName: String ): Boolean
-    suspend fun initialize(modelFileName: String)
+    suspend fun initialize(modelFileName: String, modelFormat: ModelFormat = ModelFormat.GGML)
     suspend fun finish()
     suspend fun stop()
     suspend fun start(
