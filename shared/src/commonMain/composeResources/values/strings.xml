@@ -131,7 +131,7 @@
     <string name="speech_recognition">Speech Recognition</string>
     <string name="speech_recognition_desc">Choose your speech recognition model</string>
     <string name="speech_mode_german_quick_title">German – Moly Optimized</string>
-    <string name="speech_mode_german_quick_subtitle">~574 MB · High precision · Slightly slower</string>
+    <string name="speech_mode_german_quick_subtitle">~400 MB · High precision · Fast</string>
     <string name="speech_mode_german_accurate_title">German – Accurate</string>
     <string name="speech_mode_german_accurate_subtitle">~1.6 GB · Maximum accuracy · For special use cases</string>
     <string name="speech_mode_multilingual_title">Multilingual</string>
@@ -171,14 +171,14 @@
     <string name="onboarding_screen_two_title">Record, transcribe – offline.</string>
     <string name="onboarding_screen_two_desc">MolyEcho converts speech to text locally. No account, no cloud – all data stays on your device.</string>
     <string name="onboarding_screen_three_title">Internet\nRequired</string>
-    <string name="onboarding_screen_three_desc">The speech model (~574 MB) is downloaded automatically on first launch. An active internet connection is required.</string>
+    <string name="onboarding_screen_three_desc">The speech model (~400 MB) is downloaded automatically on first launch. An active internet connection is required.</string>
     <string name="onboarding_screen_four_title">Supports\nOver 50 languages</string>
     <string name="onboarding_screen_four_desc">For maximum accuracy: download the Turbo model (~1.6 GB) in Settings</string>
     <string name="onboarding_welcome_tagline">Your personal scribe</string>
     <string name="onboarding_models_title">Speech Models</string>
     <string name="onboarding_models_subtitle">Choose your model right now – you\'ll be taken directly to the model selection.</string>
     <string name="onboarding_model_german_quick_title">German –\nMoly Optimized</string>
-    <string name="onboarding_model_german_quick_desc">Our optimized model for German. Highly precise transcription – ideal for everyday use. Approx. 574 MB download.</string>
+    <string name="onboarding_model_german_quick_desc">Our optimized model for German. Highly precise transcription – ideal for everyday use. Approx. 400 MB download.</string>
     <string name="onboarding_model_german_accurate_title">German –\nMaximum Accuracy</string>
     <string name="onboarding_model_german_accurate_desc">Our most powerful model – for demanding recordings with accents, technical terms, or background noise. Approx. 1.6 GB download.</string>
     <string name="onboarding_model_multilingual_title">Multilingual –\nExceptionally Fast</string>
@@ -236,13 +236,13 @@
     <string name="ai_model_title">What is an AI model?</string>
     <string name="ai_model_description">An AI model is like a digital brain that has been trained to understand speech and convert it into written text. Different models have different strengths - some are faster, some are more accurate. Choose the one that matches your needs.</string>
     <string name="standard_model_title">German – Moly Optimized</string>
-    <string name="standard_model_description">Our own optimized model for the German language – and therefore our recommendation for most users. It delivers highly precise transcriptions and works especially well for clear recordings and everyday conversations. Processing takes a little longer than with the multilingual model – but in return you get significantly more accurate results in German. At around 574 MB, the download size is manageable.</string>
+    <string name="standard_model_description">Our own optimized model for the German language – and therefore our recommendation for most users. It delivers highly precise transcriptions and works especially well for clear recordings and everyday conversations. Processing takes a little longer than with the multilingual model – but in return you get significantly more accurate results in German. At around 400 MB, the download size is manageable.</string>
     <string name="optimized_model_title">German – Accurate</string>
     <string name="optimized_model_description">The most powerful model we offer – for those who want to get the absolute best results. Recommended for particularly demanding recordings: lots of background noise, technical jargon, strong accents, or long meetings. At around 1.6 GB, it is considerably larger than the other models, and processing takes noticeably longer. For everyday use, Moly Optimized is the better choice.</string>
     <string name="multilingual_model_title">Multilingual</string>
     <string name="multilingual_model_description">The fastest model – ideal when speed matters most. At around 465 MB, it is the smallest of the available models while supporting over 50 languages. Accuracy is lower than our German models, but perfectly sufficient for quick notes and simple texts. The first choice when speed or multilingual support matters more than maximum precision.</string>
     <!-- settings -->
-    <string name="standard_model_setting_desc">Our model · High precision · ~574 MB</string>
+    <string name="standard_model_setting_desc">Our model · High precision · ~400 MB</string>
     <string name="optimized_model_setting_desc">Maximum accuracy · For special use cases · ~1.6 GB</string>
     <string name="multilingual_model_setting_desc">Exceptionally fast · 50+ languages · ~465 MB</string>
     <string name="settings_model_selection">Model Selection</string>

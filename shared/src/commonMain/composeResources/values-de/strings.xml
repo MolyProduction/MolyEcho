@@ -131,7 +131,7 @@
     <string name="speech_recognition">Spracherkennung</string>
     <string name="speech_recognition_desc">Wähle dein Spracherkennungsmodell</string>
     <string name="speech_mode_german_quick_title">Deutsch – Moly optimiert</string>
-    <string name="speech_mode_german_quick_subtitle">~574 MB · Hochpräzise · Etwas langsamer</string>
+    <string name="speech_mode_german_quick_subtitle">~400 MB · Hochpräzise · Schnell</string>
     <string name="speech_mode_german_accurate_title">Deutsch – Genau</string>
     <string name="speech_mode_german_accurate_subtitle">~1,6 GB · Maximale Genauigkeit · Für Spezialfälle</string>
     <string name="speech_mode_multilingual_title">Mehrsprachig</string>
@@ -171,14 +171,14 @@
     <string name="onboarding_screen_two_title">Aufnehmen, transkribieren – offline.</string>
     <string name="onboarding_screen_two_desc">MolyEcho wandelt Sprache lokal in Text um. Kein Account, keine Cloud, alle Daten bleiben auf deinem Gerät.</string>
     <string name="onboarding_screen_three_title">Internet\nerforderlich</string>
-    <string name="onboarding_screen_three_desc">Das Sprachmodell (~574 MB) wird beim ersten Start automatisch heruntergeladen. Du benötigst eine aktive Internetverbindung.</string>
+    <string name="onboarding_screen_three_desc">Das Sprachmodell (~400 MB) wird beim ersten Start automatisch heruntergeladen. Du benötigst eine aktive Internetverbindung.</string>
     <string name="onboarding_screen_four_title">Noch\npräziser?</string>
     <string name="onboarding_screen_four_desc">Für maximale Genauigkeit: Lade das Turbo-Modell (~1,6 GB) in den Einstellungen herunter</string>
     <string name="onboarding_welcome_tagline">Dein persönlicher Schreiberling</string>
     <string name="onboarding_models_title">Sprachmodelle</string>
     <string name="onboarding_models_subtitle">Wähle jetzt gleich dein Modell aus – du wirst direkt zur Modellauswahl weitergeleitet.</string>
     <string name="onboarding_model_german_quick_title">Deutsch –\nMoly Optimiert</string>
-    <string name="onboarding_model_german_quick_desc">Unser optimiertes Modell für Deutsch. Hochpräzise Transkription – ideal für den Alltag. Ca. 574 MB Download.</string>
+    <string name="onboarding_model_german_quick_desc">Unser optimiertes Modell für Deutsch. Hochpräzise Transkription – ideal für den Alltag. Ca. 400 MB Download.</string>
     <string name="onboarding_model_german_accurate_title">Deutsch –\nMaximale Genauigkeit</string>
     <string name="onboarding_model_german_accurate_desc">Das leistungsstärkste Modell – für anspruchsvolle Aufnahmen mit Dialekt, Fachbegriffen oder Hintergrundgeräuschen. Ca. 1,6 GB Download.</string>
     <string name="onboarding_model_multilingual_title">Mehrsprachig –\nBesonders schnell</string>
@@ -236,13 +236,13 @@
     <string name="ai_model_title">Was ist ein KI-Modell?</string>
     <string name="ai_model_description">Ein KI-Modell ist wie ein digitales Gehirn, das darauf trainiert wurde, Sprache zu verstehen und in Text umzuwandeln. Verschiedene Modelle haben unterschiedliche Stärken – manche sind schneller, manche genauer. Wähle das Modell, das deinen Anforderungen am besten entspricht.</string>
     <string name="standard_model_title">Deutsch – Moly Optimiert</string>
-    <string name="standard_model_description">Unser selbst optimiertes Modell für die deutsche Sprache – und damit unsere Empfehlung für die meisten Nutzer. Es liefert hochpräzise Transkriptionen und eignet sich besonders gut für klare Aufnahmen und Alltagsgespräche. Die Verarbeitung dauert etwas länger als beim Mehrsprachigen Modell – dafür bekommst du deutlich genauere Ergebnisse auf Deutsch. Mit einem Download von ca. 574 MB hält sich der Speicherbedarf in einem angenehmen Rahmen.</string>
+    <string name="standard_model_description">Unser selbst optimiertes Modell für die deutsche Sprache – und damit unsere Empfehlung für die meisten Nutzer. Es liefert hochpräzise Transkriptionen und eignet sich besonders gut für klare Aufnahmen und Alltagsgespräche. Die Verarbeitung dauert etwas länger als beim Mehrsprachigen Modell – dafür bekommst du deutlich genauere Ergebnisse auf Deutsch. Mit einem Download von ca. 400 MB hält sich der Speicherbedarf in einem angenehmen Rahmen.</string>
     <string name="optimized_model_title">Deutsch – Genau</string>
     <string name="optimized_model_description">Das leistungsstärkste Modell, das wir anbieten – für alle, die das Maximale herausholen wollen. Empfohlen bei besonders anspruchsvollen Aufnahmen: viel Hintergrundgeräusch, Fachjargon, starke Dialekte oder lange Besprechungen. Mit ca. 1,6 GB ist es erheblich größer als die anderen Modelle, und die Verarbeitung dauert entsprechend länger. Für den täglichen Gebrauch ist Moly Optimiert die bessere Wahl.</string>
     <string name="multilingual_model_title">Mehrsprachig</string>
     <string name="multilingual_model_description">Das schnellste Modell – ideal, wenn es flott gehen soll. Mit ca. 465 MB ist es das kleinste der verfügbaren Modelle und unterstützt dabei über 50 Sprachen. Die Genauigkeit ist geringer als bei unseren deutschen Modellen, reicht aber für schnelle Notizen und einfache Texte völlig aus. Die erste Wahl, wenn Geschwindigkeit oder Mehrsprachigkeit wichtiger ist als maximale Präzision.</string>
     <!-- settings -->
-    <string name="standard_model_setting_desc">Unser Modell · Hochpräzise · ~574 MB</string>
+    <string name="standard_model_setting_desc">Unser Modell · Hochpräzise · ~400 MB</string>
     <string name="optimized_model_setting_desc">Maximale Genauigkeit · Für Spezialfälle · ~1,6 GB</string>
     <string name="multilingual_model_setting_desc">Besonders schnell · 50+ Sprachen · ~465 MB</string>
     <string name="settings_model_selection">Modellauswahl</string>
