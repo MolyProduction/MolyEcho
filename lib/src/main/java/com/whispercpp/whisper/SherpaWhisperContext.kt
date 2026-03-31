@@ -59,7 +59,7 @@ class SherpaWhisperContext private constructor(
             val config = OfflineRecognizerConfig(
                 featConfig = FeatureConfig(
                     sampleRate = 16000,
-                    featureDim = 80
+                    featureDim = 128  // large-v3-turbo uses 128 mel bins (not 80 which is for small/medium)
                 ),
                 modelConfig = OfflineModelConfig(
                     whisper = OfflineWhisperModelConfig(
@@ -67,7 +67,7 @@ class SherpaWhisperContext private constructor(
                         decoder = "$modelDir/$DECODER_FILE",
                         language = "de",
                         task = "transcribe",
-                        tailPaddings = -1
+                        tailPaddings = -1  // -1 = use sherpa-onnx default (no explicit tail padding)
                     ),
                     tokens = "$modelDir/$TOKENS_FILE",
                     numThreads = numThreads,

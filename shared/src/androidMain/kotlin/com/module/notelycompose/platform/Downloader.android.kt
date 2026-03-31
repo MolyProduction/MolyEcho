@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import androidx.core.app.NotificationCompat
+import java.io.File
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.module.notelycompose.MainActivity
@@ -35,6 +36,16 @@ actual class Downloader(
 
     actual suspend fun startDownload(url: String, fileName: String) {
         try {
+            // Create intermediate directories for subdirectory paths (e.g. ONNX multi-file downloads)
+            // DownloadManager does not guarantee parent directory creation on all Android versions.
+            if (fileName.contains('/')) {
+                val destDir = File(
+                    mainContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                    fileName.substringBeforeLast('/')
+                )
+                destDir.mkdirs()
+            }
+
             val request = DownloadManager.Request(url.toUri())
                 .setTitle("Downloading $fileName")
                 .setDestinationInExternalFilesDir(

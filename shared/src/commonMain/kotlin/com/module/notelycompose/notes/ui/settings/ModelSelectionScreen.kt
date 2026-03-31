@@ -118,10 +118,10 @@ fun ModelSelectionScreen(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            schnellReady = transcriber.doesModelExists("ggml-large-v3-turbo-german-q5_0.bin")
+            schnellReady = transcriber.doesModelExists("whisper-large-v3-turbo-german")
             genauReady = transcriber.doesModelExists("ggml-large-v3-turbo-german.bin")
             multiExtendedReady = transcriber.doesModelExists("ggml-small.bin")
-            schnellSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german-q5_0.bin") / 1024 / 1024
+            schnellSizeMB = transcriber.getModelFileSizeBytes("whisper-large-v3-turbo-german") / 1024 / 1024
             genauSizeMB = transcriber.getModelFileSizeBytes("ggml-large-v3-turbo-german.bin") / 1024 / 1024
             multiExtendedSizeMB = transcriber.getModelFileSizeBytes("ggml-small.bin") / 1024 / 1024
         }
@@ -243,7 +243,7 @@ fun ModelSelectionScreen(
                     multiExtendedSizeMB = multiExtendedSizeMB,
                     onDeleteSchnell = {
                         coroutineScope.launch {
-                            transcriber.deleteModel("ggml-large-v3-turbo-german-q5_0.bin")
+                            transcriber.deleteModel("whisper-large-v3-turbo-german")
                             schnellReady = false
                             schnellSizeMB = 0L
                             if (currentMode == MODE_GERMAN_QUICK) {

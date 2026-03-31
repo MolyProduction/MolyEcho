@@ -116,6 +116,11 @@ class ModelDownloaderViewModel(
     }
 
     private suspend fun startMultiFileDownload(model: TranscriptionModel) {
+        // KNOWN LIMITATION: If the app is killed between files, hasRunningDownload() may detect
+        // the last file's download ID and call trackDownload() with the top-level model name,
+        // which will complete for that one file and emit ModelsAreReady with an incomplete directory.
+        // doesModelExists() will return false on next launch and re-trigger the full download.
+        // Full resume support would require persisting per-file progress state.
         val files = model.downloadFiles ?: return
         val totalFiles = files.size
         _effects.emit(DownloaderEffect.DownloadEffect())
