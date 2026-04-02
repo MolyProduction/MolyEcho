@@ -38,7 +38,7 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
     /**
      * Index layout (stable — constants below depend on these positions):
      *   0  ggml-small.bin                      multilingual (465 MB, GGML)
-     *   1  whisper-large-v3-turbo-german/       German "Schnell" (~400 MB, ONNX)
+     *   1  whisper-large-v3-turbo-german/       German "Schnell" (~990 MB, ONNX)
      *   2  ggml-large-v3-turbo-german.bin       German "Genau"  (1.62 GB, GGML)
      *
      * NOTE: ONNX download URLs for model 1 are placeholders.
@@ -59,7 +59,7 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
         TranscriptionModel(
             name = "whisper-large-v3-turbo-german",
             modelType = GERMAN_MODEL,
-            size = "~400 MB",
+            size = "~990 MB",
             description = "German large-v3-turbo model — fast (ONNX/XNNPACK)",
             url = null,
             format = ModelFormat.ONNX,
