@@ -18,7 +18,6 @@ class NoteApp : Application() {
         // GetFieldID("decodingMethod") to fail at runtime.
         try {
             System.loadLibrary("sherpa-onnx-jni")
-            Log.d("NoteApp", "sherpa-onnx-jni pre-loaded on main thread")
         } catch (e: UnsatisfiedLinkError) {
             // Expected on devices/emulators where the AAR native libs are absent
             Log.w("NoteApp", "sherpa-onnx-jni not available: ${e.message}")

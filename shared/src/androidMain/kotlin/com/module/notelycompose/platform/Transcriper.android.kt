@@ -145,9 +145,7 @@ actual class Transcriber(
                         Log.e(LOG_TAG, "ONNX model files missing in ${modelDir.absolutePath}: $missingFiles")
                         return@withLock
                     }
-                    Log.d(LOG_TAG, "Loading ONNX model from ${modelDir.absolutePath}")
                     sherpaContext = SherpaWhisperContext.createContext(modelDir.absolutePath)
-                    Log.d(LOG_TAG, "ONNX model loaded successfully")
                 } else {
                     val modelFile = File(targetDir, modelFileName)
                     if (!modelFile.exists()) extractFromAssets(modelFileName, modelFile)

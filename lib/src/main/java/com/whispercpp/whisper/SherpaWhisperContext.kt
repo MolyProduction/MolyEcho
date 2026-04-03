@@ -54,10 +54,6 @@ class SherpaWhisperContext private constructor(
 
         fun createContext(modelDir: String): SherpaWhisperContext {
             val numThreads = WhisperCpuConfig.preferredThreadCount.coerceAtLeast(2)
-            Log.d(LOG_TAG, "Creating sherpa-onnx context: dir=$modelDir, threads=$numThreads")
-            Log.d(LOG_TAG, "Encoder: $modelDir/$ENCODER_FILE")
-            Log.d(LOG_TAG, "Decoder: $modelDir/$DECODER_FILE")
-            Log.d(LOG_TAG, "Tokens:  $modelDir/$TOKENS_FILE")
 
             val config = OfflineRecognizerConfig(
                 featConfig = FeatureConfig(
@@ -82,7 +78,6 @@ class SherpaWhisperContext private constructor(
             // AssetManager is only needed when loading from Android assets.
             // We use absolute file paths, so pass null.
             val recognizer = OfflineRecognizer(null, config)
-            Log.d(LOG_TAG, "sherpa-onnx recognizer created successfully")
             return SherpaWhisperContext(recognizer)
         }
     }
