@@ -8,9 +8,11 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import audio.utils.LauncherHolder
 import com.module.notelycompose.core.debugPrintln
+import com.module.notelycompose.utils.SilenceAnalyzer
 import com.module.notelycompose.utils.StreamingAudioChunker
 import com.module.notelycompose.utils.StreamingAudioChunk
 import com.module.notelycompose.utils.ChunkTranscriptionResult
+import com.module.notelycompose.utils.isSilentChunk
 import com.module.notelycompose.modelDownloader.ModelFormat
 import com.whispercpp.whisper.SherpaWhisperContext
 import com.whispercpp.whisper.WhisperCallback
@@ -313,8 +315,32 @@ actual class Transcriber(
         try {
             debugPrintln{"Reading WAV file chunks directly from disk...\n"}
 
-            // Split WAV file into streaming chunks without loading entire file into memory
-            val streamingChunks = streamingChunker.splitWavFileIntoChunks(filePath)
+            // Split WAV file into streaming chunks without loading entire file into memory.
+            // ONNX: Whisper's offline decoder has a hard 30-second receptive window (480,000
+            // samples at 16 kHz). Passing more audio to acceptWaveform() silently truncates
+            // at 30 s. Use exact 30 s chunks with no overlap (overlap would duplicate words
+            // because sherpa-onnx has no initialPrompt support between chunks).
+            // GGML: whisper.cpp handles arbitrary-length audio internally, so the default
+            // 10 MB chunks (~5.5 min) are fine.
+            val streamingChunks = if (currentLoadedModelFormat == ModelFormat.ONNX) {
+                val onnxChunkBytes = 30 * 16_000 * 2 // 30 s × 16 kHz × 2 bytes (16-bit mono)
+                val rawChunks = streamingChunker.splitWavFileIntoChunks(
+                    filePath,
+                    chunkSizeBytes = onnxChunkBytes,
+                    overlapSizeBytes = 0
+                )
+                val silenceAnalysis = SilenceAnalyzer.analyze(filePath)
+                if (silenceAnalysis.shouldApplyVad) {
+                    val filtered = rawChunks.filterNot { it.isSilentChunk(silenceAnalysis) }.toMutableList()
+                    debugPrintln { "VAD: skipped ${rawChunks.size - filtered.size}/${rawChunks.size} silent chunks" }
+                    filtered
+                } else {
+                    rawChunks
+                }
+            } else {
+                // GGML: unverändert, kein VAD
+                streamingChunker.splitWavFileIntoChunks(filePath)
+            }
             debugPrintln{"Processing ${streamingChunks.size} streaming chunks...\n"}
 
             val start = System.currentTimeMillis()
