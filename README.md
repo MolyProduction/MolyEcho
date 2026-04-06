@@ -74,12 +74,11 @@ Beim ersten Start wählt ihr ein Modell aus – es wird einmalig heruntergeladen
 
 | Modus | Modell | Größe | Empfohlen für |
 |-------|--------|-------|---------------|
-| **Deutsch – Genau** *(Standard)* | ggml-large-v3-turbo-german-q5_0 | ~574 MB | Alltag, schnelle Notizen |
+| **Deutsch – Genau** *(Standard)* | whisper-large-v3-turbo-german-sherpa-onnx |  1 GB | Alltag, schnelle Notizen |
 | **Deutsch – Extrem Genau** | ggml-large-v3-turbo-german | ~1,62 GB | Lange Texte, hohe Genauigkeit |
 | **Mehrsprachig** | ggml-small (multilingual) | ~465 MB | 50+ Sprachen |
 
-> **Hinweis zum Standardmodell:** Das Modell *Deutsch – Genau* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht. Mit ~574 MB ist es aktuell die genaueste deutsche Whisper-Variante unter 1,4 GB – präzise genug für den Alltag, kompakt genug für jedes Smartphone.
-
+> **Hinweis zum Standardmodell:** Das Modell *Deutsch – Genau* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht.
 ---
 
 ## Build
@@ -116,7 +115,8 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 ## Credits
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
-- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [F1sk/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/F1sk/whisper-large-v3-turbo-german-ggml-q5_0)
+- **Deutsches Turbo-Modell (Schnell)alt** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0)
+- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/tree/main)
 - **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
