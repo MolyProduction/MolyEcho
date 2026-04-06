@@ -116,7 +116,7 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
 - **Deutsches Turbo-Modell (Schnell)alt** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0)
-- - **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/tree/main)
+- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/tree/main)
 - **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
