@@ -15,7 +15,7 @@
 
 MolyEcho ist eine Android-App für Notizen mit integrierter Offline-Spracherkennung, optimiert für die deutsche Sprache. Aufnahmen werden direkt auf dem Gerät transkribiert – kein Server, keine Cloud, keine Datenweitergabe.
 
-Hinter der Transkription steckt [whisper.cpp](https://github.com/ggerganov/whisper.cpp) mit speziell auf Deutsch feingetunten Modellen.
+Hinter der Transkription stecken [whisper.cpp](https://github.com/ggerganov/whisper.cpp) und [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) mit speziell auf Deutsch feingetunten Modellen.
 
 ---
 
@@ -72,13 +72,13 @@ Hinter der Transkription steckt [whisper.cpp](https://github.com/ggerganov/whisp
 
 Beim ersten Start wählt ihr ein Modell aus – es wird einmalig heruntergeladen und danach offline genutzt.
 
-| Modus | Modell | Größe | Empfohlen für |
+| Modus | Format | Größe | Empfohlen für |
 |-------|--------|-------|---------------|
-| **Deutsch – Genau** *(Standard)* | ggml-large-v3-turbo-german-q5_0 | ~574 MB | Alltag, schnelle Notizen |
-| **Deutsch – Extrem Genau** | ggml-large-v3-turbo-german | ~1,62 GB | Lange Texte, hohe Genauigkeit |
-| **Mehrsprachig** | ggml-small (multilingual) | ~465 MB | 50+ Sprachen |
+| **Deutsch – Schnell** *(Standard)* | ONNX (sherpa-onnx) | ~990 MB | Alltag, schnelle Notizen |
+| **Deutsch – Genau** | GGML (whisper.cpp) | ~1,62 GB | Lange Texte, hohe Genauigkeit |
+| **Mehrsprachig** | GGML (whisper.cpp) | ~465 MB | 50+ Sprachen |
 
-> **Hinweis zum Standardmodell:** Das Modell *Deutsch – Genau* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht. Mit ~574 MB ist es aktuell die genaueste deutsche Whisper-Variante unter 1,4 GB – präzise genug für den Alltag, kompakt genug für jedes Smartphone.
+> **Hinweis zum Standardmodell:** Das ONNX-Modell *Deutsch – Schnell* wurde von uns eigens für MolyEcho konvertiert und auf HuggingFace veröffentlicht. Es läuft über sherpa-onnx und bietet schnelle Transkription direkt auf dem Gerät – optimiert für deutschen Alltagseinsatz.
 
 ---
 
@@ -116,8 +116,9 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 ## Credits
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
-- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [F1sk/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/F1sk/whisper-large-v3-turbo-german-ggml-q5_0)
-- **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
+- **ONNX-Modell (Deutsch – Schnell)** – von uns konvertiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx)
+- **GGML-Modell (Deutsch – Genau)** – [cstr/whisper-large-v3-turbo-german-ggml](https://huggingface.co/cstr/whisper-large-v3-turbo-german-ggml)
+- **sherpa-onnx** – [k2-fsa/sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
 ---
