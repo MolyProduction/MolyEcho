@@ -107,6 +107,7 @@ fun NoteDetailScreen(
     navigateToRecorder: (noteId: String) -> Unit,
     navigateToTranscription: () -> Unit,
     onNavigateToSettingsText: () -> Unit,
+    autoTranscribe: Boolean = false,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -147,6 +148,14 @@ fun NoteDetailScreen(
                     transcriber.initialize(model.name, model.format)
                 }
             }
+        }
+    }
+
+    // Auto-navigiert zur Transkription, wenn die Notiz über den Share-Flow erstellt wurde.
+    // Feuert erneut, wenn recordingPath aus der DB nachgeladen wird (anfangs leer).
+    LaunchedEffect(autoTranscribe, editorState.recording.recordingPath) {
+        if (autoTranscribe && editorState.recording.recordingPath.isNotBlank()) {
+            navigateToTranscription()
         }
     }
 
@@ -384,7 +393,7 @@ fun NoteDetailScreen(
             showCopiedTooltip = true
         }
     }
-    3
+
     CopiedNotification(
         visible = showCopiedTooltip,
         onDismiss = {
