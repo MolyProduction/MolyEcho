@@ -28,6 +28,8 @@ import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 import com.module.notelycompose.permissions.PermissionLauncherHolder
 import com.module.notelycompose.permissions.PermissionViewModel
+import com.module.notelycompose.shareimport.AndroidShareImportCoordinator
+import com.module.notelycompose.shareimport.ShareImportCoordinator
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -87,4 +89,8 @@ actual val platformModule = module {
     // permissions
     single { PermissionLauncherHolder() }
     viewModel { PermissionViewModel(get(), get()) }
+
+    single<ShareImportCoordinator> {
+        AndroidShareImportCoordinator(context = get(), audioConverter = get(), insertNoteUseCase = get())
+    }
 }
