@@ -29,10 +29,16 @@ class TranscriptionViewModel(
     private val _uiState = MutableStateFlow(TranscriptionUiState())
     val uiState: StateFlow<TranscriptionUiState> = _uiState
 
+    // Session token captured from the Transcriber immediately after initialize() returns.
+    // Passed to finish() so stale finish() calls from a previous ViewModel instance cannot
+    // release the model owned by a newer session (Transcriber is a singleton).
+    @Volatile private var mySessionToken: Long = 0L
+
     fun initRecognizer() {
         viewModelScope.launch(Dispatchers.IO) {
             val modelFileName = modelSelection.getSelectedModel()
             transcriber.initialize(modelFileName.name, modelFileName.format)
+            mySessionToken = transcriber.currentSessionToken
         }
     }
 
@@ -53,6 +59,7 @@ class TranscriptionViewModel(
             // This prevents the race condition where start() runs before the model is loaded.
             val modelFileName = modelSelection.getSelectedModel()
             transcriber.initialize(modelFileName.name, modelFileName.format)
+            mySessionToken = transcriber.currentSessionToken
 
             // Model is loaded (or was already cached) — update notification and UI
             serviceController.notifyTranscriptionPhaseTranscribing()
@@ -130,8 +137,9 @@ class TranscriptionViewModel(
                 progress = 0
             )
         }
+        val token = mySessionToken
         viewModelScope.launch {
-            transcriber.finish()
+            transcriber.finish(token)
         }
     }
 
@@ -157,11 +165,15 @@ class TranscriptionViewModel(
         // away). We must NOT stop the service here — finish() uses a Mutex to wait for
         // the JNI call. This coroutine: (1) aborts transcription, (2) waits for model
         // loading to complete, (3) only then stops the service.
+        // Capture the session token synchronously (onCleared runs on Main) before the
+        // coroutine launches — by the time the coroutine runs, a new ViewModel may have
+        // already called initialize() and bumped the counter.
         _uiState.update { it.copy(inTranscription = false, isModelLoading = false) }
+        val token = mySessionToken
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 transcriber.stop()
-                transcriber.finish()
+                transcriber.finish(token)
             } catch (e: Throwable) {
                 e.printStackTrace()
             } finally {
