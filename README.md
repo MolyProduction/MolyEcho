@@ -1,4 +1,4 @@
-# MolyEcho
+# <p align="center">MolyEcho</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/MolyProduction/MolyEcho/main/shared/src/commonMain/composeResources/drawable/molyecho_logo.png" width="220" alt="MolyEcho Logo">
@@ -15,7 +15,7 @@
 
 MolyEcho ist eine Android-App für Notizen mit integrierter Offline-Spracherkennung, optimiert für die deutsche Sprache. Aufnahmen werden direkt auf dem Gerät transkribiert – kein Server, keine Cloud, keine Datenweitergabe.
 
-Hinter der Transkription stecken [whisper.cpp](https://github.com/ggerganov/whisper.cpp) und [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) mit speziell auf Deutsch feingetunten Modellen.
+Hinter der Transkription steckt [whisper.cpp](https://github.com/ggerganov/whisper.cpp) mit speziell auf Deutsch feingetunten Modellen.
 
 ---
 
@@ -39,7 +39,7 @@ Hinter der Transkription stecken [whisper.cpp](https://github.com/ggerganov/whis
 - **Nahtlose Integration** – Aufnahme direkt in die Notiz transkribieren oder später manuell starten
 - **Audio-/Video-Import** – externe Aufnahmen importieren und transkribieren lassen
 - **Unbegrenzte Transkriptionen** – kein Limit, kein Abo
-- **Drei Modelle wählbar** – Moly Optimiert (ONNX, Standard), Genau (GGML) und Mehrsprachig (Details siehe [Sprachmodelle](#sprachmodelle))
+- **Wählbare Modellgröße** – von schnell & kompakt bis höchstgenau (Details siehe [Sprachmodelle](#sprachmodelle))
 
 ### 🎧 Aufnahme & Wiedergabe
 
@@ -72,14 +72,13 @@ Hinter der Transkription stecken [whisper.cpp](https://github.com/ggerganov/whis
 
 Beim ersten Start wählt ihr ein Modell aus – es wird einmalig heruntergeladen und danach offline genutzt.
 
-| Modus | Format | Größe | Empfohlen für |
+| Modus | Modell | Größe | Empfohlen für |
 |-------|--------|-------|---------------|
-| **Deutsch – Moly Optimiert** *(Standard)* | ONNX (sherpa-onnx) | ~990 MB | Alltag, hochpräzise Transkription |
-| **Deutsch – Genau** | GGML (whisper.cpp) | ~1,62 GB | Lange Texte, maximale Genauigkeit |
-| **Mehrsprachig** | GGML (whisper.cpp) | ~465 MB | 50+ Sprachen, schnelle Notizen |
+| **Deutsch – Genau** *(Standard)* | whisper-large-v3-turbo-german-sherpa-onnx |  1 GB | Alltag, schnelle Notizen |
+| **Deutsch – Extrem Genau** | ggml-large-v3-turbo-german | ~1,62 GB | Lange Texte, hohe Genauigkeit |
+| **Mehrsprachig** | ggml-small (multilingual) | ~465 MB | 50+ Sprachen |
 
-> **Hinweis zum Standardmodell:** *Deutsch – Moly Optimiert* ist unser eigens für MolyEcho konvertiertes ONNX-Modell, das wir auf HuggingFace veröffentlicht haben. Es läuft über sherpa-onnx mit INT8-Quantisierung und liefert hochpräzise deutsche Transkriptionen – die beste Wahl für den Alltag.
-
+> **Hinweis zum Standardmodell:** Das Modell *Deutsch – Genau* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht.
 ---
 
 ## Build
@@ -116,9 +115,9 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 ## Credits
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
-- **Deutsch – Moly Optimiert (ONNX)** – von uns konvertiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx)
-- **GGML-Modell (Deutsch – Genau)** – [cstr/whisper-large-v3-turbo-german-ggml](https://huggingface.co/cstr/whisper-large-v3-turbo-german-ggml)
-- **sherpa-onnx** – [k2-fsa/sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx)
+- **Deutsches Turbo-Modell (Schnell)alt** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0)
+- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/tree/main)
+- **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
 ---
@@ -129,8 +128,9 @@ GNU General Public License v3.0 – siehe [LICENSE](LICENSE).
 
 ```
 MolyEcho
-Copyright (C) 2024  Contributors
-
+Copyright (C) 2026  Contributors
+Based on NotelyVoice
+Copyright (C) 2025 NotelyVoice (Tosin Onikute)
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
