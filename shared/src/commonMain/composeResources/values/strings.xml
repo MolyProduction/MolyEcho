@@ -268,4 +268,8 @@
     <string name="onboarding_permission_granted">Granted ✓</string>
     <string name="onboarding_permission_battery_settings">Settings</string>
     <string name="onboarding_permission_disabled">Disabled ✓</string>
+    <!-- Share Import UI -->
+    <string name="share_import_preparing">Preparing audio file…</string>
+    <string name="share_import_error_title">Import error</string>
+    <string name="share_import_ok">OK</string>
 </resources>

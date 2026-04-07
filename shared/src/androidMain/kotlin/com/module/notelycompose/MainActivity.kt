@@ -17,6 +17,8 @@ import com.module.notelycompose.platform.Theme
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import com.module.notelycompose.permissions.PermissionLauncherHolder
+import android.content.Intent
+import androidx.core.content.IntentCompat
 
 class MainActivity : AppCompatActivity() {
     private val fileSaverLauncherHolder by inject<FileSaverLauncherHolder>()
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         setupFileSaverLauncher()
         setupFolderPickerLauncher()
         setupNotificationPermissionLauncher()
+        handleShareIntent(intent)
         enableEdgeToEdge()
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -81,5 +84,20 @@ class MainActivity : AppCompatActivity() {
     private fun injectLauncher() {
         val launcherHolder by inject<LauncherHolder>()
         launcherHolder.init(this)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleShareIntent(intent)
+    }
+
+    private fun handleShareIntent(intent: Intent?) {
+        if (intent?.action != Intent.ACTION_SEND) return
+        val uri = IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, android.net.Uri::class.java)
+            ?: return
+        if (!ShareIntentBus.incoming.tryEmit(uri)) {
+            ShareIntentBus.incoming.resetReplayCache()
+            ShareIntentBus.incoming.tryEmit(uri)
+        }
     }
 }

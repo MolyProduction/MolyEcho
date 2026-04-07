@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -107,6 +108,7 @@ fun NoteDetailScreen(
     navigateToRecorder: (noteId: String) -> Unit,
     navigateToTranscription: () -> Unit,
     onNavigateToSettingsText: () -> Unit,
+    autoTranscribe: Boolean = false,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -136,6 +138,7 @@ fun NoteDetailScreen(
     var showExistingRecordConfirmDialog by remember { mutableStateOf(false) }
     var showCopiedTooltip by remember { mutableStateOf(false) }
     var isFabVisible by remember { mutableStateOf(true) }
+    var autoTranscribeConsumed by rememberSaveable { mutableStateOf(false) }
 
     // Pre-warm Whisper model in background when a recording exists so the model is
     // ready (or partially cached) by the time the user taps "Transkribieren".
@@ -147,6 +150,16 @@ fun NoteDetailScreen(
                     transcriber.initialize(model.name, model.format)
                 }
             }
+        }
+    }
+
+    // Auto-navigiert zur Transkription, wenn die Notiz über den Share-Flow erstellt wurde.
+    // Feuert erneut, wenn recordingPath aus der DB nachgeladen wird (anfangs leer).
+    // Das Flag verhindert doppelte Navigation bei mehrfachen DB-Updates.
+    LaunchedEffect(autoTranscribe, editorState.recording.recordingPath) {
+        if (autoTranscribe && !autoTranscribeConsumed && editorState.recording.recordingPath.isNotBlank()) {
+            autoTranscribeConsumed = true
+            navigateToTranscription()
         }
     }
 
@@ -384,7 +397,7 @@ fun NoteDetailScreen(
             showCopiedTooltip = true
         }
     }
-    3
+
     CopiedNotification(
         visible = showCopiedTooltip,
         onDismiss = {

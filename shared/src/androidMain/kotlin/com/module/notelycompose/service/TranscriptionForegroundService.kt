@@ -32,6 +32,11 @@ class TranscriptionForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
+            // Explicitly (re-)establish the foreground notification as "loading" on every
+            // new transcription start. This covers the case where the service is still alive
+            // from a previous session (onCreate was not called again) and the notification
+            // would otherwise stay in an outdated state.
+            ACTION_START -> updateNotification(loading = true)
             ACTION_PHASE_LOADING -> updateNotification(loading = true)
             ACTION_PHASE_TRANSCRIBING -> updateNotification(loading = false)
             ACTION_COMPLETE -> {
@@ -51,8 +56,11 @@ class TranscriptionForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun updateNotification(loading: Boolean) {
-        val nm = getSystemService(NotificationManager::class.java)
-        nm.notify(NOTIFICATION_ID, buildNotification(loading))
+        // Use startForeground() to update the notification — NOT NotificationManager.notify().
+        // nm.notify() is silently ignored for foreground service notifications on many Android
+        // versions and OEM skins when the app is in background. startForeground() is the
+        // correct and reliable way to update a foreground service's notification.
+        startForeground(NOTIFICATION_ID, buildNotification(loading))
     }
 
     private fun buildNotification(loading: Boolean): Notification {

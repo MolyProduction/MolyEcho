@@ -83,6 +83,12 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("junit:junit:4.13.2")
+            }
+        }
     }
 
     targets.all {

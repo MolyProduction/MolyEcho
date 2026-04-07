@@ -14,7 +14,7 @@ sealed interface Routes {
     data object DetailsGraph : Routes
 
     @Serializable
-    data class Details(val noteId: String?) : Routes
+    data class Details(val noteId: String?, val autoTranscribe: Boolean = false) : Routes
 
     @Serializable
     data class Recorder(val noteId: String?) : Routes

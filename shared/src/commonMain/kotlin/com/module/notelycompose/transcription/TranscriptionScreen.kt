@@ -42,6 +42,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -108,6 +110,28 @@ fun TranscriptionScreen(
             viewModel.finishRecognizer()
         }
     }
+
+    // Auto-save transcription text to the note database the moment transcription completes.
+    // This runs while the foreground service (and its WakeLock) are still active, so the
+    // text is persisted to the DB before the process becomes killable.
+    val wasTranscribing = remember { mutableStateOf(false) }
+    val autoSaved = remember { mutableStateOf(false) }
+    LaunchedEffect(transcriptionUiState.inTranscription) {
+        val currentlyTranscribing = transcriptionUiState.inTranscription
+        if (!currentlyTranscribing && wasTranscribing.value && !autoSaved.value) {
+            val text = transcriptionUiState.originalText
+            if (text.isNotBlank()) {
+                val existingText = editorState.content.text
+                val separator = if (existingText.isNotBlank()) "\n" else ""
+                editorViewModel.onUpdateContent(
+                    TextFieldValue("$existingText$separator$text")
+                )
+                autoSaved.value = true
+            }
+        }
+        wasTranscribing.value = currentlyTranscribing
+    }
+
         Card(
             backgroundColor = LocalCustomColors.current.bodyBackgroundColor,
             elevation = 0.dp
@@ -240,8 +264,12 @@ fun TranscriptionScreen(
                             )
                         },
                         onClick = {
-                            val result = if (transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText
-                            editorViewModel.onUpdateContent(TextFieldValue("${editorState.content.text}\n$result"))
+                            // Skip if auto-save already wrote the text to the note DB to
+                            // prevent duplication.
+                            if (!autoSaved.value) {
+                                val result = if (transcriptionUiState.viewOriginalText) transcriptionUiState.originalText else transcriptionUiState.summarizedText
+                                editorViewModel.onUpdateContent(TextFieldValue("${editorState.content.text}\n$result"))
+                            }
                             navigateBack()
                         }
                     )

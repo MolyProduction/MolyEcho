@@ -154,11 +154,15 @@ actual class Transcriber(
                     whisperContext = WhisperContext.createContextFromFile(modelFile.absolutePath)
                 }
 
-                if (isCancelled) {
-                    whisperContext?.release(); whisperContext = null
-                    sherpaContext?.release(); sherpaContext = null
-                    return@withLock
-                }
+                // Note: we intentionally do NOT check isCancelled here.
+                // finish() sets isCancelled=true *before* acquiring the mutex, so a stale
+                // finish() from the *previous* session (e.g. ONNX ViewModel onCleared)
+                // can set isCancelled=true on an IO thread *after* our reset above, while
+                // the JNI call is in progress on another IO thread.  Aborting here would
+                // silently discard the freshly-loaded model and leave canTranscribe=false.
+                // finish() already handles legitimate cleanup via the modelAtFinish
+                // comparison in its own mutex block — if the name doesn't match it is a
+                // stale cancel and should be ignored.
                 canTranscribe = true
                 currentLoadedModelName = modelFileName
                 currentLoadedModelFormat = modelFormat
