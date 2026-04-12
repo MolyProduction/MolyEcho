@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 private const val LOG_TAG = "LibWhisper"
 
@@ -73,6 +74,16 @@ class WhisperContext private constructor(private var ptr: Long) {
             ptr = 0
         }
         executor.shutdown()
+        try {
+            // Defensive: warte auf vollständige Terminierung des Executors
+            if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
+                Log.w(LOG_TAG, "Executor did not terminate in time, forcing shutdown")
+                executor.shutdownNow()
+            }
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            executor.shutdownNow()
+        }
     }
 
     protected fun finalize() {

@@ -35,7 +35,7 @@ actual class Transcriber(
     private val launcherHolder: LauncherHolder
 ) {
     private var canTranscribe: Boolean = false
-    private var isTranscribing = false
+    @Volatile private var isTranscribing = false
     private val modelsPath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
     private var whisperContext: WhisperContext? = null
     private var sherpaContext: SherpaWhisperContext? = null
@@ -48,7 +48,7 @@ actual class Transcriber(
     private val streamingChunker = StreamingAudioChunker()
     @Volatile private var currentLoadedModelName: String? = null
     private val inactivityScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private var inactivityJob: Job? = null
+    @Volatile private var inactivityJob: Job? = null
 
     // Serializes model loading and finish() so finish() always waits until the JNI
     // call completes before releasing the context and stopping the service.
@@ -271,16 +271,23 @@ actual class Transcriber(
 
     private fun resetInactivityTimer() {
         inactivityJob?.cancel()
+        // Token zum Zeitpunkt des Timer-Starts. Nach dem delay() wird geprüft ob er
+        // noch aktuell ist — ein zwischenzeitliches initialize() erhöht den Counter
+        // und verhindert so das Freisetzen des neuen Modells.
+        val tokenAtReset = sessionCounter.get()
         inactivityJob = inactivityScope.launch {
             delay(INACTIVITY_TIMEOUT_MS)
-            debugPrintln { "speech: inactivity timeout — releasing model $currentLoadedModelName" }
-            whisperContext?.release()
-            whisperContext = null
-            sherpaContext?.release()
-            sherpaContext = null
-            currentLoadedModelFormat = null
-            currentLoadedModelName = null
-            canTranscribe = false
+            modelLoadMutex.withLock {
+                if (sessionCounter.get() != tokenAtReset) return@withLock
+                debugPrintln { "speech: inactivity timeout — releasing model $currentLoadedModelName" }
+                whisperContext?.release()
+                whisperContext = null
+                sherpaContext?.release()
+                sherpaContext = null
+                currentLoadedModelFormat = null
+                currentLoadedModelName = null
+                canTranscribe = false
+            }
         }
     }
 

@@ -8,7 +8,12 @@ class AndroidTranscriptionServiceController(
     private val context: Context
 ) : TranscriptionServiceController {
 
+    @Volatile
+    override var isServiceActive: Boolean = false
+        private set
+
     override fun startTranscriptionService() {
+        isServiceActive = true
         val intent = Intent(context, TranscriptionForegroundService::class.java).apply {
             action = TranscriptionForegroundService.ACTION_START
         }
@@ -16,10 +21,12 @@ class AndroidTranscriptionServiceController(
     }
 
     override fun stopTranscriptionService() {
+        isServiceActive = false
         context.stopService(Intent(context, TranscriptionForegroundService::class.java))
     }
 
     override fun notifyTranscriptionPhaseLoading() {
+        if (!isServiceActive) return
         context.startService(
             Intent(context, TranscriptionForegroundService::class.java).apply {
                 action = TranscriptionForegroundService.ACTION_PHASE_LOADING
@@ -28,6 +35,7 @@ class AndroidTranscriptionServiceController(
     }
 
     override fun notifyTranscriptionPhaseTranscribing() {
+        if (!isServiceActive) return
         context.startService(
             Intent(context, TranscriptionForegroundService::class.java).apply {
                 action = TranscriptionForegroundService.ACTION_PHASE_TRANSCRIBING
@@ -36,6 +44,8 @@ class AndroidTranscriptionServiceController(
     }
 
     override fun notifyTranscriptionComplete() {
+        if (!isServiceActive) return
+        isServiceActive = false
         context.startService(
             Intent(context, TranscriptionForegroundService::class.java).apply {
                 action = TranscriptionForegroundService.ACTION_COMPLETE
