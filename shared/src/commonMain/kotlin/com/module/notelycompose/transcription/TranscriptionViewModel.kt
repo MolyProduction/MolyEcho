@@ -37,8 +37,7 @@ class TranscriptionViewModel(
     fun initRecognizer() {
         viewModelScope.launch(Dispatchers.IO) {
             val modelFileName = modelSelection.getSelectedModel()
-            transcriber.initialize(modelFileName.name, modelFileName.format)
-            mySessionToken = transcriber.currentSessionToken
+            mySessionToken = transcriber.initialize(modelFileName.name, modelFileName.format)
         }
     }
 
@@ -58,8 +57,7 @@ class TranscriptionViewModel(
             // Initialize the correct model sequentially before transcribing.
             // This prevents the race condition where start() runs before the model is loaded.
             val modelFileName = modelSelection.getSelectedModel()
-            transcriber.initialize(modelFileName.name, modelFileName.format)
-            mySessionToken = transcriber.currentSessionToken
+            mySessionToken = transcriber.initialize(modelFileName.name, modelFileName.format)
 
             // Model is loaded (or was already cached) — update notification and UI
             serviceController.notifyTranscriptionPhaseTranscribing()

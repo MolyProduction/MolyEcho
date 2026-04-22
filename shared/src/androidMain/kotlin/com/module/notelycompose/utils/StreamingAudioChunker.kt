@@ -1,11 +1,9 @@
 package com.module.notelycompose.utils
 
 import com.module.notelycompose.core.debugPrintln
-import java.io.File
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import kotlin.math.min
 
 /**
  * Streaming audio chunker that reads chunks directly from WAV files
@@ -27,37 +25,6 @@ class StreamingAudioChunker {
     private var reusableByteArray: ByteArray? = null
 
     /**
-     * Reads WAV file header and returns metadata
-     */
-    private fun readWavHeader(file: RandomAccessFile): WavHeader {
-        val header = ByteArray(44)
-        file.read(header)
-
-        val buffer = ByteBuffer.wrap(header)
-        buffer.order(ByteOrder.LITTLE_ENDIAN)
-
-        // Check if it's a valid WAV file
-        val riff = String(header, 0, 4)
-        val wave = String(header, 8, 4)
-        if (riff != "RIFF" || wave != "WAVE") {
-            throw IllegalArgumentException("Not a valid WAV file")
-        }
-
-        val channels = buffer.getShort(22).toInt()
-        val sampleRate = buffer.getInt(24)
-        val bitsPerSample = buffer.getShort(34).toInt()
-        // Read data size as unsigned 32-bit (WAV spec) to avoid sign overflow for files > 2 GB
-        val dataSize = buffer.getInt(40).toLong() and 0xFFFFFFFFL
-
-        return WavHeader(
-            channels = channels,
-            sampleRate = sampleRate,
-            bitsPerSample = bitsPerSample,
-            dataSize = dataSize
-        )
-    }
-
-    /**
      * Splits WAV file into overlapping chunks without loading entire file into memory
      *
      * @param filePath Path to the WAV file
@@ -73,7 +40,7 @@ class StreamingAudioChunker {
         val file = RandomAccessFile(filePath, "r")
 
         try {
-            val header = readWavHeader(file)
+            val header = WavFileParser.parse(file)
             val chunks = mutableListOf<StreamingAudioChunk>()
 
             // Calculate total chunks needed
@@ -81,11 +48,11 @@ class StreamingAudioChunker {
 
             debugPrintln { "Splitting WAV file: ${header.dataSize} bytes into ~$totalChunks chunks" }
 
-            var currentOffset = 44L // Skip WAV header
+            var currentOffset = header.dataOffset
             var chunkIndex = 0
 
-            while (currentOffset < 44L + header.dataSize) {
-                val remainingBytes = (44L + header.dataSize) - currentOffset
+            while (currentOffset < header.dataOffset + header.dataSize) {
+                val remainingBytes = (header.dataOffset + header.dataSize) - currentOffset
                 val currentChunkSize = minOf(chunkSizeBytes.toLong(), remainingBytes)
 
                 // Calculate overlap for next chunk
@@ -104,7 +71,7 @@ class StreamingAudioChunker {
                     endOffset = overlapEnd,
                     header = header,
                     isFirstChunk = chunkIndex == 0,
-                    isLastChunk = currentOffset + currentChunkSize >= 44L + header.dataSize
+                    isLastChunk = currentOffset + currentChunkSize >= header.dataOffset + header.dataSize
                 ))
 
                 chunkIndex++
@@ -213,7 +180,7 @@ class StreamingAudioChunker {
     private fun convertBytesToFloatArrayReusable(
         buffer: ByteArray,
         bytesRead: Int,
-        header: WavHeader
+        header: WavInfo
     ): FloatArray {
         val bytesPerSample = header.bitsPerSample / 8
         val samplesCount = bytesRead / (header.channels * bytesPerSample)
@@ -246,16 +213,6 @@ class StreamingAudioChunker {
 }
 
 /**
- * WAV file header information
- */
-data class WavHeader(
-    val channels: Int,
-    val sampleRate: Int,
-    val bitsPerSample: Int,
-    val dataSize: Long
-)
-
-/**
  * Represents a streaming audio chunk with file position information
  */
 data class StreamingAudioChunk(
@@ -263,7 +220,7 @@ data class StreamingAudioChunk(
     val filePath: String,
     val startOffset: Long,
     val endOffset: Long,
-    val header: WavHeader,
+    val header: WavInfo,
     val isFirstChunk: Boolean,
     val isLastChunk: Boolean
 ) {

@@ -12,10 +12,9 @@ android {
         targetSdk 36
 
         ndk {
-            // Note: sherpa-onnx ships ARM-only (arm64-v8a, armeabi-v7a).
-            // x86/x86_64 here only applies to whisper.cpp (for emulator builds).
-            // sherpa-onnx will throw UnsatisfiedLinkError on x86/x86_64 emulators - use an ARM emulator.
-            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
+            // sherpa-onnx ships ARM-only (arm64-v8a, armeabi-v7a); x86/x86_64 would
+            // compile whisper.cpp but crash the ONNX path at runtime. Use an ARM emulator.
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
         }
         externalNativeBuild {
             cmake {

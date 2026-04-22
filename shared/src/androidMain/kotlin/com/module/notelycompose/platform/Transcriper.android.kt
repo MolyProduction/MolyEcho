@@ -13,6 +13,7 @@ import com.module.notelycompose.utils.StreamingAudioChunker
 import com.module.notelycompose.utils.StreamingAudioChunk
 import com.module.notelycompose.utils.ChunkTranscriptionResult
 import com.module.notelycompose.utils.isSilentChunk
+import com.module.notelycompose.utils.WavFileParser
 import com.module.notelycompose.modelDownloader.ModelFormat
 import com.whispercpp.whisper.SherpaWhisperContext
 import com.whispercpp.whisper.WhisperCallback
@@ -104,18 +105,21 @@ actual class Transcriber(
     }
 
 
-    actual suspend fun initialize(modelFileName: String, modelFormat: ModelFormat) {
+    actual suspend fun initialize(modelFileName: String, modelFormat: ModelFormat): Long {
         // Bump the session counter first — before the fast-path check. This ensures that a
         // finish() from the previous ViewModel (which captured the old token) will see a
         // mismatching token and skip the release, even when both sessions use the same model.
-        sessionCounter.incrementAndGet()
+        // The returned token is what the caller MUST use for its later finish() call — reading
+        // currentSessionToken after initialize() returns is not safe, because a concurrent
+        // initialize() from another ViewModel can bump the counter in between.
+        val myToken = sessionCounter.incrementAndGet()
 
         if (currentLoadedModelName == modelFileName && currentLoadedModelFormat == modelFormat
             && (whisperContext != null || sherpaContext != null)) {
             debugPrintln { "speech: model $modelFileName already loaded, skipping re-init" }
             if (!isTranscribing) canTranscribe = true
             resetInactivityTimer()
-            return
+            return myToken
         }
         cancelInactivityTimer()
         debugPrintln { "speech: initialize model $modelFileName (format=$modelFormat)" }
@@ -128,6 +132,7 @@ actual class Transcriber(
         canTranscribe = false
         loadBaseModel(modelFileName, modelFormat)
         if (whisperContext != null || sherpaContext != null) resetInactivityTimer()
+        return myToken
     }
 
     private suspend fun loadBaseModel(modelFileName: String, modelFormat: ModelFormat) {
@@ -215,18 +220,8 @@ actual class Transcriber(
 
     actual fun getAudioDurationSeconds(filePath: String): Int {
         return try {
-            val file = java.io.RandomAccessFile(filePath, "r")
-            val header = ByteArray(44)
-            file.read(header)
-            file.close()
-            val buffer = java.nio.ByteBuffer.wrap(header)
-            buffer.order(java.nio.ByteOrder.LITTLE_ENDIAN)
-            val channels = buffer.getShort(22).toInt()
-            val sampleRate = buffer.getInt(24)
-            val bitsPerSample = buffer.getShort(34).toInt()
-            val dataSize = buffer.getInt(40).toLong() and 0xFFFFFFFFL
-            if (sampleRate <= 0 || channels <= 0 || bitsPerSample <= 0) return 0
-            (dataSize / (sampleRate * channels * (bitsPerSample / 8.0))).toInt()
+            val info = java.io.RandomAccessFile(filePath, "r").use { WavFileParser.parse(it) }
+            (info.dataSize / (info.sampleRate * info.channels * (info.bitsPerSample / 8.0))).toInt()
         } catch (e: Exception) {
             0
         }
@@ -378,10 +373,10 @@ actual class Transcriber(
                         chunkText = text
 
                         if (text.isNotBlank()) {
-                            val chunkStartMs = ((streamingChunk.startOffset - 44).toDouble() /
+                            val chunkStartMs = ((streamingChunk.startOffset - streamingChunk.header.dataOffset).toDouble() /
                                 (streamingChunk.header.sampleRate * streamingChunk.header.channels *
                                  (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)).toLong()
-                            val chunkEndMs = ((streamingChunk.endOffset - 44).toDouble() /
+                            val chunkEndMs = ((streamingChunk.endOffset - streamingChunk.header.dataOffset).toDouble() /
                                 (streamingChunk.header.sampleRate * streamingChunk.header.channels *
                                  (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)).toLong()
 
@@ -407,7 +402,7 @@ actual class Transcriber(
                             callback = object : WhisperCallback {
                             override fun onNewSegment(startMs: Long, endMs: Long, text: String) {
                                 // Adjust timing to account for chunk position in original audio
-                                val chunkStartTimeMs = (streamingChunk.startOffset - 44) / (streamingChunk.header.sampleRate * streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)
+                                val chunkStartTimeMs = (streamingChunk.startOffset - streamingChunk.header.dataOffset) / (streamingChunk.header.sampleRate * streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8.0) / 1000.0)
                                 val adjustedStartMs = startMs + chunkStartTimeMs.toLong()
                                 val adjustedEndMs = endMs + chunkStartTimeMs.toLong()
 
@@ -449,8 +444,8 @@ actual class Transcriber(
                     // the block below clears it immediately. This scaffolding is left intact
                     // to avoid changing pre-existing GGML behavior; remove when the merge logic is implemented.
                     val tempAudioChunk = com.module.notelycompose.utils.AudioChunk(
-                        startSample = ((streamingChunk.startOffset - 44) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
-                        endSample = ((streamingChunk.endOffset - 44) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
+                        startSample = ((streamingChunk.startOffset - streamingChunk.header.dataOffset) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
+                        endSample = ((streamingChunk.endOffset - streamingChunk.header.dataOffset) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
                         data = chunkData
                     )
 

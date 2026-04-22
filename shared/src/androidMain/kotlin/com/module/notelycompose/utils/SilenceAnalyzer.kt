@@ -2,8 +2,6 @@ package com.module.notelycompose.utils
 
 import com.module.notelycompose.core.debugPrintln
 import java.io.RandomAccessFile
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 /**
  * Ergebnis des Stille-Scans.
@@ -56,30 +54,15 @@ object SilenceAnalyzer {
     private fun analyzeInternal(filePath: String): SilenceAnalysisResult {
         val file = RandomAccessFile(filePath, "r")
         return try {
-            // WAV-Header lesen (44 Bytes)
-            val headerBytes = ByteArray(44)
-            file.read(headerBytes)
-            val headerBuf = ByteBuffer.wrap(headerBytes).order(ByteOrder.LITTLE_ENDIAN)
+            val info = WavFileParser.parse(file)
 
-            val riff = String(headerBytes, 0, 4)
-            val wave = String(headerBytes, 8, 4)
-            if (riff != "RIFF" || wave != "WAVE") {
-                debugPrintln { "SilenceAnalyzer: Kein valides WAV-File, VAD deaktiviert" }
+            if (info.bitsPerSample != 16) {
+                debugPrintln { "SilenceAnalyzer: Nicht-unterstütztes Format (bits=${info.bitsPerSample}), VAD deaktiviert" }
                 return SilenceAnalysisResult(silenceRatio = 0f, silentWindows = BooleanArray(0))
             }
 
-            val channels      = headerBuf.getShort(22).toInt()
-            val sampleRate    = headerBuf.getInt(24)
-            val bitsPerSample = headerBuf.getShort(34).toInt()
-            val dataSize      = headerBuf.getInt(40).toLong() and 0xFFFFFFFFL
-
-            if (sampleRate <= 0 || channels <= 0 || bitsPerSample != 16) {
-                debugPrintln { "SilenceAnalyzer: Nicht-unterstütztes Format (sampleRate=$sampleRate, channels=$channels, bits=$bitsPerSample), VAD deaktiviert" }
-                return SilenceAnalysisResult(silenceRatio = 0f, silentWindows = BooleanArray(0))
-            }
-
-            val bytesPerSecond = (sampleRate * channels * (bitsPerSample / 8)).toLong()
-            val totalSeconds   = (dataSize / bytesPerSecond).toInt()
+            val bytesPerSecond = (info.sampleRate * info.channels * (info.bitsPerSample / 8)).toLong()
+            val totalSeconds   = (info.dataSize / bytesPerSecond).toInt()
 
             if (totalSeconds <= 0) {
                 return SilenceAnalysisResult(silenceRatio = 0f, silentWindows = BooleanArray(0))
@@ -89,7 +72,7 @@ object SilenceAnalyzer {
             val windowBuffer  = ByteArray(bytesPerSecond.toInt())
             var silentCount   = 0
 
-            file.seek(44L) // Daten-Bereich beginnt nach dem Header
+            file.seek(info.dataOffset)
 
             for (sec in 0 until totalSeconds) {
                 val bytesRead = file.read(windowBuffer, 0, bytesPerSecond.toInt())
@@ -141,8 +124,8 @@ fun StreamingAudioChunk.isSilentChunk(analysis: SilenceAnalysisResult): Boolean 
     val bytesPerSecond = (header.sampleRate * header.channels * (header.bitsPerSample / 8)).toLong()
     if (bytesPerSecond <= 0) return false
 
-    val chunkStartSec = ((startOffset - 44L) / bytesPerSecond).toInt()
-    val chunkEndSec   = ((endOffset   - 44L) / bytesPerSecond).toInt()
+    val chunkStartSec = ((startOffset - header.dataOffset) / bytesPerSecond).toInt()
+    val chunkEndSec   = ((endOffset   - header.dataOffset) / bytesPerSecond).toInt()
         .coerceAtMost(analysis.silentWindows.size)
 
     if (chunkStartSec >= chunkEndSec) return false
