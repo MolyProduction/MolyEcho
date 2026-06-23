@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import de.molyecho.notlyvoice.resources.Res
-import de.molyecho.notlyvoice.resources.ic_topbar_logo
+import de.molyecho.notlyvoice.resources.molyecho_logo
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -19,7 +19,7 @@ fun TopBarLogo(
 ) {
     val tintColor = if (tinted) LocalCustomColors.current.bodyContentColor else null
     Image(
-        painter = painterResource(Res.drawable.ic_topbar_logo),
+        painter = painterResource(Res.drawable.molyecho_logo),
         contentDescription = "MolyEcho",
         modifier = Modifier.size(size),
         colorFilter = tintColor?.let { ColorFilter.tint(it) }

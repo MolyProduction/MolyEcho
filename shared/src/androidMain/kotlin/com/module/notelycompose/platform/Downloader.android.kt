@@ -200,7 +200,7 @@ actual class Downloader(
         val notification = NotificationCompat.Builder(mainContext, CHANNEL_DOWNLOAD_DONE_ID)
             .setContentTitle(mainContext.getString(R.string.notification_download_done_title))
             .setContentText(mainContext.getString(R.string.notification_download_done_text))
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_outline_edit_note)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

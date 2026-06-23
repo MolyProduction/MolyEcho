@@ -27,7 +27,6 @@ import com.module.notelycompose.platform.presentation.PlatformUiState
 import com.module.notelycompose.platform.presentation.PlatformViewModel
 import kotlinx.coroutines.launch
 import de.molyecho.notlyvoice.resources.Res
-import de.molyecho.notlyvoice.resources.ic_topbar_logo
 import de.molyecho.notlyvoice.resources.icon
 import de.molyecho.notlyvoice.resources.molyecho_logo
 import de.molyecho.notlyvoice.resources.model_label_german_accurate
@@ -274,7 +273,7 @@ fun OnboardingPageContent(
             VoiceNotePageContent(page, isTablet, isAndroid)
         }
         Image(
-            painter = painterResource(Res.drawable.ic_topbar_logo),
+            painter = painterResource(Res.drawable.molyecho_logo),
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.TopStart)

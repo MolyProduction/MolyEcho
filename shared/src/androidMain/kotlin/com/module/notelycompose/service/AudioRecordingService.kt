@@ -110,7 +110,7 @@ class AudioRecordingService : Service() {
         val builder = NotificationCompat.Builder(this, "recording_channel")
             .setContentTitle(getString(R.string.notification_recording_title))
             .setContentText(getString(R.string.notification_recording_text))
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_outline_edit_note)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

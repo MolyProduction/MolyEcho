@@ -181,7 +181,7 @@ android {
                 "proguard-rules.pro"
             )
             // uncomment to run on release for testing
-            // signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     dependenciesInfo {
