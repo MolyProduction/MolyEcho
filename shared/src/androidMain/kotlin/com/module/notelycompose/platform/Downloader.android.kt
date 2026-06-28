@@ -135,6 +135,7 @@ actual class Downloader(
         }
         when (finalStatus) {
             DownloadManager.STATUS_SUCCESSFUL -> {
+                moveToInternalStorage(fileName)
                 postDownloadCompleteNotification()
                 onSuccess()
             }
@@ -146,6 +147,32 @@ actual class Downloader(
                 }
                 onFailed(getErrorTextFromReason(reason))
             }
+        }
+    }
+
+    actual suspend fun cancelDownload() {
+        val downloadId = preferencesRepository.getModelDownloadId().first()
+        if (downloadId != -1L) {
+            val downloadManager = mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            downloadManager.remove(downloadId)
+            preferencesRepository.setModelDownloadId(-1)
+            debugPrintln { "Download: Cancelled download $downloadId" }
+        }
+    }
+
+    private fun moveToInternalStorage(fileName: String) {
+        val externalDir = mainContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
+        val externalSrc = File(externalDir, fileName)
+        val internalDest = File(mainContext.filesDir, "models/$fileName")
+        internalDest.parentFile?.mkdirs()
+        try {
+            if (externalSrc.exists()) {
+                externalSrc.copyRecursively(internalDest, overwrite = true)
+                externalSrc.deleteRecursively()
+                debugPrintln { "Download: Moved $fileName to internal storage" }
+            }
+        } catch (e: Exception) {
+            debugPrintln { "Download: Failed to move $fileName: ${e.message}" }
         }
     }
 
