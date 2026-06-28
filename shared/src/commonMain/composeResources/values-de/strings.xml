@@ -183,6 +183,43 @@
     <string name="onboarding_model_german_accurate_desc">Das leistungsstärkste Modell – für anspruchsvolle Aufnahmen mit Dialekt, Fachbegriffen oder Hintergrundgeräuschen. Ca. 1,6 GB Download.</string>
     <string name="onboarding_model_multilingual_title">Mehrsprachig –\nBesonders schnell</string>
     <string name="onboarding_model_multilingual_desc">Blitzschnelle Transkription in über 50 Sprachen. Etwas weniger präzise als die deutschen Modelle, aber perfekt für schnelle Notizen. Ca. 465 MB Download.</string>
+    <!-- Onboarding Screen 1 – Willkommen (neu) -->
+    <string name="onboarding_welcome_title">Willkommen bei MolyEcho</string>
+    <string name="onboarding_welcome_subtitle">Euer persönlicher Schreiberling.</string>
+    <string name="onboarding_welcome_body">Aufnehmen, sprechen, fertig – vollständig auf eurem Gerät.</string>
+    <string name="onboarding_welcome_cta">Los geht\'s →</string>
+    <!-- Onboarding Screen 2 – Benachrichtigungen -->
+    <string name="onboarding_notif_title">Bleib informiert</string>
+    <string name="onboarding_notif_body">MolyEcho benachrichtigt dich, sobald eine Transkription abgeschlossen ist – damit du nichts verpasst.</string>
+    <string name="onboarding_notif_cta">Berechtigung erlauben</string>
+    <string name="onboarding_notif_denied_hint">Ohne diese Berechtigung siehst du keine Fertigmeldungen.</string>
+    <string name="onboarding_notif_cta_retry">Trotzdem erlauben</string>
+    <string name="onboarding_notif_skip">Ohne Benachrichtigung fortfahren</string>
+    <string name="onboarding_notif_permanent_title">Berechtigung dauerhaft verweigert</string>
+    <string name="onboarding_notif_permanent_body">Du kannst sie jederzeit unter Einstellungen → Apps → MolyEcho aktivieren.</string>
+    <string name="onboarding_notif_open_settings">App-Einstellungen öffnen</string>
+    <!-- Onboarding Screen 3 – Energiesparmodus -->
+    <string name="onboarding_battery_title">Aufnahmen im Hintergrund</string>
+    <string name="onboarding_battery_body">Android kann Apps im Hintergrund beenden, um Akku zu sparen.\n\nDamit MolyEcho eine Aufnahme nicht mitten im Satz abbricht, benötigen wir eine Ausnahme vom Energiesparmodus.\n\nWähle im nächsten Bildschirm „Nicht eingeschränkt".</string>
+    <string name="onboarding_battery_cta">Einstellungen öffnen</string>
+    <string name="onboarding_battery_not_granted">Es sieht aus, als wäre die Ausnahme nicht gesetzt worden. Wähle auf der Einstellungsseite „Nicht eingeschränkt".</string>
+    <string name="onboarding_battery_skip">Ohne diese Einstellung fortfahren</string>
+    <!-- Onboarding Screen 4 – Modell-Download -->
+    <string name="onboarding_model_title">Fast fertig!</string>
+    <string name="onboarding_model_subtitle">Jetzt das Sprachmodell herunterladen</string>
+    <string name="onboarding_model_info_size">📦  Größe: ca. 1 GB</string>
+    <string name="onboarding_model_info_wifi">📶  Empfehlung: WLAN nutzen</string>
+    <string name="onboarding_model_info_once">✅  Nur einmalig nötig – danach offline</string>
+    <string name="onboarding_model_body">Das Modell läuft vollständig auf deinem Gerät – kein Server, keine Cloud.</string>
+    <string name="onboarding_model_cta">Jetzt herunterladen</string>
+    <string name="onboarding_model_skip">Später herunterladen</string>
+    <string name="onboarding_model_downloading_title">Wird heruntergeladen…</string>
+    <string name="onboarding_model_progress">%1$s / %2$s</string>
+    <string name="onboarding_model_cancel">Abbrechen</string>
+    <string name="onboarding_model_success">Modell bereit! ✓</string>
+    <string name="onboarding_model_finish">MolyEcho starten →</string>
+    <string name="onboarding_model_error">Download fehlgeschlagen. Bitte überprüfe deine Verbindung.</string>
+    <string name="onboarding_model_retry">Erneut versuchen</string>
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Helles Design</string>
     <string name="settings_dark_theme">Dunkles Design</string>
