@@ -19,9 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -101,25 +99,16 @@ fun App(
             val onboardingState by viewmodel.onboardingState.collectAsState()
             val platformUiState by platformViewModel.state.collectAsState()
             val permissionHandler = rememberPermissionHandler()
-            var openModelSelectionOnLaunch by remember { mutableStateOf(false) }
 
             when (onboardingState) {
                 is OnboardingState.Initial -> Unit
                 is OnboardingState.NotCompleted -> {
                     OnboardingWalkthrough(
-                        onFinish = {
-                            viewmodel.onCompleteOnboarding()
-                        },
-                        onFinishToModelSelection = {
-                            openModelSelectionOnLaunch = true
-                            viewmodel.onCompleteOnboarding()
-                        },
-                        permissionHandler = permissionHandler,
-                        platformState = platformUiState
+                        onFinish = { viewmodel.onCompleteOnboarding() },
+                        permissionHandler = permissionHandler
                     )
                 }
-
-                is OnboardingState.Completed -> NoteAppRoot(platformUiState, openModelSelection = openModelSelectionOnLaunch)
+                is OnboardingState.Completed -> NoteAppRoot(platformUiState)
             }
         }
     }
@@ -128,7 +117,7 @@ fun App(
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun NoteAppRoot(platformUiState: PlatformUiState, openModelSelection: Boolean = false) {
+fun NoteAppRoot(platformUiState: PlatformUiState) {
     val navController = rememberNavController()
     val shareCoordinator: ShareImportCoordinator = koinInject()
     val shareState by shareCoordinator.state.collectAsState()
@@ -139,12 +128,6 @@ fun NoteAppRoot(platformUiState: PlatformUiState, openModelSelection: Boolean = 
             val noteId = (shareState as ShareImportState.Ready).noteId
             navController.navigate(Routes.Details(noteId.toString(), autoTranscribe = true))
             shareCoordinator.consumed()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (openModelSelection) {
-            navController.navigate(Routes.LanguageModelSelection)
         }
     }
 
