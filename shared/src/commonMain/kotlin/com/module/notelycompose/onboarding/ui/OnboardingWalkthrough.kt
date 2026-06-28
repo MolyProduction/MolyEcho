@@ -27,8 +27,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -413,7 +413,7 @@ private fun OnboardingScreen3Battery(
             }
         } else {
             Icon(
-                imageVector = Icons.Default.BatteryChargingFull,
+                imageVector = Icons.Default.Settings,
                 contentDescription = null,
                 tint = MolyGreen,
                 modifier = Modifier.size(72.dp)
