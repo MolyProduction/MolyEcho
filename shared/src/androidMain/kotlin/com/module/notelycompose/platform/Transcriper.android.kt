@@ -37,7 +37,7 @@ actual class Transcriber(
 ) {
     private var canTranscribe: Boolean = false
     @Volatile private var isTranscribing = false
-    private val modelsPath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+    private val modelsPath: File = File(context.filesDir, "models").also { it.mkdirs() }
     private var whisperContext: WhisperContext? = null
     private var sherpaContext: SherpaWhisperContext? = null
     // @Volatile matches the same risk accepted for currentLoadedModelName:
@@ -71,8 +71,33 @@ actual class Transcriber(
             SherpaWhisperContext.DECODER_FILE,
             SherpaWhisperContext.TOKENS_FILE
         )
+        private val KNOWN_MODEL_NAMES = listOf(
+            "whisper-large-v3-turbo-german",
+            "ggml-large-v3-turbo-german.bin",
+            "ggml-small.bin"
+        )
     }
 
+    init {
+        migrateModelsToInternalStorage()
+    }
+
+    private fun migrateModelsToInternalStorage() {
+        val externalDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
+        for (name in KNOWN_MODEL_NAMES) {
+            val src = File(externalDir, name)
+            val dest = File(modelsPath, name)
+            if (src.exists() && !dest.exists()) {
+                try {
+                    src.copyRecursively(dest, overwrite = true)
+                    src.deleteRecursively()
+                    debugPrintln { "Migration: Moved model $name from external to internal storage" }
+                } catch (e: Exception) {
+                    debugPrintln { "Migration: Failed to move $name: ${e.message}" }
+                }
+            }
+        }
+    }
 
     actual fun hasRecordingPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -139,10 +164,7 @@ actual class Transcriber(
         modelLoadMutex.withLock {
             try {
                 debugPrintln { "Loading model: $modelFileName (format=$modelFormat)" }
-                val targetDir = modelsPath ?: run {
-                    debugPrintln { "External storage unavailable — cannot load $modelFileName" }
-                    return@withLock
-                }
+                val targetDir = modelsPath
 
                 if (modelFormat == ModelFormat.ONNX) {
                     val modelDir = File(targetDir, modelFileName)
@@ -191,17 +213,18 @@ actual class Transcriber(
     }
 
     actual fun doesModelExists(modelFileName: String): Boolean {
-        val target = modelsPath?.let { File(it, modelFileName) }
+        val target = File(modelsPath, modelFileName)
         return when {
-            target == null -> false
             target.isDirectory -> ONNX_REQUIRED_FILES.all { File(target, it).exists() }
             target.exists() -> true
             else -> try { context.assets.open(modelFileName).use { true } } catch (e: Exception) { false }
         }
     }
 
+    actual fun isReadyToTranscribe(): Boolean = canTranscribe
+
     actual fun deleteModel(modelFileName: String): Boolean {
-        val target = modelsPath?.let { File(it, modelFileName) } ?: return false
+        val target = File(modelsPath, modelFileName)
         return when {
             target.isDirectory -> target.deleteRecursively()
             target.exists() -> target.delete()
@@ -210,7 +233,7 @@ actual class Transcriber(
     }
 
     actual fun getModelFileSizeBytes(modelFileName: String): Long {
-        val target = modelsPath?.let { File(it, modelFileName) } ?: return 0L
+        val target = File(modelsPath, modelFileName)
         return when {
             target.isDirectory -> target.walkTopDown().filter { it.isFile }.sumOf { it.length() }
             target.exists() -> target.length()
@@ -228,7 +251,7 @@ actual class Transcriber(
     }
 
     actual fun isValidModel(modelFileName: String): Boolean {
-        val target = modelsPath?.let { File(it, modelFileName) } ?: return false
+        val target = File(modelsPath, modelFileName)
         return when {
             target.isDirectory -> ONNX_REQUIRED_FILES.all { File(target, it).exists() }
             target.exists() -> target.length() > 0

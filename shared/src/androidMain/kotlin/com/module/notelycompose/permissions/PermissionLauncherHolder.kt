@@ -4,4 +4,5 @@ import androidx.activity.result.ActivityResultLauncher
 
 class PermissionLauncherHolder {
     var notificationLauncher: ActivityResultLauncher<String>? = null
+    var onNotificationPermissionResult: ((granted: Boolean, showRationale: Boolean) -> Unit)? = null
 }

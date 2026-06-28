@@ -12,7 +12,8 @@ data class TranscriptionUiState(
     val downloaded: String = "0 MB ",
     val total: String = "0 MB",
     val hasError: Boolean = false,
-    val showLongRunningHint: Boolean = false
+    val showLongRunningHint: Boolean = false,
+    val modelNotAvailable: Boolean = false  // Modell nicht geladen → stumm zurücknavigieren
 )
 
 sealed class TranscriptionEffect() {

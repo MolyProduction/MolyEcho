@@ -14,8 +14,11 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Theme
+import android.Manifest
 import android.net.Uri
+import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import com.module.notelycompose.permissions.PermissionLauncherHolder
 import android.content.Intent
 import androidx.core.content.IntentCompat
@@ -76,8 +79,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNotificationPermissionLauncher() {
         permissionLauncherHolder.notificationLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
-                // Result handled via PermissionViewModel.refresh() on ON_RESUME
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                val showRationale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isGranted) {
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        this, Manifest.permission.POST_NOTIFICATIONS
+                    )
+                } else false
+                permissionLauncherHolder.onNotificationPermissionResult?.invoke(isGranted, showRationale)
             }
     }
 

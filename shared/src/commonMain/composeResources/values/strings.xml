@@ -183,6 +183,43 @@
     <string name="onboarding_model_german_accurate_desc">Our most powerful model – for demanding recordings with accents, technical terms, or background noise. Approx. 1.6 GB download.</string>
     <string name="onboarding_model_multilingual_title">Multilingual –\nExceptionally Fast</string>
     <string name="onboarding_model_multilingual_desc">Lightning-fast transcription in over 50 languages. Slightly less precise than the German models, but perfect for quick notes. Approx. 465 MB download.</string>
+    <!-- Onboarding Screen 1 – Welcome (new) -->
+    <string name="onboarding_welcome_title">Welcome to MolyEcho</string>
+    <string name="onboarding_welcome_subtitle">Your personal scribe.</string>
+    <string name="onboarding_welcome_body">Record, speak, done – fully on your device.</string>
+    <string name="onboarding_welcome_cta">Get started →</string>
+    <!-- Onboarding Screen 2 – Notifications -->
+    <string name="onboarding_notif_title">Stay informed</string>
+    <string name="onboarding_notif_body">MolyEcho notifies you when a transcription is complete – so you never miss a result.</string>
+    <string name="onboarding_notif_cta">Allow permission</string>
+    <string name="onboarding_notif_denied_hint">Without this permission you won\'t see completion notifications.</string>
+    <string name="onboarding_notif_cta_retry">Allow anyway</string>
+    <string name="onboarding_notif_skip">Continue without notifications</string>
+    <string name="onboarding_notif_permanent_title">Permission permanently denied</string>
+    <string name="onboarding_notif_permanent_body">You can enable it anytime under Settings → Apps → MolyEcho.</string>
+    <string name="onboarding_notif_open_settings">Open app settings</string>
+    <!-- Onboarding Screen 3 – Battery -->
+    <string name="onboarding_battery_title">Background recordings</string>
+    <string name="onboarding_battery_body">Android can stop apps in the background to save battery.\n\nSo MolyEcho doesn\'t interrupt a recording mid-sentence, we need an exception from battery optimization.\n\nSelect \"Unrestricted\" on the next screen.</string>
+    <string name="onboarding_battery_cta">Open settings</string>
+    <string name="onboarding_battery_not_granted">It looks like the exception wasn\'t set. Please select \"Unrestricted\" on the settings page.</string>
+    <string name="onboarding_battery_skip">Continue without this setting</string>
+    <!-- Onboarding Screen 4 – Model Download -->
+    <string name="onboarding_model_title">Almost done!</string>
+    <string name="onboarding_model_subtitle">Download the speech model now</string>
+    <string name="onboarding_model_info_size">📦  Size: approx. 1 GB</string>
+    <string name="onboarding_model_info_wifi">📶  Recommendation: use Wi-Fi</string>
+    <string name="onboarding_model_info_once">✅  Only needed once – offline afterwards</string>
+    <string name="onboarding_model_body">The model runs entirely on your device – no server, no cloud.</string>
+    <string name="onboarding_model_cta">Download now</string>
+    <string name="onboarding_model_skip">Download later</string>
+    <string name="onboarding_model_downloading_title">Downloading…</string>
+    <string name="onboarding_model_progress">%1$s / %2$s</string>
+    <string name="onboarding_model_cancel">Cancel</string>
+    <string name="onboarding_model_success">Model ready! ✓</string>
+    <string name="onboarding_model_finish">Start MolyEcho →</string>
+    <string name="onboarding_model_error">Download failed. Please check your connection.</string>
+    <string name="onboarding_model_retry">Try again</string>
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Light Theme</string>
     <string name="settings_dark_theme">Dark Theme</string>

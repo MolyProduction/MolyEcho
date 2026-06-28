@@ -77,6 +77,12 @@ class ModelDownloaderViewModel(
         }
     }
 
+    fun cancelDownload() {
+        viewModelScope.launch(Dispatchers.IO) {
+            downloader.cancelDownload()
+        }
+    }
+
     fun downloadModelForSettings(model: TranscriptionModel) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = DownloaderUiState(model)

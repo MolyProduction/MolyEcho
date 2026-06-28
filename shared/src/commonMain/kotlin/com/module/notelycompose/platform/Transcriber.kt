@@ -9,6 +9,7 @@ expect class Transcriber {
     // cannot release a model that a newer session owns.
     val currentSessionToken: Long
     fun doesModelExists(modelFileName: String ): Boolean
+    fun isReadyToTranscribe(): Boolean
     suspend fun initialize(modelFileName: String, modelFormat: ModelFormat = ModelFormat.GGML): Long
     suspend fun finish(sessionToken: Long)
     suspend fun stop()
