@@ -59,6 +59,14 @@ class TranscriptionViewModel(
             val modelFileName = modelSelection.getSelectedModel()
             mySessionToken = transcriber.initialize(modelFileName.name, modelFileName.format)
 
+            // Wenn Modell nicht geladen (z.B. noch nicht heruntergeladen):
+            // stumm zurücknavigieren statt irreführenden "Datei zu groß"-Dialog zu zeigen.
+            if (!transcriber.isReadyToTranscribe()) {
+                serviceController.stopTranscriptionService()
+                _uiState.update { it.copy(inTranscription = false, isModelLoading = false, modelNotAvailable = true) }
+                return@launch
+            }
+
             // Model is loaded (or was already cached) — update notification and UI
             serviceController.notifyTranscriptionPhaseTranscribing()
             _uiState.update { it.copy(isModelLoading = false) }

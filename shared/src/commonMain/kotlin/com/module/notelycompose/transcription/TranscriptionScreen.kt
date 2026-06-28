@@ -96,6 +96,14 @@ fun TranscriptionScreen(
     // FileNotFoundException caught as a generic Exception, showing the misleading
     // "audio file too large" error. Guard against this by navigating back immediately;
     // the user will land on NoteDetailScreen which will load the note data normally.
+    // Wenn Modell nicht verfügbar (nicht heruntergeladen): stumm zurücknavigieren,
+    // damit der Nutzer auf dem NoteDetailScreen den Download starten kann.
+    LaunchedEffect(transcriptionUiState.modelNotAvailable) {
+        if (transcriptionUiState.modelNotAvailable) {
+            navigateBack()
+        }
+    }
+
     LaunchedEffect(Unit) {
         val path = editorState.recording.recordingPath
         if (path.isBlank()) {
