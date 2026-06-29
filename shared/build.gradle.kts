@@ -136,8 +136,8 @@ android {
         applicationId = "de.molyecho.notlyvoice.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 27
-        versionName = "1.2.6"
+        versionCode = 30
+        versionName = "1.3.1"
     }
     buildFeatures {
         compose = true
