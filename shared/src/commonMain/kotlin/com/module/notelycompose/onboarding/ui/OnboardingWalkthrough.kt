@@ -75,6 +75,7 @@ import de.molyecho.notlyvoice.resources.onboarding_model_cta
 import de.molyecho.notlyvoice.resources.onboarding_model_downloading_title
 import de.molyecho.notlyvoice.resources.onboarding_model_error
 import de.molyecho.notlyvoice.resources.onboarding_model_finish
+import de.molyecho.notlyvoice.resources.onboarding_model_info_minimize
 import de.molyecho.notlyvoice.resources.onboarding_model_info_once
 import de.molyecho.notlyvoice.resources.onboarding_model_info_size
 import de.molyecho.notlyvoice.resources.onboarding_model_info_wifi
@@ -524,11 +525,13 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F5EA))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = stringResource(Res.string.onboarding_model_info_size), fontSize = 15.sp)
+                        Text(text = stringResource(Res.string.onboarding_model_info_size), fontSize = 14.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = stringResource(Res.string.onboarding_model_info_wifi), fontSize = 15.sp)
+                        Text(text = stringResource(Res.string.onboarding_model_info_wifi), fontSize = 14.sp)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = stringResource(Res.string.onboarding_model_info_once), fontSize = 15.sp)
+                        Text(text = stringResource(Res.string.onboarding_model_info_once), fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(text = stringResource(Res.string.onboarding_model_info_minimize), fontSize = 14.sp)
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
