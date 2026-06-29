@@ -187,7 +187,7 @@
     <string name="onboarding_welcome_title">Willkommen bei MolyEcho</string>
     <string name="onboarding_welcome_subtitle">Euer persönlicher Schreiberling.</string>
     <string name="onboarding_welcome_body">Aufnehmen, sprechen, fertig – vollständig auf eurem Gerät.</string>
-    <string name="onboarding_welcome_cta">Los geht\'s →</string>
+    <string name="onboarding_welcome_cta">Los geht&apos;s →</string>
     <!-- Onboarding Screen 2 – Benachrichtigungen -->
     <string name="onboarding_notif_title">Bleib informiert</string>
     <string name="onboarding_notif_body">MolyEcho benachrichtigt dich, sobald eine Transkription abgeschlossen ist – damit du nichts verpasst.</string>
@@ -207,10 +207,11 @@
     <!-- Onboarding Screen 4 – Modell-Download -->
     <string name="onboarding_model_title">Fast fertig!</string>
     <string name="onboarding_model_subtitle">Jetzt das Sprachmodell herunterladen</string>
-    <string name="onboarding_model_info_size">📦  Größe: ca. 1 GB</string>
+    <string name="onboarding_model_info_size">📦  2 Dateien · ca. 1 GB gesamt</string>
     <string name="onboarding_model_info_wifi">📶  Empfehlung: WLAN nutzen</string>
     <string name="onboarding_model_info_once">✅  Nur einmalig nötig – danach offline</string>
-    <string name="onboarding_model_body">Das Modell läuft vollständig auf deinem Gerät – kein Server, keine Cloud.</string>
+    <string name="onboarding_model_info_minimize">📱  App kann während des Downloads minimiert werden</string>
+    <string name="onboarding_model_body">Das Sprachmodell wandelt deine Aufnahmen direkt auf dem Gerät in Text um – ohne Cloud, ohne Server.</string>
     <string name="onboarding_model_cta">Jetzt herunterladen</string>
     <string name="onboarding_model_skip">Später herunterladen</string>
     <string name="onboarding_model_downloading_title">Wird heruntergeladen…</string>

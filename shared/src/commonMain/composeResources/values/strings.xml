@@ -207,10 +207,11 @@
     <!-- Onboarding Screen 4 – Model Download -->
     <string name="onboarding_model_title">Almost done!</string>
     <string name="onboarding_model_subtitle">Download the speech model now</string>
-    <string name="onboarding_model_info_size">📦  Size: approx. 1 GB</string>
+    <string name="onboarding_model_info_size">📦  2 files · approx. 1 GB total</string>
     <string name="onboarding_model_info_wifi">📶  Recommendation: use Wi-Fi</string>
     <string name="onboarding_model_info_once">✅  Only needed once – offline afterwards</string>
-    <string name="onboarding_model_body">The model runs entirely on your device – no server, no cloud.</string>
+    <string name="onboarding_model_info_minimize">📱  You can minimize the app during the download</string>
+    <string name="onboarding_model_body">The speech model converts your recordings into text directly on your device – no cloud, no server.</string>
     <string name="onboarding_model_cta">Download now</string>
     <string name="onboarding_model_skip">Download later</string>
     <string name="onboarding_model_downloading_title">Downloading…</string>
