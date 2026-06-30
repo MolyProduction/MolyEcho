@@ -53,7 +53,7 @@ actual class Downloader(
                     Environment.DIRECTORY_DOWNLOADS,
                     fileName
                 )
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
             val downloadManager =
                 mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -93,7 +93,10 @@ actual class Downloader(
         onFailed: (String) -> Unit,
     ) {
         val downloadId = preferencesRepository.getModelDownloadId().first()
-        if (downloadId == -1L) return
+        if (downloadId == -1L) {
+            onFailed("Download konnte nicht gestartet werden")
+            return
+        }
 
         registerDownloadReceiver(downloadId)
         val downloadManager = mainContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
