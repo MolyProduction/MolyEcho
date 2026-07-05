@@ -13,4 +13,13 @@
     <string name="notification_download_done_title">Model downloaded</string>
     <string name="notification_download_done_text">MolyEcho is ready for transcription</string>
     <string name="notification_download_done_channel_name">Download complete</string>
+    <string name="notification_download_channel_name">Model download</string>
+    <string name="notification_download_title">Downloading model…</string>
+    <string name="notification_download_text">Preparing download…</string>
+    <string name="notification_recording_channel_name">Recording</string>
+    <string name="notification_transcription_channel_name">Transcription</string>
+    <string name="download_error_not_started">Download could not be started</string>
+    <string name="download_error_generic">Download failed</string>
+    <string name="download_error_network">Network error</string>
+    <string name="download_error_incomplete">Download incomplete (%1$s of %2$s)</string>
 </resources>

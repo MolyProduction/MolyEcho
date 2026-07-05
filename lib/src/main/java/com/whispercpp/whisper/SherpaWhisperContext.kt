@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 private const val LOG_TAG = "SherpaWhisperContext"
 
@@ -20,42 +19,37 @@ class SherpaWhisperContext private constructor(
     private val executor = Executors.newSingleThreadExecutor()
     private val scope = CoroutineScope(executor.asCoroutineDispatcher())
 
+    /**
+     * Transcribes one chunk. Errors are rethrown (not swallowed into an empty string) so the
+     * caller can count failed chunks and inform the user about an incomplete transcript.
+     */
     suspend fun transcribeData(data: FloatArray, sampleRate: Int = 16000): String =
         withContext(scope.coroutineContext) {
+            val stream = recognizer.createStream()
             try {
-                val stream = recognizer.createStream()
                 stream.acceptWaveform(data, sampleRate)
                 recognizer.decode(stream)
-                val result = recognizer.getResult(stream)
+                recognizer.getResult(stream).text.trim()
+            } finally {
                 stream.release()
-                result.text.trim()
-            } catch (e: Exception) {
-                Log.e(LOG_TAG, "Error during ONNX transcription", e)
-                ""
             }
         }
 
     // No-op: stopping is handled at chunk-loop level in Transcriber via isTranscribing flag.
     fun stopTranscription() = Unit
 
-    suspend fun release() = withContext(scope.coroutineContext) {
-        try {
-            recognizer.release()
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, "Error releasing ONNX recognizer", e)
-        }
-        executor.shutdown()
-        try {
-            // Defensive: warte auf vollständige Terminierung des Executors
-            // (Single-Thread-Executor hat nach shutdown() keine weiteren Tasks — kehrt sofort zurück)
-            if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
-                Log.w(LOG_TAG, "Executor did not terminate in time, forcing shutdown")
-                executor.shutdownNow()
+    suspend fun release() {
+        withContext(scope.coroutineContext) {
+            try {
+                recognizer.release()
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Error releasing ONNX recognizer", e)
             }
-        } catch (e: InterruptedException) {
-            Thread.currentThread().interrupt()
-            executor.shutdownNow()
         }
+        // Shut down from OUTSIDE the executor's own thread. Calling awaitTermination from
+        // within the executor task itself can never succeed (the running task blocks
+        // termination) and used to stall every release() for the full timeout.
+        executor.shutdown()
     }
 
     companion object {

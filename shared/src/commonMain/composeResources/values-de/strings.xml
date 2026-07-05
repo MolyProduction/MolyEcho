@@ -310,4 +310,6 @@
     <string name="share_import_preparing">Audiodatei wird vorbereitet…</string>
     <string name="share_import_error_title">Fehler beim Importieren</string>
     <string name="share_import_ok">OK</string>
+    <string name="transcription_incomplete_hint">%1$d Abschnitt(e) konnten nicht transkribiert werden – das Transkript ist möglicherweise unvollständig.</string>
+    <string name="download_metered_warning">Achtung: keine WLAN-Verbindung – der Download nutzt evtl. mobile Daten.</string>
 </resources>

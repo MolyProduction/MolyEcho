@@ -92,6 +92,90 @@ class StreamingAudioChunker {
     }
 
     /**
+     * Splits a WAV file into chunks of at most [maxChunkSeconds], placing every cut at the
+     * quietest second boundary within the window [minChunkSeconds, maxChunkSeconds] after the
+     * chunk start (based on [rmsPerSecond] from SilenceAnalyzer). Cutting where the signal is
+     * quietest minimizes words being sliced in half at chunk borders — ONNX/Whisper has a hard
+     * 30 s receptive window and no cross-chunk prompt, so a mid-word cut loses that word.
+     *
+     * The final chunk always ends exactly at the end of the data section (including a partial
+     * trailing second not covered by [rmsPerSecond]).
+     */
+    fun splitWavFileIntoSilenceAlignedChunks(
+        filePath: String,
+        rmsPerSecond: FloatArray,
+        maxChunkSeconds: Int,
+        minChunkSeconds: Int
+    ): MutableList<StreamingAudioChunk> {
+        require(minChunkSeconds in 1 until maxChunkSeconds) {
+            "minChunkSeconds must be in 1 until maxChunkSeconds"
+        }
+        val file = RandomAccessFile(filePath, "r")
+        try {
+            val header = WavFileParser.parse(file)
+            val bytesPerSecond = (header.sampleRate * header.channels * (header.bitsPerSample / 8)).toLong()
+            val dataEnd = header.dataOffset + header.dataSize
+            val totalSeconds = rmsPerSecond.size
+            val chunks = mutableListOf<StreamingAudioChunk>()
+
+            var startSec = 0
+            var chunkIndex = 0
+            while (true) {
+                val startOffset = header.dataOffset + startSec * bytesPerSecond
+                if (startOffset >= dataEnd) break
+
+                // Remaining audio fits into one chunk (strictly less than max so the partial
+                // trailing second can never push the chunk beyond the 30 s receptive window).
+                if (totalSeconds - startSec < maxChunkSeconds) {
+                    chunks.add(StreamingAudioChunk(
+                        chunkIndex = chunkIndex,
+                        filePath = filePath,
+                        startOffset = startOffset,
+                        endOffset = dataEnd,
+                        header = header,
+                        isFirstChunk = chunkIndex == 0,
+                        isLastChunk = true
+                    ))
+                    break
+                }
+
+                // Choose the boundary where BOTH adjacent seconds are quietest. Iterating from
+                // max down to min makes ties resolve to the LATEST boundary — uniform loudness
+                // then degrades to full-length chunks (fewer seams) instead of 20 s chunks.
+                var bestBoundary = startSec + maxChunkSeconds
+                var bestScore = Float.MAX_VALUE
+                for (boundary in (startSec + maxChunkSeconds) downTo (startSec + minChunkSeconds)) {
+                    val before = rmsPerSecond[boundary - 1]
+                    val after = if (boundary < totalSeconds) rmsPerSecond[boundary] else 0f
+                    val score = maxOf(before, after)
+                    if (score < bestScore) {
+                        bestScore = score
+                        bestBoundary = boundary
+                    }
+                }
+
+                val endOffset = header.dataOffset + bestBoundary * bytesPerSecond
+                chunks.add(StreamingAudioChunk(
+                    chunkIndex = chunkIndex,
+                    filePath = filePath,
+                    startOffset = startOffset,
+                    endOffset = endOffset,
+                    header = header,
+                    isFirstChunk = chunkIndex == 0,
+                    isLastChunk = endOffset >= dataEnd
+                ))
+                startSec = bestBoundary
+                chunkIndex++
+            }
+
+            debugPrintln { "Created ${chunks.size} silence-aligned chunks (max ${maxChunkSeconds}s)" }
+            return chunks
+        } finally {
+            file.close()
+        }
+    }
+
+    /**
      * Reads a specific chunk from the WAV file and converts it to FloatArray
      * Uses a reusable FloatArray to avoid repeated allocations
      *

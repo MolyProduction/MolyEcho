@@ -122,7 +122,7 @@ class TranscriptionForegroundService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Transcription",
+            getString(R.string.notification_transcription_channel_name),
             NotificationManager.IMPORTANCE_LOW
         )
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)

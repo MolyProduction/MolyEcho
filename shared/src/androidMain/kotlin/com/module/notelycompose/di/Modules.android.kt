@@ -58,7 +58,7 @@ actual val platformModule = module {
 
     single { PlatformAudioPlayer() }
 
-    single { Downloader(get(), get()) }
+    single { Downloader(get()) }
 
     single { Transcriber(get(), get()) }
 

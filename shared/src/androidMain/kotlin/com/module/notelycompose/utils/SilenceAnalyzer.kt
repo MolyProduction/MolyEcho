@@ -8,10 +8,13 @@ import java.io.RandomAccessFile
  *
  * @param silenceRatio Anteil stiller 1s-Fenster (0.0 = alles Sprache, 1.0 = alles Stille)
  * @param silentWindows BooleanArray der Länge totalSeconds; true = dieses 1s-Fenster ist still
+ * @param rmsPerSecond RMS-Wert (0..1) je 1s-Fenster — Grundlage für stille-orientierte
+ *        Chunk-Grenzen (leer wenn der Scan fehlgeschlagen ist)
  */
 data class SilenceAnalysisResult(
     val silenceRatio: Float,
-    val silentWindows: BooleanArray
+    val silentWindows: BooleanArray,
+    val rmsPerSecond: FloatArray = FloatArray(0)
 ) {
     /** true wenn VAD aktiv sein soll (Stille-Anteil überschreitet Trigger-Schwelle) */
     val shouldApplyVad: Boolean get() = silenceRatio >= SilenceAnalyzer.VAD_TRIGGER_RATIO
@@ -19,10 +22,14 @@ data class SilenceAnalysisResult(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SilenceAnalysisResult) return false
-        return silenceRatio == other.silenceRatio && silentWindows.contentEquals(other.silentWindows)
+        return silenceRatio == other.silenceRatio &&
+            silentWindows.contentEquals(other.silentWindows) &&
+            rmsPerSecond.contentEquals(other.rmsPerSecond)
     }
 
-    override fun hashCode(): Int = 31 * silenceRatio.hashCode() + silentWindows.contentHashCode()
+    override fun hashCode(): Int =
+        (31 * silenceRatio.hashCode() + silentWindows.contentHashCode()) * 31 +
+            rmsPerSecond.contentHashCode()
 }
 
 /**
@@ -69,6 +76,7 @@ object SilenceAnalyzer {
             }
 
             val silentWindows = BooleanArray(totalSeconds)
+            val rmsPerSecond  = FloatArray(totalSeconds)
             val windowBuffer  = ByteArray(bytesPerSecond.toInt())
             var silentCount   = 0
 
@@ -79,6 +87,7 @@ object SilenceAnalyzer {
                 if (bytesRead <= 0) break
 
                 val rms = computeRms(windowBuffer, bytesRead)
+                rmsPerSecond[sec] = rms
                 if (rms < SILENCE_RMS_THRESHOLD) {
                     silentWindows[sec] = true
                     silentCount++
@@ -88,7 +97,11 @@ object SilenceAnalyzer {
             val silenceRatio = silentCount.toFloat() / totalSeconds
             debugPrintln { "SilenceAnalyzer: silenceRatio=$silenceRatio ($silentCount/$totalSeconds Fenster still), shouldApplyVad=${silenceRatio >= VAD_TRIGGER_RATIO}" }
 
-            SilenceAnalysisResult(silenceRatio = silenceRatio, silentWindows = silentWindows)
+            SilenceAnalysisResult(
+                silenceRatio = silenceRatio,
+                silentWindows = silentWindows,
+                rmsPerSecond = rmsPerSecond
+            )
         } finally {
             file.close()
         }

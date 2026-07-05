@@ -62,7 +62,7 @@ class AudioRecordingService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             "recording_channel",
-            "Recording",
+            getString(R.string.notification_recording_channel_name),
             NotificationManager.IMPORTANCE_LOW,
         )
         val manager = getSystemService(NotificationManager::class.java)

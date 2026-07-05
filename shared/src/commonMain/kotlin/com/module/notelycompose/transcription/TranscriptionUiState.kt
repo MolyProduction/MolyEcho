@@ -13,7 +13,10 @@ data class TranscriptionUiState(
     val total: String = "0 MB",
     val hasError: Boolean = false,
     val showLongRunningHint: Boolean = false,
-    val modelNotAvailable: Boolean = false  // Modell nicht geladen → stumm zurücknavigieren
+    val modelNotAvailable: Boolean = false,  // Modell nicht geladen → stumm zurücknavigieren
+    // Anzahl der Audio-Abschnitte, die bei der Transkription fehlgeschlagen sind.
+    // > 0 bedeutet: Transkript ist unvollständig — Hinweis im UI anzeigen.
+    val failedChunks: Int = 0
 )
 
 sealed class TranscriptionEffect() {

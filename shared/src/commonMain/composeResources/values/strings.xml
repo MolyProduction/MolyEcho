@@ -310,4 +310,6 @@
     <string name="share_import_preparing">Preparing audio file…</string>
     <string name="share_import_error_title">Import error</string>
     <string name="share_import_ok">OK</string>
+    <string name="transcription_incomplete_hint">%1$d section(s) could not be transcribed – the transcript may be incomplete.</string>
+    <string name="download_metered_warning">Warning: no Wi-Fi connection – the download may use mobile data.</string>
 </resources>

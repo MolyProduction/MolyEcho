@@ -67,6 +67,7 @@ import de.molyecho.notlyvoice.resources.transcription_dialog_summarize
 import de.molyecho.notlyvoice.resources.transcription_dialog_error_got_it
 import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_title
 import de.molyecho.notlyvoice.resources.transcription_dialog_error_audio_file_desc
+import de.molyecho.notlyvoice.resources.transcription_incomplete_hint
 import de.molyecho.notlyvoice.resources.transcription_loading_model
 import de.molyecho.notlyvoice.resources.transcription_long_running_hint
 import org.jetbrains.compose.resources.painterResource
@@ -224,6 +225,22 @@ fun TranscriptionScreen(
                     && !transcriptionUiState.isModelLoading
                 ) {
                     LongRunningHintCard()
+                }
+
+                // Einzelne Abschnitte sind bei der Transkription fehlgeschlagen — das
+                // Transkript ist unvollständig. Ohne diesen Hinweis würde der Nutzer die
+                // Lücken nie bemerken.
+                if (!transcriptionUiState.inTranscription && transcriptionUiState.failedChunks > 0) {
+                    Text(
+                        text = stringResource(
+                            Res.string.transcription_incomplete_hint,
+                            transcriptionUiState.failedChunks
+                        ),
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    )
                 }
 
 //                FloatingActionButton(
