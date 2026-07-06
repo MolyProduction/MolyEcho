@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.module.notelycompose.MainActivity
@@ -27,7 +26,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.InetAddress
 import java.net.URL
+import java.net.UnknownHostException
 
 /**
  * Direct streaming downloader built on HttpURLConnection.
@@ -50,6 +51,11 @@ import java.net.URL
  * against Content-Length, so a partial download never looks like a complete model. The
  * `.part` file is kept on failure/cancel and resumed on the next attempt via an HTTP Range
  * request.
+ *
+ * DNS-Fallback: liefert das lokale DNS für einen Host keine (oder nur Null-Route-)Adressen —
+ * beobachtet bei Router-Filtern für `*.hf.co` — werden die IPs per DNS-over-HTTPS
+ * ([DohResolver]) geholt und die Verbindung über [DirectHttpsClient] mit voller
+ * TLS-Validierung gegen den Original-Hostnamen aufgebaut.
  */
 actual class Downloader(private val mainContext: Context) {
 
@@ -82,13 +88,13 @@ actual class Downloader(private val mainContext: Context) {
             if (current != null && !current.result.isCompleted) {
                 // Guard: a transfer is already running. Callers attach to it via
                 // trackDownloadProgress() instead of starting a competing writer.
-                Log.w(LOG_TAG, "startDownload ignored, session active for ${current.fileName}")
+                debugPrintln { "Download: startDownload ignoriert, Session aktiv für ${current.fileName}" }
                 return
             }
             newSession = Session(url, fileName)
             session = newSession
         }
-        Log.d(LOG_TAG, "startDownload url=$url file=$fileName")
+        debugPrintln { "Download: start url=$url file=$fileName" }
         scope.launch { runDownload(newSession) }
     }
 
@@ -144,7 +150,7 @@ actual class Downloader(private val mainContext: Context) {
                 // The rename below only ever happens after a size-validated transfer, so an
                 // existing destination is a complete file — skip the download (relevant for
                 // multi-file retries: already-finished files are not downloaded again).
-                Log.d(LOG_TAG, "file already complete, skipping download: ${s.fileName}")
+                debugPrintln { "Download: Datei bereits vollständig, überspringe ${s.fileName}" }
                 s.progress.value = ProgressSnapshot(100, formatMb(dest.length()), formatMb(dest.length()))
                 result = DownloadResult.Success
             } else {
@@ -161,40 +167,40 @@ actual class Downloader(private val mainContext: Context) {
                         part.copyTo(dest, overwrite = true)
                         part.delete()
                     }
-                    Log.d(LOG_TAG, "download complete file=${s.fileName} size=${dest.length()}")
+                    debugPrintln { "Download: fertig file=${s.fileName} size=${dest.length()}" }
                 }
             }
         } catch (e: Exception) {
-            Log.w(LOG_TAG, "download error file=${s.fileName}: ${e.message}")
+            debugPrintln { "Download: Fehler file=${s.fileName}: ${e.message}" }
             result = DownloadResult.Failed(e.message ?: mainContext.getString(R.string.download_error_generic))
         }
         when (result) {
-            is DownloadResult.Cancelled -> Log.d(LOG_TAG, "download cancelled file=${s.fileName}")
-            is DownloadResult.Failed -> Log.w(LOG_TAG, "download failed file=${s.fileName} reason=${result.message}")
+            is DownloadResult.Cancelled -> debugPrintln { "Download: abgebrochen file=${s.fileName}" }
+            is DownloadResult.Failed -> debugPrintln { "Download: fehlgeschlagen file=${s.fileName} grund=${result.message}" }
             else -> {}
         }
         s.result.complete(result)
     }
 
     private fun transfer(s: Session, part: File): DownloadResult {
-        var connection: HttpURLConnection? = null
+        var source: HttpSource? = null
         try {
             val resumeFrom = if (part.exists()) part.length() else 0L
-            connection = openConnectionFollowingRedirects(s.url, resumeFrom)
-            if (connection == null) {
+            source = openFollowingRedirects(s.url, resumeFrom)
+            if (source == null) {
                 // HTTP 416: our resume offset is at/after the end of the resource — the
                 // .part file already contains all bytes of a previous, almost-complete run.
-                Log.d(LOG_TAG, "resume offset beyond resource end, treating .part as complete")
+                debugPrintln { "Download: Resume-Offset hinter Ressourcen-Ende, .part ist komplett" }
                 return DownloadResult.Success
             }
-            val append = connection.responseCode == HttpURLConnection.HTTP_PARTIAL
+            val append = source.code == HttpURLConnection.HTTP_PARTIAL
             val alreadyDownloaded = if (append) resumeFrom else 0L
-            val remaining = connection.contentLengthLong // -1 if the server omits Content-Length
+            val remaining = source.contentLength // -1 if the server omits Content-Length
             val total = if (remaining >= 0) alreadyDownloaded + remaining else -1L
-            Log.d(LOG_TAG, "connected resumeFrom=$resumeFrom append=$append total=$total url=${s.url}")
+            debugPrintln { "Download: verbunden resumeFrom=$resumeFrom append=$append total=$total url=${s.url}" }
 
             var downloaded = alreadyDownloaded
-            connection.inputStream.use { input ->
+            source.body().use { input ->
                 FileOutputStream(part, append).use { output ->
                     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                     var lastReportedPct = -1
@@ -244,7 +250,7 @@ actual class Downloader(private val mainContext: Context) {
             // Keep the .part file for a Range-resume on the next attempt.
             return DownloadResult.Failed(e.message ?: mainContext.getString(R.string.download_error_network))
         } finally {
-            connection?.disconnect()
+            source?.close()
         }
     }
 
@@ -257,37 +263,79 @@ actual class Downloader(private val mainContext: Context) {
      * answers it). Returns null for HTTP 416 (range starts beyond the end of the resource,
      * i.e. the .part file is already complete).
      */
-    private fun openConnectionFollowingRedirects(initialUrl: String, resumeFrom: Long): HttpURLConnection? {
+    private fun openFollowingRedirects(initialUrl: String, resumeFrom: Long): HttpSource? {
         var current = URL(initialUrl)
         var redirects = 0
         while (true) {
-            val connection = (current.openConnection() as HttpURLConnection).apply {
-                instanceFollowRedirects = false
-                connectTimeout = CONNECT_TIMEOUT_MS
-                readTimeout = READ_TIMEOUT_MS
-                requestMethod = "GET"
-                setRequestProperty("User-Agent", "MolyEcho-Android")
-                if (resumeFrom > 0) setRequestProperty("Range", "bytes=$resumeFrom-")
-            }
-            val code = connection.responseCode
+            val source = openSingle(current, resumeFrom)
+            val code = source.code
             if (code in REDIRECT_CODES) {
-                val location = connection.getHeaderField("Location")
-                    ?: throw IOException("HTTP $code ohne Location-Header")
-                connection.disconnect()
+                val location = source.header("Location")
+                    ?: run { source.close(); throw IOException("HTTP $code ohne Location-Header") }
+                source.close()
                 if (++redirects > MAX_REDIRECTS) throw IOException("Zu viele Weiterleitungen")
                 current = URL(current, location) // resolves relative + absolute targets
                 continue
             }
             if (code == 416) {
-                connection.disconnect()
+                source.close()
                 return null
             }
             if (code != HttpURLConnection.HTTP_OK && code != HttpURLConnection.HTTP_PARTIAL) {
-                connection.disconnect()
+                source.close()
                 throw IOException("HTTP $code")
             }
-            return connection
+            return source
         }
+    }
+
+    /**
+     * Opens ONE hop. Normally via HttpURLConnection; if the local DNS cannot resolve the
+     * host (or only returns null routes like 0.0.0.0 — sinkholing routers), the host is
+     * resolved via DNS-over-HTTPS and connected directly with full TLS validation.
+     */
+    private fun openSingle(url: URL, resumeFrom: Long): HttpSource {
+        if (!isSystemDnsBroken(url.host)) {
+            try {
+                val connection = openConnection(url, resumeFrom)
+                connection.responseCode // erzwingt den Verbindungsaufbau innerhalb des try
+                return UrlConnectionSource(connection)
+            } catch (e: UnknownHostException) {
+                debugPrintln { "Download: Systemauflösung für ${url.host} fehlgeschlagen, versuche DoH" }
+            }
+        } else {
+            debugPrintln { "Download: lokales DNS für ${url.host} defekt/gefiltert (Null-Route), DoH-Fallback" }
+        }
+
+        val ips = DohResolver.resolve(url.host)
+        if (ips.isEmpty()) throw UnknownHostException("${url.host} (auch via DoH nicht auflösbar)")
+        var lastError: IOException? = null
+        for (ip in ips.take(MAX_DOH_IPS)) {
+            try {
+                return DirectHttpsClient.get(url, ip, resumeFrom)
+            } catch (e: IOException) {
+                debugPrintln { "Download: DoH-Verbindung über $ip fehlgeschlagen: ${e.message}" }
+                lastError = e
+            }
+        }
+        throw lastError ?: IOException("DoH-Fallback für ${url.host} fehlgeschlagen")
+    }
+
+    private fun openConnection(url: URL, resumeFrom: Long): HttpURLConnection =
+        (url.openConnection() as HttpURLConnection).apply {
+            instanceFollowRedirects = false
+            connectTimeout = CONNECT_TIMEOUT_MS
+            readTimeout = READ_TIMEOUT_MS
+            requestMethod = "GET"
+            setRequestProperty("User-Agent", "MolyEcho-Android")
+            if (resumeFrom > 0) setRequestProperty("Range", "bytes=$resumeFrom-")
+        }
+
+    /** true = Host löst nicht auf oder liefert ausschließlich Null-Routen/Loopback. */
+    private fun isSystemDnsBroken(host: String): Boolean = try {
+        InetAddress.getAllByName(host).all { it.isAnyLocalAddress || it.isLoopbackAddress }
+    } catch (e: UnknownHostException) {
+        true
     }
 
     private fun formatMb(bytes: Long): String = String.format("%.2f MB", bytes / 1024.0 / 1024.0)
@@ -331,12 +379,12 @@ actual class Downloader(private val mainContext: Context) {
     }
 
     companion object {
-        private const val LOG_TAG = "MolyDownload"
         private const val CHANNEL_DOWNLOAD_DONE_ID = "download_done_channel"
         private const val NOTIFICATION_DOWNLOAD_DONE_ID = 4
         private const val CONNECT_TIMEOUT_MS = 30_000
         private const val READ_TIMEOUT_MS = 30_000
         private const val MAX_REDIRECTS = 5
+        private const val MAX_DOH_IPS = 3
         private const val PROGRESS_THROTTLE_MS = 500L
         private const val NOTIFICATION_THROTTLE_MS = 1_000L
         private val REDIRECT_CODES = setOf(

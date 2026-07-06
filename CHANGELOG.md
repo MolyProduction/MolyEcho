@@ -14,6 +14,28 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ---
 
+## Versionshistorie
+
+### 1.3.7 (36) – 2026-07-06
+- **DNS-over-HTTPS-Fallback:** Liefert das lokale DNS für die Download-Hosts keine (oder nur Null-Route-)Adressen — z. B. durch filternde Router — werden die IPs über die DoH-Server von Google/Cloudflare aufgelöst und die Verbindung mit voller TLS-Validierung direkt aufgebaut. Der Modell-Download funktioniert damit auch hinter defektem Router-DNS.
+- Beim Löschen eines Modells werden jetzt auch `.part`-Reste abgebrochener Downloads entfernt
+- Download-Diagnose-Logs (`MolyDownload`-Tag) nur noch in Debug-Builds
+
+### 1.3.6 (35) – 2026-07-06 (inkl. Zwischenstand 1.3.5)
+Umsetzung des Code-Audits vom 2026-07-05 (8 Bugs, 10 Optimierungen):
+- **Download robust:** Transfer läuft im Downloader-Singleton mit eigenem Foreground-Service (überlebt Navigation & Hintergrund); Doppel-Download-Guard; HTTP-Range-Resume; Größenvalidierung; Abbruch wird nicht mehr als Fehler angezeigt; byte-genauer Gesamtfortschritt; Warnung bei mobiler Datenverbindung
+- **Transkription:** ONNX-Chunks werden an der leisesten Stelle (20–30-s-Fenster) geschnitten statt hart bei 30 s (weniger zerschnittene Wörter); fehlgeschlagene Abschnitte werden gezählt und als Hinweis angezeigt; 3-Sekunden-Blockade bei jedem Modellwechsel behoben
+- **Release:** arm64-only (APK 75 → 42 MB), R8-Shrinking aktiv (Blanket-Keeps entfernt), 16-KB-Page-Alignment
+- **Deutsch:** Notification-Channel-Namen und Modellbeschreibungen übersetzt
+
+### 1.3.4 (33) – 2026-07
+- `android.app.DownloadManager` durch direkten Streaming-Download (HttpURLConnection) ersetzt — behebt den Endlos-Hang bei 0 % gegen das HuggingFace-CDN; `.part`+Rename verhindert halbe Modelle
+
+### 1.3.3 (32) – 2026-06
+- Race-Condition beim Speichern der Download-ID behoben (Vorarbeit zum DownloadManager-Ersatz)
+
+---
+
 ## 1. Projekt-Umbenennung & Branding
 
 - Projektname von NotelyVoice zu **MolyEcho** geändert (`78c2545`, `dd2712b`, `dae3d09`)
