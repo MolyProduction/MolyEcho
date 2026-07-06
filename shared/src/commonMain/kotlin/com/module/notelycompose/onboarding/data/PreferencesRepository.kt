@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.module.notelycompose.notes.extension.TEXT_SIZE_BODY
 import com.module.notelycompose.modelDownloader.NO_MODEL_SELECTION
@@ -23,7 +22,6 @@ class PreferencesRepository(
         private val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val KEY_LANGUAGE = stringPreferencesKey("language")
         private val KEY_THEME = stringPreferencesKey("theme")
-        private val KEY_MODEL_DOWNLOAD_ID = longPreferencesKey("model_download_id")
         private val KEY_BODY_TEXT_SIZE = floatPreferencesKey("body_text_size")
         private val KEY_MODEL_SELECTION = intPreferencesKey("model_selection")
         private val KEY_ACCENT_THEME = stringPreferencesKey("accent_theme")
@@ -59,16 +57,6 @@ class PreferencesRepository(
 
     fun getTheme(): Flow<String> = dataStore.data.map { prefs ->
         prefs[KEY_THEME]?:Theme.SYSTEM.name
-    }
-
-    fun getModelDownloadId(): Flow<Long> = dataStore.data.map { prefs ->
-        prefs[KEY_MODEL_DOWNLOAD_ID]?:-1
-    }
-
-    suspend fun setModelDownloadId(downloadId: Long) {
-        dataStore.edit { prefs ->
-            prefs[KEY_MODEL_DOWNLOAD_ID] = downloadId
-        }
     }
 
     fun getBodyTextSize(): Flow<Float> = dataStore.data.map { prefs ->

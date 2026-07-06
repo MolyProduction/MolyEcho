@@ -22,6 +22,7 @@ import de.molyecho.notlyvoice.resources.take_few_minutes
 import de.molyecho.notlyvoice.resources.download
 import de.molyecho.notlyvoice.resources.cancel
 import com.module.notelycompose.modelDownloader.TranscriptionModel
+import de.molyecho.notlyvoice.resources.download_metered_warning
 import de.molyecho.notlyvoice.resources.file_size_approx
 import de.molyecho.notlyvoice.resources.file_model_english
 import de.molyecho.notlyvoice.resources.file_model_german_turbo
@@ -31,6 +32,7 @@ fun DownloadModelDialog(
     onDownload: () -> Unit,
     onCancel: () -> Unit,
     transcriptionModel: TranscriptionModel,
+    showMeteredHint: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val fileInfo: String = when (transcriptionModel.getModelDownloadType()) {
@@ -58,6 +60,13 @@ fun DownloadModelDialog(
                 Text(fileInfo)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(stringResource(Res.string.file_size_approx, transcriptionModel.getModelDownloadSize()))
+                if (showMeteredHint) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(Res.string.download_metered_warning),
+                        color = Color(0xFFB00020)
+                    )
+                }
             }
         },
         confirmButton = {

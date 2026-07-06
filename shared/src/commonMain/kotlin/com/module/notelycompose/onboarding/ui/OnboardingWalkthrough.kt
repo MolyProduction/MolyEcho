@@ -57,12 +57,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.module.notelycompose.modelDownloader.DownloaderEffect
+import com.module.notelycompose.modelDownloader.DownloadStatus
 import com.module.notelycompose.modelDownloader.ModelDownloaderViewModel
 import com.module.notelycompose.notes.ui.theme.PoppingsFontFamily
 import com.module.notelycompose.permissions.NotificationPermissionState
 import com.module.notelycompose.permissions.PermissionHandler
 import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.download_metered_warning
 import de.molyecho.notlyvoice.resources.molyecho_logo
 import de.molyecho.notlyvoice.resources.onboarding_battery_body
 import de.molyecho.notlyvoice.resources.onboarding_battery_cta
@@ -478,16 +479,19 @@ private fun OnboardingScreen3Battery(
 private fun OnboardingScreen4Model(onFinish: () -> Unit) {
     val downloaderViewModel = koinViewModel<ModelDownloaderViewModel>()
     val downloaderUiState by downloaderViewModel.uiState.collectAsState()
-    var downloadState by remember { mutableStateOf(ModelDownloadScreenState.INFO) }
+    // Screen state is derived from the ViewModel, not held locally: a local copy would
+    // reset to INFO when the user navigates back and forth while the download keeps
+    // running, making it possible to start a second download of the same model.
+    val downloadState = when (downloaderUiState.status) {
+        DownloadStatus.IDLE -> ModelDownloadScreenState.INFO
+        DownloadStatus.DOWNLOADING -> ModelDownloadScreenState.DOWNLOADING
+        DownloadStatus.SUCCESS -> ModelDownloadScreenState.SUCCESS
+        DownloadStatus.ERROR -> ModelDownloadScreenState.ERROR
+    }
 
-    LaunchedEffect(Unit) {
-        downloaderViewModel.effects.collect { effect ->
-            when (effect) {
-                is DownloaderEffect.DownloadEffect -> downloadState = ModelDownloadScreenState.DOWNLOADING
-                is DownloaderEffect.ModelsAreReady -> downloadState = ModelDownloadScreenState.SUCCESS
-                is DownloaderEffect.ErrorEffect -> downloadState = ModelDownloadScreenState.ERROR
-                else -> {}
-            }
+    LaunchedEffect(downloadState) {
+        if (downloadState == ModelDownloadScreenState.INFO) {
+            downloaderViewModel.refreshNetworkStatus()
         }
     }
 
@@ -533,6 +537,15 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(text = stringResource(Res.string.onboarding_model_info_minimize), fontSize = 14.sp)
                     }
+                }
+                if (downloaderUiState.isMeteredNetwork) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(Res.string.download_metered_warning),
+                        fontSize = 14.sp,
+                        color = Color(0xFFB00020),
+                        textAlign = TextAlign.Center
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -582,10 +595,9 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                 Spacer(modifier = Modifier.height(24.dp))
                 OnboardingTextLink(
                     text = stringResource(Res.string.onboarding_model_cancel),
-                    onClick = {
-                        downloaderViewModel.cancelDownload()
-                        downloadState = ModelDownloadScreenState.INFO
-                    }
+                    // Status flips back to IDLE (→ INFO screen) once the Downloader has
+                    // actually stopped and reported the cancellation.
+                    onClick = { downloaderViewModel.cancelDownload() }
                 )
             }
 
@@ -625,10 +637,7 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                 Spacer(modifier = Modifier.height(24.dp))
                 OnboardingPrimaryButton(
                     text = stringResource(Res.string.onboarding_model_retry),
-                    onClick = {
-                        downloadState = ModelDownloadScreenState.DOWNLOADING
-                        downloaderViewModel.startDownload()
-                    }
+                    onClick = { downloaderViewModel.startDownload() }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OnboardingTextLink(

@@ -17,7 +17,9 @@ expect class Transcriber {
         filePath:String, language:String,
         onProgress : (Int) -> Unit,
         onNewSegment : (Long, Long,String) -> Unit,
-        onComplete : () -> Unit,
+        // failedChunks: number of audio chunks that threw during transcription and are
+        // therefore missing from the transcript (0 = complete transcript).
+        onComplete : (failedChunks: Int) -> Unit,
         onError : () -> Unit
     )
     fun hasRecordingPermission(): Boolean

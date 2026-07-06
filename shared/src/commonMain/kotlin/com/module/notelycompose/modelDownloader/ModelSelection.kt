@@ -12,6 +12,16 @@ const val GERMAN_MODEL = "de"
 
 enum class ModelFormat { GGML, ONNX }
 
+/**
+ * One file of a multi-file model. [sizeBytes] is the expected download size (from the
+ * HuggingFace API) and is used for byte-weighted aggregate progress across files.
+ */
+data class DownloadFile(
+    val fileName: String,
+    val url: String,
+    val sizeBytes: Long
+)
+
 data class TranscriptionModel(
     val name: String,
     val modelType: String,
@@ -20,10 +30,9 @@ data class TranscriptionModel(
     val url: String?,
     val format: ModelFormat = ModelFormat.GGML,
     /**
-     * For ONNX models: list of (local filename, download URL) pairs.
-     * Null for single-file GGML models.
+     * For ONNX models: list of files to download. Null for single-file GGML models.
      */
-    val downloadFiles: List<Pair<String, String>>? = null
+    val downloadFiles: List<DownloadFile>? = null
 ) {
     fun getModelDownloadSize(): String = size
     fun getModelDownloadType(): String = modelType
@@ -41,9 +50,9 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
      *   1  whisper-large-v3-turbo-german/       German "Schnell" (~990 MB, ONNX)
      *   2  ggml-large-v3-turbo-german.bin       German "Genau"  (1.62 GB, GGML)
      *
-     * NOTE: ONNX download URLs for model 1 are placeholders.
-     * Update with actual HuggingFace URLs after running sherpa-onnx export and uploading.
-     * Expected files from: python export-onnx.py --model large-v3-turbo --checkpoint primeline/whisper-large-v3-turbo-german
+     * ONNX files for model 1 were exported via sherpa-onnx:
+     * python export-onnx.py --model large-v3-turbo --checkpoint primeline/whisper-large-v3-turbo-german
+     * sizeBytes values come from the HuggingFace API (repo MolyProduction/…-sherpa-onnx).
      */
     private val models = listOf(
         // Index 0 — Multilingual GGML (unchanged)
@@ -51,7 +60,8 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
             name = "ggml-small.bin",
             modelType = MULTILINGUAL_MODEL,
             size = "465 MB",
-            description = "Multilingual model (supports 50+ languages, slower, more-accurate)",
+            // User-visible in the download dialog → German (project rule: all UI texts German)
+            description = "Mehrsprachiges Modell (50+ Sprachen)",
             url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin",
             format = ModelFormat.GGML
         ),
@@ -60,21 +70,33 @@ class ModelSelection(private val preferencesRepository: PreferencesRepository) {
             name = "whisper-large-v3-turbo-german",
             modelType = GERMAN_MODEL,
             size = "~990 MB",
-            description = "German large-v3-turbo model — fast (ONNX/XNNPACK)",
+            description = "Deutsches Modell – Schnell (ONNX)",
             url = null,
             format = ModelFormat.ONNX,
             downloadFiles = listOf(
-                "large-v3-turbo-encoder.int8.onnx" to "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-encoder.int8.onnx",
-                "large-v3-turbo-decoder.int8.onnx" to "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-decoder.int8.onnx",
-                "large-v3-turbo-tokens.txt" to "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-tokens.txt"
+                DownloadFile(
+                    fileName = "large-v3-turbo-encoder.int8.onnx",
+                    url = "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-encoder.int8.onnx",
+                    sizeBytes = 674_622_356L
+                ),
+                DownloadFile(
+                    fileName = "large-v3-turbo-decoder.int8.onnx",
+                    url = "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-decoder.int8.onnx",
+                    sizeBytes = 361_070_805L
+                ),
+                DownloadFile(
+                    fileName = "large-v3-turbo-tokens.txt",
+                    url = "https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/resolve/main/large-v3-turbo-tokens.txt",
+                    sizeBytes = 866_987L
+                )
             )
         ),
         // Index 2 — German Genau GGML (unchanged)
         TranscriptionModel(
             name = "ggml-large-v3-turbo-german.bin",
             modelType = GERMAN_MODEL,
-            size = "1.62 GB",
-            description = "German large-v3-turbo model (highest accuracy)",
+            size = "1,62 GB",
+            description = "Deutsches Modell – Genau (höchste Genauigkeit)",
             url = "https://huggingface.co/cstr/whisper-large-v3-turbo-german-ggml/resolve/main/ggml-model.bin",
             format = ModelFormat.GGML
         )

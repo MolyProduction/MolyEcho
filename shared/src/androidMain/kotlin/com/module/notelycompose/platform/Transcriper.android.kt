@@ -11,7 +11,6 @@ import com.module.notelycompose.core.debugPrintln
 import com.module.notelycompose.utils.SilenceAnalyzer
 import com.module.notelycompose.utils.StreamingAudioChunker
 import com.module.notelycompose.utils.StreamingAudioChunk
-import com.module.notelycompose.utils.ChunkTranscriptionResult
 import com.module.notelycompose.utils.isSilentChunk
 import com.module.notelycompose.utils.WavFileParser
 import com.module.notelycompose.modelDownloader.ModelFormat
@@ -35,7 +34,7 @@ actual class Transcriber(
     private val context: Context,
     private val launcherHolder: LauncherHolder
 ) {
-    private var canTranscribe: Boolean = false
+    @Volatile private var canTranscribe: Boolean = false
     @Volatile private var isTranscribing = false
     private val modelsPath: File = File(context.filesDir, "models").also { it.mkdirs() }
     private var whisperContext: WhisperContext? = null
@@ -66,6 +65,9 @@ actual class Transcriber(
     companion object {
         private const val LOG_TAG = "Transcriber"
         private const val INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000L // 10 Minuten
+        // ONNX chunking: hard 30 s receptive window; cut at quietest boundary in [20 s, 30 s]
+        private const val ONNX_MAX_CHUNK_SECONDS = 30
+        private const val ONNX_MIN_CHUNK_SECONDS = 20
         val ONNX_REQUIRED_FILES = listOf(
             SherpaWhisperContext.ENCODER_FILE,
             SherpaWhisperContext.DECODER_FILE,
@@ -318,7 +320,7 @@ actual class Transcriber(
         filePath: String, language: String,
         onProgress : (Int) -> Unit,
         onNewSegment : (Long, Long,String) -> Unit,
-        onComplete : () -> Unit,
+        onComplete : (failedChunks: Int) -> Unit,
         onError : () -> Unit
     ) {
         if (!canTranscribe) {
@@ -339,18 +341,29 @@ actual class Transcriber(
             // Split WAV file into streaming chunks without loading entire file into memory.
             // ONNX: Whisper's offline decoder has a hard 30-second receptive window (480,000
             // samples at 16 kHz). Passing more audio to acceptWaveform() silently truncates
-            // at 30 s. Use exact 30 s chunks with no overlap (overlap would duplicate words
-            // because sherpa-onnx has no initialPrompt support between chunks).
+            // at 30 s. Chunks are cut at the QUIETEST second boundary in the 20–30 s window
+            // (no overlap — overlap would duplicate words because sherpa-onnx has no
+            // initialPrompt support between chunks; cutting in silence avoids slicing words).
             // GGML: whisper.cpp handles arbitrary-length audio internally, so the default
             // 10 MB chunks (~5.5 min) are fine.
             val streamingChunks = if (currentLoadedModelFormat == ModelFormat.ONNX) {
-                val onnxChunkBytes = 30 * 16_000 * 2 // 30 s × 16 kHz × 2 bytes (16-bit mono)
-                val rawChunks = streamingChunker.splitWavFileIntoChunks(
-                    filePath,
-                    chunkSizeBytes = onnxChunkBytes,
-                    overlapSizeBytes = 0
-                )
                 val silenceAnalysis = SilenceAnalyzer.analyze(filePath)
+                val rawChunks = if (silenceAnalysis.rmsPerSecond.isNotEmpty()) {
+                    streamingChunker.splitWavFileIntoSilenceAlignedChunks(
+                        filePath,
+                        rmsPerSecond = silenceAnalysis.rmsPerSecond,
+                        maxChunkSeconds = ONNX_MAX_CHUNK_SECONDS,
+                        minChunkSeconds = ONNX_MIN_CHUNK_SECONDS
+                    )
+                } else {
+                    // Silence scan failed (e.g. unsupported bit depth) — fixed 30 s chunks.
+                    val onnxChunkBytes = ONNX_MAX_CHUNK_SECONDS * 16_000 * 2 // 16 kHz, 16-bit mono
+                    streamingChunker.splitWavFileIntoChunks(
+                        filePath,
+                        chunkSizeBytes = onnxChunkBytes,
+                        overlapSizeBytes = 0
+                    )
+                }
                 if (silenceAnalysis.shouldApplyVad) {
                     val filtered = rawChunks.filterNot { it.isSilentChunk(silenceAnalysis) }.toMutableList()
                     debugPrintln { "VAD: skipped ${rawChunks.size - filtered.size}/${rawChunks.size} silent chunks" }
@@ -365,8 +378,8 @@ actual class Transcriber(
             debugPrintln{"Processing ${streamingChunks.size} streaming chunks...\n"}
 
             val start = System.currentTimeMillis()
-            val chunkResults = mutableListOf<ChunkTranscriptionResult>()
             var completedChunks = 0
+            var failedChunks = 0
             var previousChunkPrompt: String? = null
 
             streamingChunks.forEachIndexed { chunkIndex, streamingChunk ->
@@ -378,7 +391,6 @@ actual class Transcriber(
                 debugPrintln{"Processing streaming chunk ${chunkIndex + 1}/${streamingChunks.size} (${streamingChunk.durationSeconds}s)"}
 
                 val chunkSegments = mutableListOf<com.module.notelycompose.utils.TranscriptionSegment>()
-                var chunkText = ""
 
                 try {
                     // Read chunk data directly from file (using reusable arrays)
@@ -393,7 +405,6 @@ actual class Transcriber(
                     if (currentLoadedModelFormat == ModelFormat.ONNX) {
                         // ONNX path: synchronous, no segment-level callbacks
                         val text = sherpaContext?.transcribeData(chunkData) ?: ""
-                        chunkText = text
 
                         if (text.isNotBlank()) {
                             val chunkStartMs = ((streamingChunk.startOffset - streamingChunk.header.dataOffset).toDouble() /
@@ -418,7 +429,7 @@ actual class Transcriber(
 
                     } else {
                         // GGML path (original whisperContext code)
-                        val result = whisperContext?.transcribeData(
+                        whisperContext?.transcribeData(
                             chunkData,
                             language,
                             initialPrompt = previousChunkPrompt,
@@ -456,40 +467,22 @@ actual class Transcriber(
                             }
                         })
 
-                        chunkText = result ?: ""
-
                         // Letzten Teil des Chunks als Prompt für nächsten Chunk speichern
                         val rawText = chunkSegments.joinToString(" ") { it.text.trim() }
                         previousChunkPrompt = if (rawText.length > 100) rawText.takeLast(100) else rawText.ifBlank { null }
                     }
-
-                    // TODO(pre-existing): chunkResults is accumulated here but never consumed —
-                    // the block below clears it immediately. This scaffolding is left intact
-                    // to avoid changing pre-existing GGML behavior; remove when the merge logic is implemented.
-                    val tempAudioChunk = com.module.notelycompose.utils.AudioChunk(
-                        startSample = ((streamingChunk.startOffset - streamingChunk.header.dataOffset) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
-                        endSample = ((streamingChunk.endOffset - streamingChunk.header.dataOffset) / (streamingChunk.header.channels * (streamingChunk.header.bitsPerSample / 8))).toInt(),
-                        data = chunkData
-                    )
-
-                    chunkResults.add(ChunkTranscriptionResult(tempAudioChunk, chunkText, chunkSegments))
 
                     // Clear chunk data from memory after processing (reusable array)
                     chunkData.fill(0.0f)
                     debugPrintln{"Transcription: Cleared chunk $chunkIndex data from memory (${chunkData.size} samples, reusable array)"}
 
                 } catch (e: Exception) {
+                    // Do not abort the whole transcription for one bad chunk, but COUNT it —
+                    // the transcript is incomplete and the user must be told (via onComplete).
+                    failedChunks++
+                    Log.e(LOG_TAG, "Error processing streaming chunk $chunkIndex", e)
                     debugPrintln{"Error processing streaming chunk $chunkIndex: ${e.localizedMessage}"}
-                    e.printStackTrace()
                 }
-            }
-
-            // Merge results from all chunks
-            if (isTranscribing && chunkResults.isNotEmpty()) {
-
-                // Clear chunk results from memory after merging
-                chunkResults.clear()
-                debugPrintln{"Transcription: Cleared all chunk results from memory"}
             }
 
             val elapsed = System.currentTimeMillis() - start
@@ -505,7 +498,7 @@ actual class Transcriber(
             debugPrintln{"Transcription: Cleared reusable arrays from memory (FloatArray: ${arraySizes.first}, ByteArray: ${arraySizes.second})"}
 
             if (isTranscribing) {
-                onComplete()
+                onComplete(failedChunks)
             }
 
         } catch (e: OutOfMemoryError) {

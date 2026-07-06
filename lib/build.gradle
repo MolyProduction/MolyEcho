@@ -12,9 +12,11 @@ android {
         targetSdk 36
 
         ndk {
-            // sherpa-onnx ships ARM-only (arm64-v8a, armeabi-v7a); x86/x86_64 would
-            // compile whisper.cpp but crash the ONNX path at runtime. Use an ARM emulator.
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+            // arm64-v8a only: 32-bit armeabi-v7a cannot realistically load the 1+ GB
+            // models (3 GB address space) and every Android device since ~2016 is 64-bit.
+            // x86/x86_64 would compile whisper.cpp but crash the ONNX path at runtime —
+            // use an ARM emulator.
+            abiFilters 'arm64-v8a'
         }
         externalNativeBuild {
             cmake {

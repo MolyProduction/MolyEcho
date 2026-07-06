@@ -196,6 +196,12 @@ fun NoteDetailScreen(
                     showLoadingDialog = true
                     showDownloadDialog = false
                 }
+
+                is DownloaderEffect.DownloadCancelled -> {
+                    // Deliberate cancellation is not an error — just close the dialogs.
+                    showDownloadDialog = false
+                    showLoadingDialog = false
+                }
             }
         }
     }
@@ -355,7 +361,8 @@ fun NoteDetailScreen(
             onCancel = {
                 showDownloadQuestionDialog = false
             },
-            transcriptionModel = downloaderUiState.selectedModel
+            transcriptionModel = downloaderUiState.selectedModel,
+            showMeteredHint = downloaderUiState.isMeteredNetwork
         )
     }
 

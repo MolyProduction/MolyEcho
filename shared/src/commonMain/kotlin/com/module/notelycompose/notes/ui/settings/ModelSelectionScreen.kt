@@ -111,6 +111,7 @@ fun ModelSelectionScreen(
             when (effect) {
                 is DownloaderEffect.ModelsAreReady -> navigateBack()
                 is DownloaderEffect.ErrorEffect -> navigateBack() // fallback: download at transcription time
+                is DownloaderEffect.DownloadCancelled -> showDownloadProgress = false
                 else -> {}
             }
         }
@@ -284,8 +285,10 @@ fun ModelSelectionScreen(
             else                       -> STANDARD_MODEL_SELECTION
         }
         val model = modelSelectionHelper.getModelBySelection(selectionConstant)
+        LaunchedEffect(mode) { downloaderViewModel.refreshNetworkStatus() }
         DownloadModelDialog(
             transcriptionModel = model,
+            showMeteredHint = downloaderUiState.isMeteredNetwork,
             onDownload = {
                 pendingDownloadMode = null
                 showDownloadProgress = true

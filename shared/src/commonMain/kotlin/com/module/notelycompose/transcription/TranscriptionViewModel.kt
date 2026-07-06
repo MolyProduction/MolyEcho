@@ -49,7 +49,12 @@ class TranscriptionViewModel(
             val audioDurationSeconds = transcriber.getAudioDurationSeconds(filePath)
             // Show loading indicator immediately so the user sees feedback.
             _uiState.update { current ->
-                current.copy(inTranscription = true, isModelLoading = true, showLongRunningHint = audioDurationSeconds > 20)
+                current.copy(
+                    inTranscription = true,
+                    isModelLoading = true,
+                    showLongRunningHint = audioDurationSeconds > 20,
+                    failedChunks = 0
+                )
             }
             // Yield so the Main thread has a chance to render the loading state before
             // initialize() returns (which may be instant if model is already cached).
@@ -94,14 +99,15 @@ class TranscriptionViewModel(
                     }
 
                 },
-                onComplete = {
+                onComplete = { failedChunks ->
                     // Signal service to post completion notification and stop itself
                     serviceController.notifyTranscriptionComplete()
-                    debugPrintln{"\n completed ========================= "}
+                    debugPrintln{"\n completed ========================= failedChunks=$failedChunks"}
                     _uiState.update {current ->
                         current.copy(
                             inTranscription = false,
-                            progress = 100
+                            progress = 100,
+                            failedChunks = failedChunks
                         )
                     }
                 },
@@ -140,7 +146,8 @@ class TranscriptionViewModel(
                 finalText = "",
                 partialText = "",
                 summarizedText = "",
-                progress = 0
+                progress = 0,
+                failedChunks = 0
             )
         }
         val token = mySessionToken

@@ -32,8 +32,6 @@ kotlin {
             implementation(libs.google.accompanist.systemuicontroller)
             implementation(libs.sqldelight.android.driver)
 
-            implementation(libs.google.accompanist.systemuicontroller)
-
             implementation(libs.kotlinx.serialization.json)
             implementation(project(":lib"))
 
@@ -51,8 +49,6 @@ kotlin {
             implementation(compose.material)
             implementation(compose.material3)
             implementation(libs.material.icons.core)
-            implementation(compose.components.resources)
-
             implementation(compose.components.resources)
             implementation(libs.compose.vectorize.core)
             implementation(libs.kotlinx.serialization.json)
@@ -96,12 +92,13 @@ kotlin {
             compilerOptions.configure {
                 allWarningsAsErrors = false
                 freeCompilerArgs.add("-Xexpected-actual-classes")
-                // For deterministic builds
+                // For deterministic builds. Note: -Xno-optimize was removed deliberately —
+                // it disabled Kotlin bytecode optimization in RELEASE builds too and is not
+                // required for reproducibility (deterministic jar order + timestamps suffice).
                 freeCompilerArgs.add("-Xjsr305=strict")
                 freeCompilerArgs.add("-Xno-param-assertions")
                 freeCompilerArgs.add("-Xno-call-assertions")
                 freeCompilerArgs.add("-Xno-receiver-assertions")
-                freeCompilerArgs.add("-Xno-optimize")
                 freeCompilerArgs.add("-Xassertions=jvm")
                 freeCompilerArgs.add("-Xuse-deterministic-jar-order")
                 freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
@@ -136,8 +133,15 @@ android {
         applicationId = "de.molyecho.notlyvoice.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 31
-        versionName = "1.3.2"
+        versionCode = 35
+        versionName = "1.3.6"
+        ndk {
+            // arm64-v8a only. The sherpa-onnx AAR ships all four ABIs; without this filter
+            // dead x86/x86_64 (and unused armeabi-v7a) .so files end up in the APK/AAB.
+            // 32-bit ARM was dropped deliberately: its 3 GB address space cannot load the
+            // 1+ GB models, and all Android devices since ~2016 are 64-bit.
+            abiFilters += listOf("arm64-v8a")
+        }
     }
     buildFeatures {
         compose = true
@@ -161,8 +165,10 @@ android {
 
         // Force deterministic file ordering
         jniLibs {
-            useLegacyPackaging = true
-            // 16KB Page Size Support: Use uncompressed native libraries
+            // 16KB Page Size Support: store native libs UNCOMPRESSED so AGP (8.5.1+)
+            // 16K-aligns them. Legacy packaging (compressed + extracted at install)
+            // contradicted that intent and roughly doubled the on-disk footprint.
+            useLegacyPackaging = false
             pickFirsts += listOf("**/libc++_shared.so", "**/libwhisper.so", "**/libonnxruntime.so")
         }
 

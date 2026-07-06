@@ -30,15 +30,14 @@ actual class AudioRecorder(
         val file = context.generateWavFile()
         currentRecordingPath = file.absolutePath
 
+        // Note: WaveRecorder's silence detection stays DISABLED on purpose (the boolean
+        // `silenceDetection` property is never set). Skipping silent passages would shift
+        // all transcript timestamps relative to the recording.
         recorder = WaveRecorder(file.absolutePath)
             .configureWaveSettings {
                 sampleRate = 16000
                 channels = AudioFormat.CHANNEL_IN_MONO
                 audioEncoding = selectedEncoding
-            }.configureSilenceDetection {
-                minAmplitudeThreshold = 2000
-                bufferDurationInMillis = 1500
-                preSilenceDurationInMillis = 1500
             }
 
         try {
