@@ -16,6 +16,9 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.3.8 (37) – 2026-07-08
+- Produktionsrelease für Google Play (inhaltlich identisch mit 1.3.7; neuer Versionscode, da 36 bereits vom Testrelease belegt war)
+
 ### 1.3.7 (36) – 2026-07-06
 - **DNS-over-HTTPS-Fallback:** Liefert das lokale DNS für die Download-Hosts keine (oder nur Null-Route-)Adressen — z. B. durch filternde Router — werden die IPs über die DoH-Server von Google/Cloudflare aufgelöst und die Verbindung mit voller TLS-Validierung direkt aufgebaut. Der Modell-Download funktioniert damit auch hinter defektem Router-DNS.
 - Beim Löschen eines Modells werden jetzt auch `.part`-Reste abgebrochener Downloads entfernt
