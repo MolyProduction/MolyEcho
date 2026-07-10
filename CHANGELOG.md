@@ -16,6 +16,9 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.3.9 (38) – 2026-07-10
+- **Medien-Berechtigungen entfernt** (`READ_MEDIA_AUDIO`, `READ_MEDIA_VIDEO`, `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE`): Google Play hatte das Release abgelehnt (Foto-/Video-Berechtigungen nur für Apps mit Mediathek als Kernfunktion erlaubt). Der Audio-/Video-Import lief ohnehin über den System-Picker (`ACTION_GET_CONTENT`), der die Lesefreigabe pro Datei erteilt — die Berechtigungen und der zugehörige Laufzeit-Dialog waren überflüssig und wurden ersatzlos gestrichen. Funktional ändert sich nichts.
+
 ### 1.3.8 (37) – 2026-07-08
 - Produktionsrelease für Google Play (inhaltlich identisch mit 1.3.7; neuer Versionscode, da 36 bereits vom Testrelease belegt war)
 
