@@ -133,8 +133,8 @@ android {
         applicationId = "de.molyecho.notlyvoice.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 37
-        versionName = "1.3.8"
+        versionCode = 38
+        versionName = "1.3.9"
         ndk {
             // arm64-v8a only. The sherpa-onnx AAR ships all four ABIs; without this filter
             // dead x86/x86_64 (and unused armeabi-v7a) .so files end up in the APK/AAB.
