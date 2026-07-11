@@ -16,6 +16,10 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.3.10 (39) – 2026-07-11
+- **Modell-Download deutlich beschleunigt:** Große Modelldateien werden jetzt parallel in bis zu 4 Range-Segmenten geladen (Einzelverbindungen sind auf WLAN bzw. beim CDN oft pro Verbindung limitiert). Der Fortschritt jedes Segments wird gesichert — abgebrochene Downloads setzen weiterhin exakt dort fort, wo sie standen. Zusätzlich größere Lesepuffer (8 KB → 256 KB) und verlässliche Content-Length (`Accept-Encoding: identity`).
+- **Hinweise während des Downloads:** Der Download-Dialog (Einstellungen/Notiz) und der Onboarding-Downloadbildschirm erklären jetzt, dass die App minimiert werden kann, unterbrochene Downloads automatisch fortgesetzt werden und der Download je nach Verbindung einige Minuten dauern kann.
+
 ### 1.3.9 (38) – 2026-07-10
 - **Medien-Berechtigungen entfernt** (`READ_MEDIA_AUDIO`, `READ_MEDIA_VIDEO`, `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE`): Google Play hatte das Release abgelehnt (Foto-/Video-Berechtigungen nur für Apps mit Mediathek als Kernfunktion erlaubt). Der Audio-/Video-Import lief ohnehin über den System-Picker (`ACTION_GET_CONTENT`), der die Lesefreigabe pro Datei erteilt — die Berechtigungen und der zugehörige Laufzeit-Dialog waren überflüssig und wurden ersatzlos gestrichen. Funktional ändert sich nichts.
 

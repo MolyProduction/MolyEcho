@@ -12,13 +12,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.modelDownloader.ModelSelection
 import de.molyecho.notlyvoice.resources.Res
+import de.molyecho.notlyvoice.resources.download_hint_background
+import de.molyecho.notlyvoice.resources.download_hint_duration
+import de.molyecho.notlyvoice.resources.download_hint_resume
 import de.molyecho.notlyvoice.resources.downloading_model
 import org.jetbrains.compose.resources.stringResource
 
@@ -74,6 +80,24 @@ fun DownloaderDialog(
                             color = LocalCustomColors.current.bodyContentColor
                         )
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(Res.string.download_hint_background),
+                        fontSize = 13.sp,
+                        color = LocalCustomColors.current.bodyContentColor.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.download_hint_resume),
+                        fontSize = 13.sp,
+                        color = LocalCustomColors.current.bodyContentColor.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.download_hint_duration),
+                        fontSize = 13.sp,
+                        color = LocalCustomColors.current.bodyContentColor.copy(alpha = 0.7f)
+                    )
                 }
             }
         }

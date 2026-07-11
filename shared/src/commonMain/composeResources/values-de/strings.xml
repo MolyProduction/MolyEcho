@@ -312,4 +312,8 @@
     <string name="share_import_ok">OK</string>
     <string name="transcription_incomplete_hint">%1$d Abschnitt(e) konnten nicht transkribiert werden – das Transkript ist möglicherweise unvollständig.</string>
     <string name="download_metered_warning">Achtung: keine WLAN-Verbindung – der Download nutzt evtl. mobile Daten.</string>
+    <!-- Hinweise im Download-Fortschritt (Dialog + Onboarding) -->
+    <string name="download_hint_background">📱  App kann minimiert werden – der Download läuft im Hintergrund weiter</string>
+    <string name="download_hint_resume">🔄  Unterbrochene Downloads werden beim nächsten Versuch automatisch fortgesetzt</string>
+    <string name="download_hint_duration">⏳  Je nach Internetverbindung kann das einige Minuten dauern</string>
 </resources>

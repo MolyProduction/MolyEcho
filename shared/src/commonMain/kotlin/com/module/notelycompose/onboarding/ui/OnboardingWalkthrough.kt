@@ -76,6 +76,9 @@ import de.molyecho.notlyvoice.resources.onboarding_model_cta
 import de.molyecho.notlyvoice.resources.onboarding_model_downloading_title
 import de.molyecho.notlyvoice.resources.onboarding_model_error
 import de.molyecho.notlyvoice.resources.onboarding_model_finish
+import de.molyecho.notlyvoice.resources.download_hint_background
+import de.molyecho.notlyvoice.resources.download_hint_duration
+import de.molyecho.notlyvoice.resources.download_hint_resume
 import de.molyecho.notlyvoice.resources.onboarding_model_info_minimize
 import de.molyecho.notlyvoice.resources.onboarding_model_info_once
 import de.molyecho.notlyvoice.resources.onboarding_model_info_size
@@ -592,6 +595,26 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                     fontSize = 14.sp,
                     color = Color(0xFF555555)
                 )
+                Spacer(modifier = Modifier.height(24.dp))
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        text = stringResource(Res.string.download_hint_background),
+                        fontSize = 13.sp,
+                        color = Color(0xFF555555)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.download_hint_resume),
+                        fontSize = 13.sp,
+                        color = Color(0xFF555555)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.download_hint_duration),
+                        fontSize = 13.sp,
+                        color = Color(0xFF555555)
+                    )
+                }
                 Spacer(modifier = Modifier.height(24.dp))
                 OnboardingTextLink(
                     text = stringResource(Res.string.onboarding_model_cancel),
