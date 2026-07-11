@@ -25,10 +25,13 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.RandomAccessFile
 import java.net.HttpURLConnection
 import java.net.InetAddress
 import java.net.URL
 import java.net.UnknownHostException
+import java.util.concurrent.atomic.AtomicLongArray
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Direct streaming downloader built on HttpURLConnection.
@@ -51,6 +54,14 @@ import java.net.UnknownHostException
  * against Content-Length, so a partial download never looks like a complete model. The
  * `.part` file is kept on failure/cancel and resumed on the next attempt via an HTTP Range
  * request.
+ *
+ * Große Dateien (≥ 2×32 MB) mit Range-Unterstützung (Probe-Antwort 206) werden parallel in
+ * bis zu [SegmentPlan.MAX_SEGMENTS] Segmenten geladen — Einzelverbindungen sind auf WLAN
+ * bzw. beim CDN oft pro Verbindung limitiert. Der Fortschritt je Segment liegt in einer
+ * `.smeta`-Sidecar-Datei für Resume. Invariante: die `.smeta` wird VOR dem Vorallozieren
+ * der `.part` geschrieben und erst nach validiertem Abschluss gelöscht — eine `.part` ohne
+ * `.smeta` ist deshalb immer sequenzieller Fortschritt (oder fertig) und der bestehende
+ * Legacy-Resume-Pfad bleibt korrekt.
  *
  * DNS-Fallback: liefert das lokale DNS für einen Host keine (oder nur Null-Route-)Adressen —
  * beobachtet bei Router-Filtern für `*.hf.co` — werden die IPs per DNS-over-HTTPS
@@ -140,9 +151,10 @@ actual class Downloader(private val mainContext: Context) {
         }
     }
 
-    private fun runDownload(s: Session) {
+    private suspend fun runDownload(s: Session) {
         val dest = File(mainContext.filesDir, "models/${s.fileName}")
         val part = File(dest.parentFile, dest.name + ".part")
+        val meta = File(dest.parentFile, dest.name + ".smeta")
         var result: DownloadResult
         try {
             dest.parentFile?.mkdirs()
@@ -156,7 +168,7 @@ actual class Downloader(private val mainContext: Context) {
             } else {
                 ModelDownloadService.start(mainContext)
                 try {
-                    result = transfer(s, part)
+                    result = transfer(s, part, meta)
                 } finally {
                     ModelDownloadService.stop(mainContext)
                 }
@@ -182,16 +194,189 @@ actual class Downloader(private val mainContext: Context) {
         s.result.complete(result)
     }
 
-    private fun transfer(s: Session, part: File): DownloadResult {
-        var source: HttpSource? = null
+    /**
+     * Weiche zwischen den Transferpfaden:
+     * 1. Gültige `.smeta` → segmentierten Download fortsetzen.
+     * 2. `.part` ohne `.smeta` → sequenzieller Legacy-Resume (Range ab Dateiende).
+     * 3. Frisch: Probe ab Byte 0 — antwortet der Server mit 206 und lohnt sich die Größe,
+     *    parallel in Segmenten laden, sonst sequenziell (die Probe-Verbindung wird dabei
+     *    direkt weiterverwendet, kein zweiter Request).
+     */
+    private suspend fun transfer(s: Session, part: File, meta: File): DownloadResult {
+        if (meta.exists()) {
+            val parsed = SegmentPlan.parseMeta(runCatching { meta.readText() }.getOrDefault(""))
+            if (parsed != null && part.exists() && part.length() == parsed.total) {
+                debugPrintln { "Download: segmentierter Resume, done=${parsed.done.sum()}/${parsed.total}" }
+                return segmentedTransfer(s, part, meta, parsed.total, parsed.done)
+            }
+            // Meta defekt oder passt nicht zur .part — fail-safe komplett neu anfangen.
+            debugPrintln { "Download: .smeta inkonsistent, starte frisch" }
+            meta.delete()
+            part.delete()
+        }
+        if (part.exists()) {
+            return sequentialTransfer(s, part, resumeFrom = part.length())
+        }
+
+        var probe: HttpSource? = null
         try {
-            val resumeFrom = if (part.exists()) part.length() else 0L
-            source = openFollowingRedirects(s.url, resumeFrom)
+            probe = openFollowingRedirects(s.url, 0) ?: return DownloadResult.Success
+            val total = probe.contentLength
+            val segments =
+                if (probe.code == HttpURLConnection.HTTP_PARTIAL) SegmentPlan.plan(total)
+                else emptyList()
+            if (segments.size > 1) {
+                debugPrintln { "Download: parallel n=${segments.size} total=$total file=${s.fileName}" }
+                // Reihenfolge sichert die Invariante: erst .smeta, dann vorallozieren.
+                meta.writeText(SegmentPlan.encodeMeta(total, LongArray(segments.size)))
+                RandomAccessFile(part, "rw").use { it.setLength(total) }
+                val segment0Source = probe
+                probe = null // Ownership geht an segmentedTransfer (Segment 0)
+                return segmentedTransfer(
+                    s, part, meta, total, LongArray(segments.size), segment0Source
+                )
+            }
+            val preOpened = probe
+            probe = null // Ownership geht an sequentialTransfer
+            return sequentialTransfer(s, part, resumeFrom = 0, preOpened = preOpened)
+        } catch (e: IOException) {
+            return DownloadResult.Failed(e.message ?: mainContext.getString(R.string.download_error_network))
+        } finally {
+            probe?.close()
+        }
+    }
+
+    /**
+     * Lädt alle noch offenen Segmente parallel in dieselbe vorallozierte [part]-Datei
+     * (je Segment ein eigenes RandomAccessFile mit seek auf den Segment-Offset).
+     * Fehler und Abbruch stoppen alle Segmente kooperativ; der Stand wandert für den
+     * nächsten Resume in die [meta]-Datei. Erst nach validiertem Gesamtabschluss wird
+     * die Meta gelöscht — danach greift beim Aufrufer der übliche Rename.
+     */
+    private suspend fun segmentedTransfer(
+        s: Session,
+        part: File,
+        meta: File,
+        total: Long,
+        initialDone: LongArray,
+        segment0Source: HttpSource? = null
+    ): DownloadResult {
+        val segments = SegmentPlan.plan(total)
+        val done = AtomicLongArray(initialDone)
+        val abortMessage = AtomicReference<String?>(null)
+        val progressLock = Any()
+        var lastPct = -1
+        var lastNotificationMs = 0L
+        var lastMetaMs = System.currentTimeMillis()
+
+        fun snapshotDone() = LongArray(segments.size) { done.get(it) }
+
+        fun persistMeta() = synchronized(progressLock) {
+            runCatching { meta.writeText(SegmentPlan.encodeMeta(total, snapshotDone())) }
+        }
+
+        fun reportProgress() {
+            val sum = (0 until segments.size).sumOf { done.get(it) }
+            synchronized(progressLock) {
+                val pct = (sum * 100L / total).toInt()
+                if (pct != lastPct) {
+                    lastPct = pct
+                    s.progress.value = ProgressSnapshot(pct, formatMb(sum), formatMb(total))
+                }
+                val now = System.currentTimeMillis()
+                if (now - lastNotificationMs >= NOTIFICATION_THROTTLE_MS) {
+                    lastNotificationMs = now
+                    ModelDownloadService.progress(
+                        mainContext, pct, "${formatMb(sum)} / ${formatMb(total)}"
+                    )
+                }
+                if (now - lastMetaMs >= META_FLUSH_MS) {
+                    lastMetaMs = now
+                    runCatching { meta.writeText(SegmentPlan.encodeMeta(total, snapshotDone())) }
+                }
+            }
+        }
+
+        coroutineScope {
+            for (seg in segments) {
+                launch(Dispatchers.IO) {
+                    var source: HttpSource? = null
+                    try {
+                        val already = done.get(seg.index)
+                        if (already >= seg.size) return@launch // Segment war schon fertig
+                        source = if (seg.index == 0 && segment0Source != null && already == 0L) {
+                            segment0Source
+                        } else {
+                            openFollowingRedirects(s.url, seg.start + already, rangeEnd = seg.end - 1)
+                                ?: throw IOException("HTTP 416 für Segment ${seg.index}")
+                        }
+                        if (seg.start + already > 0 && source.code != HttpURLConnection.HTTP_PARTIAL) {
+                            // Antwort beginnt bei Byte 0 — an diesem Offset zu schreiben
+                            // würde die Datei korrumpieren.
+                            throw IOException("Server ignoriert Range (HTTP ${source.code})")
+                        }
+                        RandomAccessFile(part, "rw").use { raf ->
+                            raf.seek(seg.start + already)
+                            val buffer = ByteArray(TRANSFER_BUFFER_BYTES)
+                            var remaining = seg.size - already
+                            val input = source.body()
+                            while (remaining > 0) {
+                                if (s.cancelRequested || abortMessage.get() != null) return@launch
+                                val read = input.read(
+                                    buffer, 0, minOf(buffer.size.toLong(), remaining).toInt()
+                                )
+                                if (read < 0) {
+                                    throw IOException("Verbindung endete vor Segmentende")
+                                }
+                                raf.write(buffer, 0, read)
+                                remaining -= read
+                                done.addAndGet(seg.index, read.toLong())
+                                reportProgress()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Auch Nicht-IOExceptions kooperativ einsammeln, damit kein Segment
+                        // per Strukturabbruch hängen bleibt (blockierende Reads suspendieren nie).
+                        debugPrintln { "Download: Segment ${seg.index} fehlgeschlagen: ${e.message}" }
+                        abortMessage.compareAndSet(
+                            null, e.message ?: mainContext.getString(R.string.download_error_network)
+                        )
+                    } finally {
+                        source?.close()
+                    }
+                }
+            }
+        }
+        persistMeta()
+
+        if (s.cancelRequested) return DownloadResult.Cancelled
+        abortMessage.get()?.let { return DownloadResult.Failed(it) }
+        val sum = snapshotDone().sum()
+        if (sum != total) {
+            return DownloadResult.Failed(
+                mainContext.getString(R.string.download_error_incomplete, formatMb(sum), formatMb(total))
+            )
+        }
+        meta.delete()
+        return DownloadResult.Success
+    }
+
+    private fun sequentialTransfer(
+        s: Session,
+        part: File,
+        resumeFrom: Long,
+        preOpened: HttpSource? = null
+    ): DownloadResult {
+        var source: HttpSource? = preOpened
+        try {
             if (source == null) {
-                // HTTP 416: our resume offset is at/after the end of the resource — the
-                // .part file already contains all bytes of a previous, almost-complete run.
-                debugPrintln { "Download: Resume-Offset hinter Ressourcen-Ende, .part ist komplett" }
-                return DownloadResult.Success
+                source = openFollowingRedirects(s.url, resumeFrom)
+                if (source == null) {
+                    // HTTP 416: our resume offset is at/after the end of the resource — the
+                    // .part file already contains all bytes of a previous, almost-complete run.
+                    debugPrintln { "Download: Resume-Offset hinter Ressourcen-Ende, .part ist komplett" }
+                    return DownloadResult.Success
+                }
             }
             val append = source.code == HttpURLConnection.HTTP_PARTIAL
             val alreadyDownloaded = if (append) resumeFrom else 0L
@@ -202,7 +387,7 @@ actual class Downloader(private val mainContext: Context) {
             var downloaded = alreadyDownloaded
             source.body().use { input ->
                 FileOutputStream(part, append).use { output ->
-                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    val buffer = ByteArray(TRANSFER_BUFFER_BYTES)
                     var lastReportedPct = -1
                     var lastReportMs = 0L
                     var lastNotificationMs = 0L
@@ -259,15 +444,21 @@ actual class Downloader(private val mainContext: Context) {
      * (HuggingFace redirects huggingface.co → its signed CDN host), which
      * HttpURLConnection.setInstanceFollowRedirects does NOT handle automatically.
      *
-     * When [resumeFrom] > 0 a Range header is sent (on every hop — only the final host
-     * answers it). Returns null for HTTP 416 (range starts beyond the end of the resource,
-     * i.e. the .part file is already complete).
+     * A Range header is sent on every hop (only the final host answers it); with
+     * resumeFrom = 0 it doubles as the probe for range support (206 vs. 200). [rangeEnd]
+     * (inclusive, -1 = open-ended) bounds a segment request. Returns null for HTTP 416
+     * (range starts beyond the end of the resource, i.e. the .part file is already
+     * complete).
      */
-    private fun openFollowingRedirects(initialUrl: String, resumeFrom: Long): HttpSource? {
+    private fun openFollowingRedirects(
+        initialUrl: String,
+        resumeFrom: Long,
+        rangeEnd: Long = -1L
+    ): HttpSource? {
         var current = URL(initialUrl)
         var redirects = 0
         while (true) {
-            val source = openSingle(current, resumeFrom)
+            val source = openSingle(current, resumeFrom, rangeEnd)
             val code = source.code
             if (code in REDIRECT_CODES) {
                 val location = source.header("Location")
@@ -294,10 +485,10 @@ actual class Downloader(private val mainContext: Context) {
      * host (or only returns null routes like 0.0.0.0 — sinkholing routers), the host is
      * resolved via DNS-over-HTTPS and connected directly with full TLS validation.
      */
-    private fun openSingle(url: URL, resumeFrom: Long): HttpSource {
+    private fun openSingle(url: URL, resumeFrom: Long, rangeEnd: Long): HttpSource {
         if (!isSystemDnsBroken(url.host)) {
             try {
-                val connection = openConnection(url, resumeFrom)
+                val connection = openConnection(url, resumeFrom, rangeEnd)
                 connection.responseCode // erzwingt den Verbindungsaufbau innerhalb des try
                 return UrlConnectionSource(connection)
             } catch (e: UnknownHostException) {
@@ -312,7 +503,7 @@ actual class Downloader(private val mainContext: Context) {
         var lastError: IOException? = null
         for (ip in ips.take(MAX_DOH_IPS)) {
             try {
-                return DirectHttpsClient.get(url, ip, resumeFrom)
+                return DirectHttpsClient.get(url, ip, resumeFrom, rangeEnd)
             } catch (e: IOException) {
                 debugPrintln { "Download: DoH-Verbindung über $ip fehlgeschlagen: ${e.message}" }
                 lastError = e
@@ -321,14 +512,17 @@ actual class Downloader(private val mainContext: Context) {
         throw lastError ?: IOException("DoH-Fallback für ${url.host} fehlgeschlagen")
     }
 
-    private fun openConnection(url: URL, resumeFrom: Long): HttpURLConnection =
+    private fun openConnection(url: URL, resumeFrom: Long, rangeEnd: Long): HttpURLConnection =
         (url.openConnection() as HttpURLConnection).apply {
             instanceFollowRedirects = false
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS
             requestMethod = "GET"
             setRequestProperty("User-Agent", "MolyEcho-Android")
-            if (resumeFrom > 0) setRequestProperty("Range", "bytes=$resumeFrom-")
+            // identity: kein transparentes gzip — Content-Length bleibt für Progress,
+            // Größenvalidierung und Range-Arithmetik verlässlich.
+            setRequestProperty("Accept-Encoding", "identity")
+            setRequestProperty("Range", "bytes=$resumeFrom-${if (rangeEnd >= 0) "$rangeEnd" else ""}")
         }
 
     /** true = Host löst nicht auf oder liefert ausschließlich Null-Routen/Loopback. */
@@ -387,6 +581,10 @@ actual class Downloader(private val mainContext: Context) {
         private const val MAX_DOH_IPS = 3
         private const val PROGRESS_THROTTLE_MS = 500L
         private const val NOTIFICATION_THROTTLE_MS = 1_000L
+        /** 256 KB statt 8-KB-Default: weniger Syscalls/JNI-Übergänge pro übertragenem GB. */
+        private const val TRANSFER_BUFFER_BYTES = 256 * 1024
+        /** Wie oft der Segment-Fortschritt für Resume in die .smeta geschrieben wird. */
+        private const val META_FLUSH_MS = 2_000L
         private val REDIRECT_CODES = setOf(
             HttpURLConnection.HTTP_MOVED_PERM,  // 301
             HttpURLConnection.HTTP_MOVED_TEMP,  // 302

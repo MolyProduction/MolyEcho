@@ -227,9 +227,10 @@ actual class Transcriber(
 
     actual fun deleteModel(modelFileName: String): Boolean {
         val target = File(modelsPath, modelFileName)
-        // Rest eines abgebrochenen Downloads mitputzen (der Downloader lässt .part-Dateien
+        // Reste eines abgebrochenen Downloads mitputzen (der Downloader lässt .part/.smeta
         // bewusst für Range-Resume liegen; ONNX-Verzeichnisse erwischt deleteRecursively).
         File(modelsPath, "$modelFileName.part").delete()
+        File(modelsPath, "$modelFileName.smeta").delete()
         return when {
             target.isDirectory -> target.deleteRecursively()
             target.exists() -> target.delete()

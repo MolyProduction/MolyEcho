@@ -51,8 +51,11 @@ internal object DirectHttpsClient {
 
     private const val CONNECT_TIMEOUT_MS = 30_000
     private const val READ_TIMEOUT_MS = 30_000
+    /** 64 KB statt 8-KB-Default — TLS-Records (16 KB) werden nicht zerstückelt. */
+    private const val HEADER_BUFFER_BYTES = 64 * 1024
 
-    fun get(url: URL, ip: String, resumeFrom: Long): HttpSource {
+    /** [rangeEnd] inklusiv, -1 = offenes Range-Ende. */
+    fun get(url: URL, ip: String, resumeFrom: Long, rangeEnd: Long = -1L): HttpSource {
         if (url.protocol != "https") throw IOException("DoH-Fallback unterstützt nur https (${url.protocol})")
         val host = url.host
         val port = if (url.port == -1) 443 else url.port
@@ -82,13 +85,17 @@ internal object DirectHttpsClient {
                 append("Host: ").append(host).append("\r\n")
                 append("User-Agent: MolyEcho-Android\r\n")
                 append("Accept-Encoding: identity\r\n")
-                if (resumeFrom > 0) append("Range: bytes=").append(resumeFrom).append("-\r\n")
+                // Immer mit Range — bei resumeFrom=0 dient die 206/200-Antwort als Probe
+                // für Range-Unterstützung (Weiche für den parallelen Segment-Download).
+                append("Range: bytes=").append(resumeFrom).append("-")
+                if (rangeEnd >= 0) append(rangeEnd)
+                append("\r\n")
                 append("Connection: close\r\n\r\n")
             }
             ssl.outputStream.write(request.toByteArray(Charsets.ISO_8859_1))
             ssl.outputStream.flush()
 
-            val input = BufferedInputStream(ssl.inputStream)
+            val input = BufferedInputStream(ssl.inputStream, HEADER_BUFFER_BYTES)
             val statusLine = readLine(input) ?: throw IOException("Leere Antwort von $host ($ip)")
             val code = statusLine.split(" ").getOrNull(1)?.toIntOrNull()
                 ?: throw IOException("Ungültige Statuszeile: $statusLine")
