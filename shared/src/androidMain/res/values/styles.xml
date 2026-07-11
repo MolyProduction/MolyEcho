@@ -1,7 +1,9 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Kein android:statusBarColor mehr: unter Edge-to-Edge (Target 35+) wirkungslos
+             und von Google Play als veralteter Parameter beanstandet. Die Bar-Optik setzt
+             MainActivity zur Laufzeit über enableEdgeToEdge(). -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/white</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
