@@ -1,6 +1,8 @@
 package com.module.notelycompose
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,10 +10,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import audio.utils.LauncherHolder
 import org.koin.android.ext.android.inject
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Theme
 import android.Manifest
@@ -37,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         handleShareIntent(intent)
         enableEdgeToEdge()
         setContent {
-            val systemUiController = rememberSystemUiController()
             val preferenceRepository by inject<PreferencesRepository>()
             val uiMode by preferenceRepository.getTheme().collectAsState(Theme.SYSTEM.name)
             val darkTheme = when (uiMode) {
@@ -45,10 +45,16 @@ class MainActivity : AppCompatActivity() {
                 Theme.LIGHT.name -> false
                 else -> isSystemInDarkTheme()
             }
-            systemUiController.setSystemBarsColor(
-                color = Color.Transparent,
-                darkIcons = !darkTheme
-            )
+            // Ersetzt den (deprecated) Accompanist-SystemUiController: transparente
+            // System-Bars mit zum Theme passender Icon-Farbe. Muss dem In-App-Theme
+            // aus dem DataStore folgen, nicht nur dem System-Dunkelmodus — deshalb
+            // hier statt einmalig in onCreate.
+            LaunchedEffect(darkTheme) {
+                val style =
+                    if (darkTheme) SystemBarStyle.dark(Color.TRANSPARENT)
+                    else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+            }
             App()
         }
     }

@@ -16,6 +16,10 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.3.11 (40) – 2026-07-11
+- **Edge-to-Edge modernisiert** (Google-Play-Hinweise zu Release 38): Der veraltete Accompanist-SystemUiController (nutzt intern `window.setStatusBarColor`/`setNavigationBarColor`, auf Android 15+ wirkungslos) wurde durch `enableEdgeToEdge(SystemBarStyle)` aus androidx.activity ersetzt; `android:statusBarColor` aus den Themes entfernt; ungenutzte `StatusBarManager`-Klasse (expect/actual) gelöscht; Accompanist-Dependency komplett entfernt. Verhalten unverändert: transparente System-Bars, Icon-Farbe folgt dem App-Theme.
+- Dritter Play-Hinweis (R8-Optimierung) war bereits erfüllt: Minify/Shrink mit `proguard-android-optimize.txt` seit 1.3.6 aktiv, R8-Full-Mode ist bei AGP 8.11 Standard.
+
 ### 1.3.10 (39) – 2026-07-11
 - **Modell-Download deutlich beschleunigt:** Große Modelldateien werden jetzt parallel in bis zu 4 Range-Segmenten geladen (Einzelverbindungen sind auf WLAN bzw. beim CDN oft pro Verbindung limitiert). Der Fortschritt jedes Segments wird gesichert — abgebrochene Downloads setzen weiterhin exakt dort fort, wo sie standen. Zusätzlich größere Lesepuffer (8 KB → 256 KB) und verlässliche Content-Length (`Accept-Encoding: identity`).
 - **Hinweise während des Downloads:** Der Download-Dialog (Einstellungen/Notiz) und der Onboarding-Downloadbildschirm erklären jetzt, dass die App minimiert werden kann, unterbrochene Downloads automatisch fortgesetzt werden und der Download je nach Verbindung einige Minuten dauern kann.
