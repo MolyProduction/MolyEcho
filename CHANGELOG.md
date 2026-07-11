@@ -16,7 +16,7 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
-### 1.3.11 (40) – 2026-07-11
+### 1.3.11 (41) – 2026-07-11 (Produktionsrelease; versionCode 40 war bereits verbraucht)
 - **Edge-to-Edge modernisiert** (Google-Play-Hinweise zu Release 38): Der veraltete Accompanist-SystemUiController (nutzt intern `window.setStatusBarColor`/`setNavigationBarColor`, auf Android 15+ wirkungslos) wurde durch `enableEdgeToEdge(SystemBarStyle)` aus androidx.activity ersetzt; `android:statusBarColor` aus den Themes entfernt; ungenutzte `StatusBarManager`-Klasse (expect/actual) gelöscht; Accompanist-Dependency komplett entfernt. Verhalten unverändert: transparente System-Bars, Icon-Farbe folgt dem App-Theme.
 - Dritter Play-Hinweis (R8-Optimierung) war bereits erfüllt: Minify/Shrink mit `proguard-android-optimize.txt` seit 1.3.6 aktiv, R8-Full-Mode ist bei AGP 8.11 Standard.
 
