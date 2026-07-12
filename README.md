@@ -9,6 +9,12 @@
 
 <p align="center">Eine Internetverbindung wird nur einmalig benötigt, wenn ihr beim ersten Start ein Sprachmodell herunterladet. Danach arbeitet MolyEcho vollständig offline.</p>
 
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android">
+    <img src="https://play.google.com/intl/de_de/badges/static/images/badges/de_badge_web_generic.png" height="80" alt="Jetzt bei Google Play">
+  </a>
+</p>
+
 ---
 
 ## Was ist MolyEcho?
@@ -79,6 +85,20 @@ Beim ersten Start wählt ihr ein Modell aus – es wird einmalig heruntergeladen
 | **Mehrsprachig** | ggml-small (multilingual) | ~465 MB | 50+ Sprachen |
 
 > **Hinweis zum Standardmodell:** Das Modell *Deutsch – Genau* wurde von uns eigens für MolyEcho quantisiert und auf HuggingFace veröffentlicht.
+---
+
+## 📲 Download
+
+MolyEcho ist kostenlos bei Google Play erhältlich – ohne Werbung, ohne Abo, ohne Konto:
+
+**➡️ [MolyEcho bei Google Play](https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android)**
+
+- Benötigt Android 8.0 oder neuer (64-bit-Gerät, Standard seit ~2016)
+- App-Größe ca. 42 MB; das gewählte Sprachmodell wird beim ersten Start heruntergeladen
+- Berechtigungen: nur Mikrofon (Aufnahme) und optional Benachrichtigungen – sonst nichts
+
+Wer nicht über den Play Store installieren möchte, kann die App selbst bauen – siehe [Build](#build).
+
 ---
 
 ## Build
