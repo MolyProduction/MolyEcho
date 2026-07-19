@@ -39,6 +39,12 @@ class PlatformViewModel (
          }
     }
 
+    fun shareImageWithText(imageBytes: ByteArray, text: String) {
+        if (imageBytes.isNotEmpty()) {
+            platformUtils.shareImageWithText(imageBytes, text)
+        }
+    }
+
     fun shareRecording(path: String) {
          if (path.isNotBlank()) {
              if(_state.value.isAndroid) {

@@ -108,6 +108,13 @@
     <string name="about_url">about.html</string>
     <string name="support_url">support.html</string>
     <string name="privacy_url">privacy.html</string>
+    <!-- Share App -->
+    <string name="share_app_menu">App weiterempfehlen</string>
+    <string name="share_app_title">MolyEcho weiterempfehlen</string>
+    <string name="share_app_body">MolyEcho ist neu, werbefrei und wird nirgendwo beworben – sichtbar wird die App nur, wenn Nutzer sie weiterempfehlen. Wenn dir MolyEcho gefällt, teile die App mit Freunden, Familie oder Kollegen. Jede Empfehlung hilft!</string>
+    <string name="share_app_button">Jetzt teilen</string>
+    <string name="share_app_message">MolyEcho – Sprachnotizen zu Text, 100 % offline &amp; privat, für Deutsch optimiert, kostenlos &amp; werbefrei. Jetzt bei Google Play: https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android</string>
+    <string name="share_app_image_description">MolyEcho-Teilen-Karte mit QR-Code zu Google Play</string>
     <!-- Empty List String -->
     <string name="empty_list_title">Noch keine Notizen</string>
     <string name="empty_list_description">Beginne mit dem Erfassen deiner Gedanken und Sprachaufnahmen. Tippe auf das + Symbol unten rechts, um deine erste Notiz zu erstellen.</string>

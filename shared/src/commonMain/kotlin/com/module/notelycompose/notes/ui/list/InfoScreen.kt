@@ -38,6 +38,7 @@ import de.molyecho.notlyvoice.resources.faq
 import de.molyecho.notlyvoice.resources.about
 import de.molyecho.notlyvoice.resources.support
 import de.molyecho.notlyvoice.resources.privacy
+import de.molyecho.notlyvoice.resources.share_app_menu
 import de.molyecho.notlyvoice.resources.version_string
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.getKoin
@@ -60,10 +61,12 @@ fun InfoScreen(
 ) {
     val isAndroid = platformViewModel.state.value.isAndroid
     var showWebView by remember { mutableStateOf(false) }
+    var showShareApp by remember { mutableStateOf(false) }
     var currentPageTitle by remember { mutableStateOf("") }
     var currentPageUrl by remember { mutableStateOf("") }
     var shouldUseCustomBackHandler by remember { mutableStateOf(true) }
 
+    val shareApp = stringResource(Res.string.share_app_menu)
     val faq  = stringResource(Res.string.faq)
     val about  = stringResource(Res.string.about)
     val support  = stringResource(Res.string.support)
@@ -92,7 +95,11 @@ fun InfoScreen(
         }
     }
 
-    if (showWebView) {
+    if (showShareApp) {
+        ShareAppScreen(
+            onNavigateBack = { showShareApp = false }
+        )
+    } else if (showWebView) {
         if(isAndroid) {
             browserLauncher.openUrl(currentPageUrl)
         } else {
@@ -178,6 +185,17 @@ fun InfoScreen(
                     showWebView = true
                     onNavigateToWebPage(currentPageTitle, currentPageUrl)
                 }
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            )
+
+            SettingsMenuItem(
+                icon = Icons.Default.Share,
+                title = shareApp,
+                onClick = { showShareApp = true }
             )
 
             Spacer(modifier = Modifier.weight(1f))

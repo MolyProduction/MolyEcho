@@ -108,6 +108,13 @@
     <string name="about_url">about.html</string>
     <string name="support_url">support.html</string>
     <string name="privacy_url">privacy.html</string>
+    <!-- Share App -->
+    <string name="share_app_menu">Recommend the App</string>
+    <string name="share_app_title">Recommend MolyEcho</string>
+    <string name="share_app_body">MolyEcho is new, ad-free and not promoted anywhere – the app only becomes visible when users recommend it to others. If you like MolyEcho, share it with friends, family or colleagues. Every recommendation helps!</string>
+    <string name="share_app_button">Share now</string>
+    <string name="share_app_message">MolyEcho – voice notes to text, 100% offline &amp; private, optimized for German, free &amp; ad-free. Get it on Google Play: https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android</string>
+    <string name="share_app_image_description">MolyEcho share card with QR code to Google Play</string>
     <!-- Empty List String -->
     <string name="empty_list_title">No Notes Yet</string>
     <string name="empty_list_description">Start capturing your thoughts and voice recordings. Tap the plus + icon at the bottom right corner to create your first note.</string>
