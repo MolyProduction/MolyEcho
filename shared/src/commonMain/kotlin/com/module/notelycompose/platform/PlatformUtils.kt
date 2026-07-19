@@ -8,6 +8,7 @@ enum class Theme(val displayName: String) {
 
 expect class PlatformUtils {
     fun shareText(text: String)
+    fun shareImageWithText(imageBytes: ByteArray, text: String)
     fun shareRecording(path: String)
     fun exportRecordingWithFilePicker(
         sourcePath: String,

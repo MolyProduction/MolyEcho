@@ -132,11 +132,21 @@ MolyEcho verarbeitet alle Sprach- und Textdaten ausschließlich lokal auf eurem 
 
 ---
 
+## 💬 Support & Community
+
+- **📧 E-Mail** – [info@ifritflammenzunge.de](mailto:info@ifritflammenzunge.de) – der direkte Draht für Fragen, Probleme und Feedback
+- **💬 Discord** – [MolyEcho-Community beitreten](https://discord.gg/k5KuB24j7) – Austausch, Support und Feedback
+- **🐛 Bugs & Feature-Wünsche** – [GitHub Issues](https://github.com/MolyProduction/MolyEcho/issues)
+- **💡 Fragen & Ideen** – [GitHub Discussions](https://github.com/MolyProduction/MolyEcho/discussions)
+
+**MolyEcho gefällt dir?** Die App ist werbefrei und wird nicht beworben – sie wird nur sichtbar, wenn Nutzer sie weiterempfehlen. Erzähl Freunden davon oder bewerte sie bei [Google Play](https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android). ⭐
+
+---
+
 ## Credits
 
 - **NotelyVoice** – Ursprüngliche App von [Tosin Onikute](https://github.com/tosinonikute/NotelyVoice) *(Basis dieses Forks)*
-- **Deutsches Turbo-Modell (Schnell)alt** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0)
-- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-ggml-q5_0](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx/tree/main)
+- **Deutsches Turbo-Modell (Schnell)** – von uns quantisiert und veröffentlicht: [MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx](https://huggingface.co/MolyProduction/whisper-large-v3-turbo-german-sherpa-onnx)
 - **Deutsches Turbo-Modell (Genau)** – [cstr/whisper-large-v3-turbo-german](https://huggingface.co/cstr/whisper-large-v3-turbo-german)
 - **whisper.cpp** – [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 

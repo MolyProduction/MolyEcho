@@ -27,6 +27,27 @@ actual class PlatformUtils(
         context.startActivity(chooser)
     }
 
+    actual fun shareImageWithText(imageBytes: ByteArray, text: String) {
+        val imageFile = File(context.cacheDir, "share_card.png")
+        imageFile.writeBytes(imageBytes)
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            imageFile
+        )
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/png"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_TEXT, text)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val chooser = Intent.createChooser(shareIntent, null)
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
+    }
+
     actual fun shareRecording(path: String) {
         val uri = FileProvider.getUriForFile(
             context,
