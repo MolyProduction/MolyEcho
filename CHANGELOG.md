@@ -16,7 +16,7 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
-### 1.3.12 (42) – 2026-07-20
+### 1.3.12 (43) – 2026-07-20 (versionCode 42 war in der Play Console bereits verbraucht)
 - **Neuer Menüpunkt „App weiterempfehlen":** Nativer Screen im Info-Menü mit Hinweis, dass MolyEcho nur durch Weiterempfehlung sichtbar wird. Teilt die QR-Karte (Grafik) samt Empfehlungstext und Play-Store-Link über das Android-Share-Sheet.
 - **Kontaktkanäle aufbereitet (Beta-Reste entfernt):** Support-Seite hat jetzt eine E-Mail-Karte (info@ifritflammenzunge.de) und einen echten Discord-Link statt des toten „demnächst"-Buttons; Datenschutzerklärung nennt die E-Mail als Kontaktweg. README um Abschnitt „Support & Community" ergänzt, `.github/SUPPORT.md` angelegt, Credits-Duplikat bereinigt.
 
