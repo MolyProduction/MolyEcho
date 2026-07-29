@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -98,6 +99,9 @@ import de.molyecho.notlyvoice.resources.onboarding_notif_permanent_body
 import de.molyecho.notlyvoice.resources.onboarding_notif_permanent_title
 import de.molyecho.notlyvoice.resources.onboarding_notif_skip
 import de.molyecho.notlyvoice.resources.onboarding_notif_title
+import de.molyecho.notlyvoice.resources.onboarding_share_body
+import de.molyecho.notlyvoice.resources.onboarding_share_cta
+import de.molyecho.notlyvoice.resources.onboarding_share_title
 import de.molyecho.notlyvoice.resources.onboarding_welcome_body
 import de.molyecho.notlyvoice.resources.onboarding_welcome_cta
 import de.molyecho.notlyvoice.resources.onboarding_welcome_subtitle
@@ -118,7 +122,7 @@ fun OnboardingWalkthrough(
     permissionHandler: PermissionHandler
 ) {
     var currentScreen by remember { mutableStateOf(0) }
-    val totalScreens = 4
+    val totalScreens = 5
 
     BackHandler {
         if (currentScreen > 0) currentScreen -= 1
@@ -161,7 +165,11 @@ fun OnboardingWalkthrough(
                         onNext = { currentScreen = 3 },
                         onSkip = { currentScreen = 3 }
                     )
-                    3 -> OnboardingScreen4Model(onFinish = onFinish)
+                    // Alle drei Ausgänge des Modell-Screens (übersprungen, erfolgreich,
+                    // Fehler-Skip) laufen über denselben Parameter und damit über den
+                    // Teilen-Hinweis – der Tipp geht auch ohne Download nicht verloren.
+                    3 -> OnboardingScreen4Model(onFinish = { currentScreen = 4 })
+                    4 -> OnboardingScreen5Share(onFinish = onFinish)
                 }
             }
         }
@@ -669,6 +677,55 @@ private fun OnboardingScreen4Model(onFinish: () -> Unit) {
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+// ──────────────────────────────────────────────────────────────
+// Screen 5: Teilen-Funktion (Hinweis)
+// ──────────────────────────────────────────────────────────────
+
+@Composable
+private fun OnboardingScreen5Share(onFinish: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Icon(
+            imageVector = Icons.Default.Share,
+            contentDescription = null,
+            tint = MolyGreen,
+            modifier = Modifier.size(72.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(Res.string.onboarding_share_title),
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = PoppingsFontFamily(),
+            color = Color(0xFF1A1A1A),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(Res.string.onboarding_share_body),
+            fontSize = 16.sp,
+            color = Color(0xFF555555),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+        OnboardingPrimaryButton(
+            text = stringResource(Res.string.onboarding_share_cta),
+            onClick = onFinish
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
     }
