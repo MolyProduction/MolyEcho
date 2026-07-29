@@ -114,7 +114,11 @@
     <string name="share_app_body">MolyEcho is new, ad-free and not promoted anywhere – the app only becomes visible when users recommend it to others. If you like MolyEcho, share it with friends, family or colleagues. Every recommendation helps!</string>
     <string name="share_app_button">Share now</string>
     <string name="share_app_message">MolyEcho – voice notes to text, 100% offline &amp; private, optimized for German, free &amp; ad-free. Get it on Google Play: https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android</string>
-    <string name="share_app_image_description">MolyEcho share card with QR code to Google Play</string>
+    <string name="share_app_image_description">QR code to the MolyEcho page on Google Play</string>
+    <string name="share_app_qr_hint">Let others scan it, or send the card via “Share now”.</string>
+    <string name="share_app_rate_hint">Ratings help other people find MolyEcho.</string>
+    <string name="share_app_rate_button">Rate on Google Play</string>
+    <string name="share_app_play_url">https://play.google.com/store/apps/details?id=de.molyecho.notlyvoice.android</string>
     <!-- Empty List String -->
     <string name="empty_list_title">No Notes Yet</string>
     <string name="empty_list_description">Start capturing your thoughts and voice recordings. Tap the plus + icon at the bottom right corner to create your first note.</string>
@@ -225,9 +229,12 @@
     <string name="onboarding_model_progress">%1$s / %2$s</string>
     <string name="onboarding_model_cancel">Cancel</string>
     <string name="onboarding_model_success">Model ready! ✓</string>
-    <string name="onboarding_model_finish">Start MolyEcho →</string>
+    <string name="onboarding_model_finish">Continue →</string>
     <string name="onboarding_model_error">Download failed. Please check your connection.</string>
     <string name="onboarding_model_retry">Try again</string>
+    <string name="onboarding_share_title">Share straight from other apps</string>
+    <string name="onboarding_share_body">No need to hunt for voice messages or videos: in WhatsApp, Telegram &amp; co. tap “Share” and pick MolyEcho. The recording lands in a new note automatically and gets transcribed.</string>
+    <string name="onboarding_share_cta">Start MolyEcho →</string>
     <!-- Setting Bottom Sheet -->
     <string name="settings_light_theme">Light Theme</string>
     <string name="settings_dark_theme">Dark Theme</string>

@@ -16,6 +16,11 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.3.13 (44) – 2026-07-29
+- **QR-Code im Teilen-Screen mehr als doppelt so groß:** Der Screen zeigte bisher die komplette Teilen-Karte, in der der QR-Code nur ein Drittel der Breite einnimmt — auf dem Bildschirm rund 2 cm und damit zu klein zum Abscannen. Jetzt wird der QR-Bereich als eigene, hochaufgelöste Kachel (~4,5 cm) dargestellt. Verschickt wird über „Jetzt teilen" weiterhin die vollständige Karte.
+- **Bewertungs-Hinweis:** Unter dem Teilen-Button führt ein Button „Bei Google Play bewerten" direkt auf die Store-Seite.
+- **Onboarding-Hinweis auf die Teilen-Funktion:** Neuer fünfter Onboarding-Bildschirm erklärt, dass Sprachnachrichten und Videos aus WhatsApp, Telegram & Co. über „Teilen" an MolyEcho geschickt werden können und dort automatisch in einer neuen Notiz transkribiert werden. Der Bildschirm erscheint unabhängig davon, ob der Modell-Download durchgeführt oder übersprungen wurde.
+
 ### 1.3.12 (43) – 2026-07-20 (versionCode 42 war in der Play Console bereits verbraucht)
 - **Neuer Menüpunkt „App weiterempfehlen":** Nativer Screen im Info-Menü mit Hinweis, dass MolyEcho nur durch Weiterempfehlung sichtbar wird. Teilt die QR-Karte (Grafik) samt Empfehlungstext und Play-Store-Link über das Android-Share-Sheet.
 - **Kontaktkanäle aufbereitet (Beta-Reste entfernt):** Support-Seite hat jetzt eine E-Mail-Karte (info@ifritflammenzunge.de) und einen echten Discord-Link statt des toten „demnächst"-Buttons; Datenschutzerklärung nennt die E-Mail als Kontaktweg. README um Abschnitt „Support & Community" ergänzt, `.github/SUPPORT.md` angelegt, Credits-Duplikat bereinigt.
