@@ -22,4 +22,15 @@
     <string name="download_error_generic">Download failed</string>
     <string name="download_error_network">Network error</string>
     <string name="download_error_incomplete">Download incomplete (%1$s of %2$s)</string>
+    <string name="notification_dictation_channel_name">MolyDictation</string>
+    <string name="notification_dictation_ready_title">MolyDictation – text ready</string>
+    <string name="notification_dictation_ready_text_copied">Copied to clipboard · tap to copy again</string>
+    <string name="notification_dictation_ready_text_tap">Tap to copy, then paste anywhere</string>
+    <string name="notification_dictation_action_open">Open in MolyEcho</string>
+    <string name="notification_dictation_failed_title">MolyDictation</string>
+    <string name="notification_dictation_failed_no_text">No text recognized</string>
+    <string name="notification_dictation_failed_model">Speech model missing – please open MolyEcho</string>
+    <string name="notification_dictation_failed_generic">Transcription failed</string>
+    <string name="dictation_toast_copied">Text copied</string>
+    <string name="dictation_toast_busy">MolyDictation: a recording or transcription is already running</string>
 </resources>

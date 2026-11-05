@@ -61,6 +61,8 @@ class DictationSession {
     fun finish() {
         _active.value = false
         _options.value = DictationOptions()
+        // Unzugestelltes Hintergrund-Signal verwerfen (keine spätere Überraschung).
+        backgroundChannel.tryReceive()
     }
 
     /** Verwirft einen wartenden, noch nicht gestarteten Diktat-Wunsch. */

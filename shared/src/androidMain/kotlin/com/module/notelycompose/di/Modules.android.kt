@@ -21,6 +21,7 @@ import com.module.notelycompose.platform.PlatformUtils
 import com.module.notelycompose.modelDownloader.ModelDownloaderViewModel
 import com.module.notelycompose.platform.Transcriber
 import com.module.notelycompose.platform.dataStore
+import com.module.notelycompose.dictation.DictationResultStore
 import com.module.notelycompose.transcription.AndroidTranscriptionServiceController
 import com.module.notelycompose.transcription.TranscriptionServiceController
 import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
@@ -62,7 +63,8 @@ actual val platformModule = module {
 
     single { Transcriber(get(), get()) }
 
-    single<TranscriptionServiceController> { AndroidTranscriptionServiceController(get()) }
+    single { DictationResultStore(get()) }
+    single<TranscriptionServiceController> { AndroidTranscriptionServiceController(get(), get()) }
 
     // domain
     single<AudioRecorderInteractor> { AudioRecorderInteractorImpl(get(), get(), get()) }

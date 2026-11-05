@@ -122,4 +122,15 @@ class DictationSessionTest {
         assertNotNull(session.backgroundSignal())
         assertNull(session.backgroundSignal())
     }
+
+    @Test
+    fun `finish verwirft ein unzugestelltes Hintergrund-Signal`() {
+        // Sonst wuerde eine spaeter gestartete Activity ploetzlich in den Hintergrund springen.
+        val session = DictationSession()
+        session.request()
+        session.begin(DictationOptions())
+        session.requestBackground()
+        session.finish()
+        assertNull(session.backgroundSignal())
+    }
 }
