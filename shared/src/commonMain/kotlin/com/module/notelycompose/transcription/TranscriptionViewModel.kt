@@ -3,6 +3,8 @@ package com.module.notelycompose.transcription
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.module.notelycompose.core.debugPrintln
+import com.module.notelycompose.dictation.DictationFailure
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.modelDownloader.ModelSelection
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import com.module.notelycompose.platform.Transcriber
@@ -24,10 +26,14 @@ class TranscriptionViewModel(
     private val transcriber: Transcriber,
     private val preferencesRepository: PreferencesRepository,
     private val modelSelection: ModelSelection,
-    private val serviceController: TranscriptionServiceController
+    private val serviceController: TranscriptionServiceController,
+    private val dictationSession: DictationSession
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TranscriptionUiState())
     val uiState: StateFlow<TranscriptionUiState> = _uiState
+
+    // Session, zu der dieses ViewModel gehört (onCleared kann nach Start eines neuen Diktats laufen).
+    private val dictationSessionId = dictationSession.sessionId
 
     // Session token captured from the Transcriber immediately after initialize() returns.
     // Passed to finish() so stale finish() calls from a previous ViewModel instance cannot
@@ -67,7 +73,12 @@ class TranscriptionViewModel(
             // Wenn Modell nicht geladen (z.B. noch nicht heruntergeladen):
             // stumm zurücknavigieren statt irreführenden "Datei zu groß"-Dialog zu zeigen.
             if (!transcriber.isReadyToTranscribe()) {
-                serviceController.stopTranscriptionService()
+                if (dictationSession.active.value) {
+                    serviceController.notifyDictationFailed(DictationFailure.MODEL_MISSING)
+                    dictationSession.finish()
+                } else {
+                    serviceController.stopTranscriptionService()
+                }
                 _uiState.update { it.copy(inTranscription = false, isModelLoading = false, modelNotAvailable = true) }
                 return@launch
             }
@@ -100,8 +111,21 @@ class TranscriptionViewModel(
 
                 },
                 onComplete = { failedChunks ->
-                    // Signal service to post completion notification and stop itself
-                    serviceController.notifyTranscriptionComplete()
+                    if (dictationSession.active.value) {
+                        // MolyDiktat: Text aus dem ViewModel (nicht aus Compose) weitergeben, damit
+                        // Zwischenablage + Benachrichtigung auch bei pausierter UI funktionieren.
+                        val options = dictationSession.options.value
+                        val text = _uiState.value.originalText.trim()
+                        if (text.isBlank()) {
+                            serviceController.notifyDictationFailed(DictationFailure.NO_TEXT)
+                        } else {
+                            serviceController.notifyDictationResult(text, options.autoCopy, options.notifyReady)
+                        }
+                        dictationSession.finish()
+                    } else {
+                        // Signal service to post completion notification and stop itself
+                        serviceController.notifyTranscriptionComplete()
+                    }
                     debugPrintln{"\n completed ========================= failedChunks=$failedChunks"}
                     _uiState.update {current ->
                         current.copy(
@@ -112,7 +136,12 @@ class TranscriptionViewModel(
                     }
                 },
                 onError = {
-                    serviceController.stopTranscriptionService()
+                    if (dictationSession.active.value) {
+                        serviceController.notifyDictationFailed(DictationFailure.FAILED)
+                        dictationSession.finish()
+                    } else {
+                        serviceController.stopTranscriptionService()
+                    }
                     debugPrintln{"\n error ========================= "}
                     _uiState.update {current ->
                         current.copy(
@@ -182,6 +211,7 @@ class TranscriptionViewModel(
         // coroutine launches — by the time the coroutine runs, a new ViewModel may have
         // already called initialize() and bumped the counter.
         _uiState.update { it.copy(inTranscription = false, isModelLoading = false) }
+        dictationSession.finishIfCurrent(dictationSessionId)
         val token = mySessionToken
         CoroutineScope(Dispatchers.IO).launch {
             try {

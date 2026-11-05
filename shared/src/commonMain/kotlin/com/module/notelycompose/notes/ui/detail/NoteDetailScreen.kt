@@ -77,6 +77,7 @@ import com.module.notelycompose.modelDownloader.DownloaderEffect
 import com.module.notelycompose.modelDownloader.ModelDownloaderViewModel
 import com.module.notelycompose.audio.presentation.AudioImportViewModel
 import com.module.notelycompose.audio.ui.importing.ImportingAudioStateHost
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.modelDownloader.ModelSelection
 import com.module.notelycompose.notes.presentation.detail.TextEditorViewModel
 import com.module.notelycompose.platform.Transcriber
@@ -109,13 +110,15 @@ fun NoteDetailScreen(
     navigateToTranscription: () -> Unit,
     onNavigateToSettingsText: () -> Unit,
     autoTranscribe: Boolean = false,
+    autoRecord: Boolean = false,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
     audioImportViewModel: AudioImportViewModel = koinViewModel(),
     editorViewModel: TextEditorViewModel,
     modelSelection: ModelSelection = koinInject(),
-    transcriber: Transcriber = koinInject()
+    transcriber: Transcriber = koinInject(),
+    dictationSession: DictationSession = koinInject()
 ) {
     val currentNoteId by editorViewModel.currentNoteId.collectAsStateWithLifecycle()
     val importingState by audioImportViewModel.importingAudioState.collectAsStateWithLifecycle()
@@ -139,6 +142,18 @@ fun NoteDetailScreen(
     var showCopiedTooltip by remember { mutableStateOf(false) }
     var isFabVisible by remember { mutableStateOf(true) }
     var autoTranscribeConsumed by rememberSaveable { mutableStateOf(false) }
+    var autoRecordConsumed by rememberSaveable { mutableStateOf(false) }
+    var dictationTranscribeConsumed by rememberSaveable { mutableStateOf(false) }
+    val dictationActive by dictationSession.active.collectAsStateWithLifecycle()
+
+    // MolyDiktat: neue Notiz → Aufnahme-Screen genau einmal automatisch öffnen.
+    // Das Flag ist gespeichert, damit Drehen oder Zurück aus dem Recorder nicht erneut öffnet.
+    LaunchedEffect(autoRecord) {
+        if (autoRecord && !autoRecordConsumed) {
+            autoRecordConsumed = true
+            navigateToRecorder("$currentNoteId")
+        }
+    }
 
     // Pre-warm Whisper model in background when a recording exists so the model is
     // ready (or partially cached) by the time the user taps "Transkribieren".
@@ -163,6 +178,23 @@ fun NoteDetailScreen(
         }
     }
 
+    // MolyDiktat: Sobald die Aufnahme in der Notiz steht, Transkription anstoßen.
+    // Über checkTranscriptionAvailability() (nicht direkt navigieren), damit bei fehlendem
+    // Modell der Download-Dialog erscheint - der Nutzer ist ja noch in der App.
+    // Option „automatisch transkribieren" aus: Diktat endet hier, die Notiz bleibt normal offen.
+    LaunchedEffect(dictationActive, editorState.recording.recordingPath) {
+        if (dictationActive && !dictationTranscribeConsumed &&
+            editorState.recording.recordingPath.isNotBlank()
+        ) {
+            dictationTranscribeConsumed = true
+            if (dictationSession.options.value.autoTranscribe) {
+                downloaderViewModel.checkTranscriptionAvailability()
+            } else {
+                dictationSession.finish()
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (noteId.toLong() > 0L) {
             editorViewModel.onGetNoteById(noteId)
@@ -176,6 +208,7 @@ fun NoteDetailScreen(
                 }
 
                 is DownloaderEffect.ErrorEffect -> {
+                    dictationSession.finish()
                     showDownloadDialog = false
                     showErrorDialog = true
                     showLoadingDialog = false
@@ -199,6 +232,7 @@ fun NoteDetailScreen(
 
                 is DownloaderEffect.DownloadCancelled -> {
                     // Deliberate cancellation is not an error — just close the dialogs.
+                    dictationSession.finish()
                     showDownloadDialog = false
                     showLoadingDialog = false
                 }
@@ -360,6 +394,7 @@ fun NoteDetailScreen(
             },
             onCancel = {
                 showDownloadQuestionDialog = false
+                dictationSession.finish()
             },
             transcriptionModel = downloaderUiState.selectedModel,
             showMeteredHint = downloaderUiState.isMeteredNetwork

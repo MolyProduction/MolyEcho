@@ -166,6 +166,10 @@ fun SettingsScreen(
             }
 
             item {
+                DictationSettingsSection()
+            }
+
+            item {
                 ExportSettingSection()
             }
 

@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.module.notelycompose.audio.presentation.AudioRecorderViewModel
 import com.module.notelycompose.core.debugPrintln
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.notes.presentation.detail.TextEditorViewModel
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.HandlePlatformBackNavigation
@@ -81,6 +83,7 @@ import com.module.notelycompose.resources.vectors.IcRecorder
 import com.module.notelycompose.resources.vectors.Images
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 enum class ScreenState {
@@ -94,12 +97,24 @@ fun RecordingScreen(
     noteId: Long?,
     navigateBack: () -> Unit,
     viewModel: AudioRecorderViewModel = koinViewModel(),
-    editorViewModel: TextEditorViewModel
+    editorViewModel: TextEditorViewModel,
+    dictationSession: DictationSession = koinInject()
 ) {
     val recordingState by viewModel.audioRecorderPresentationState.collectAsStateWithLifecycle()
     val screenState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var showStopConfirmDialog by remember { mutableStateOf(false) }
+
+    // MolyDiktat: Aufnahme sofort starten. Nur einmal (auch über Drehen hinweg), damit ein
+    // abgelehntes Mikrofon-Recht nicht in eine Dauerschleife läuft; der Nutzer kann danach
+    // wie gewohnt manuell auf den Aufnahmeknopf tippen.
+    var dictationAutoStarted by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!dictationAutoStarted && dictationSession.active.value && screenState == ScreenState.Initial) {
+            dictationAutoStarted = true
+            viewModel.onStartRecording(noteId)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -132,7 +147,10 @@ fun RecordingScreen(
             ScreenState.Success -> {
                 RecordingSuccessScreen()
                 LaunchedEffect(Unit) {
-                    delay(2000)
+                    // MolyDiktat mit Auto-Transkription: Erfolgsscreen nicht abwarten.
+                    val skipWait = dictationSession.active.value &&
+                        dictationSession.options.value.autoTranscribe
+                    if (!skipWait) delay(2000)
                     debugPrintln { "%%%%%%%%%%% ${recordingState.recordingPath}" }
                     editorViewModel.onUpdateRecordingPath(recordingState.recordingPath)
                     navigateBack()

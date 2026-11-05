@@ -330,4 +330,15 @@
     <string name="download_hint_background">📱  App kann minimiert werden – der Download läuft im Hintergrund weiter</string>
     <string name="download_hint_resume">🔄  Unterbrochene Downloads werden beim nächsten Versuch automatisch fortgesetzt</string>
     <string name="download_hint_duration">⏳  Je nach Internetverbindung kann das einige Minuten dauern</string>
+    <!-- MolyDiktat-Einstellungen -->
+    <string name="dictation_settings_title">MolyDiktat</string>
+    <string name="dictation_settings_description">Ein Tipp öffnet eine neue Notiz und startet sofort die Aufnahme. Nach „Stopp“ transkribiert MolyEcho und wechselt in den Hintergrund. Tippe auf die Benachrichtigung, um den Text zu kopieren. Hinweis: Der Text bleibt in der Zwischenablage, bis du etwas anderes kopierst.</string>
+    <string name="dictation_settings_auto_transcribe">Nach Stopp automatisch transkribieren</string>
+    <string name="dictation_settings_auto_transcribe_desc">Schiebt die App in den Hintergrund. Aus: Die Notiz bleibt wie gewohnt offen.</string>
+    <string name="dictation_settings_auto_copy">Text automatisch kopieren</string>
+    <string name="dictation_settings_auto_copy_desc">Legt den fertigen Text in die Zwischenablage.</string>
+    <string name="dictation_settings_notify_ready">Benachrichtigung „Text bereit“ anzeigen</string>
+    <string name="dictation_settings_notify_ready_desc">Ein Tipp kopiert den Text erneut. Aus: Es erscheint die normale Fertig-Benachrichtigung.</string>
+    <string name="dictation_settings_pin_button">Verknüpfung auf Startbildschirm anlegen</string>
+    <string name="dictation_settings_pin_unsupported">Dein Startbildschirm unterstützt keine Verknüpfungen. Halte stattdessen das MolyEcho-Symbol gedrückt und wähle MolyDiktat.</string>
 </resources>

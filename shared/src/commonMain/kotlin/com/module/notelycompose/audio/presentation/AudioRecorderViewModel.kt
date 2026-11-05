@@ -6,6 +6,7 @@ import com.module.notelycompose.audio.domain.AudioRecorderInteractor
 import com.module.notelycompose.audio.domain.AudioRecorderPresentationState
 import com.module.notelycompose.audio.ui.recorder.AudioRecorderUiState
 import com.module.notelycompose.audio.ui.recorder.ScreenState
+import com.module.notelycompose.dictation.DictationSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +14,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AudioRecorderViewModel(
-    private val interactor: AudioRecorderInteractor
+    private val interactor: AudioRecorderInteractor,
+    private val dictationSession: DictationSession
 ) : ViewModel() {
+    private val dictationSessionId = dictationSession.sessionId
+
     val audioRecorderPresentationState: StateFlow<AudioRecorderPresentationState> =
         interactor.state
 
@@ -54,6 +58,10 @@ class AudioRecorderViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        // MolyDiktat: Wird der Recorder ohne erfolgreiche Aufnahme verlassen (Berechtigung
+        // abgelehnt, Zurück), endet das Diktat. Hier statt in einem DisposableEffect, weil
+        // onCleared() beim Drehen NICHT läuft, die Compose-Entsorgung aber schon.
+        if (_screenState.value != ScreenState.Success) dictationSession.finishIfCurrent(dictationSessionId)
         interactor.onCleared()
         onStopRecording()
         finishRecorder()

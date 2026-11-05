@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.module.notelycompose.dictation.DictationOptions
 import com.module.notelycompose.notes.extension.TEXT_SIZE_BODY
 import com.module.notelycompose.modelDownloader.NO_MODEL_SELECTION
 import com.module.notelycompose.platform.Theme
@@ -25,6 +26,9 @@ class PreferencesRepository(
         private val KEY_BODY_TEXT_SIZE = floatPreferencesKey("body_text_size")
         private val KEY_MODEL_SELECTION = intPreferencesKey("model_selection")
         private val KEY_ACCENT_THEME = stringPreferencesKey("accent_theme")
+        private val KEY_DICTATION_AUTO_TRANSCRIBE = booleanPreferencesKey("dictation_auto_transcribe")
+        private val KEY_DICTATION_AUTO_COPY = booleanPreferencesKey("dictation_auto_copy")
+        private val KEY_DICTATION_NOTIFY_READY = booleanPreferencesKey("dictation_notify_ready")
     }
 
     suspend fun hasCompletedOnboarding(): Boolean {
@@ -89,6 +93,36 @@ class PreferencesRepository(
         }
     }
 
+    // --- MolyDiktat (alle Optionen standardmäßig an) ---
+
+    fun getDictationAutoTranscribe(): Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[KEY_DICTATION_AUTO_TRANSCRIBE] ?: true
+    }
+
+    suspend fun setDictationAutoTranscribe(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[KEY_DICTATION_AUTO_TRANSCRIBE] = enabled }
+    }
+
+    fun getDictationAutoCopy(): Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[KEY_DICTATION_AUTO_COPY] ?: true
+    }
+
+    suspend fun setDictationAutoCopy(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[KEY_DICTATION_AUTO_COPY] = enabled }
+    }
+
+    fun getDictationNotifyReady(): Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[KEY_DICTATION_NOTIFY_READY] ?: true
+    }
+
+    suspend fun setDictationNotifyReady(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[KEY_DICTATION_NOTIFY_READY] = enabled }
+    }
+
+    /** Liest alle drei Optionen als Momentaufnahme (für den Diktat-Start). */
+    suspend fun getDictationOptions(): DictationOptions = DictationOptions(
+        autoTranscribe = getDictationAutoTranscribe().first(),
+        autoCopy = getDictationAutoCopy().first(),
+        notifyReady = getDictationNotifyReady().first()
+    )
 }
-
-

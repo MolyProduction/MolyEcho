@@ -22,4 +22,18 @@
     <string name="download_error_generic">Download fehlgeschlagen</string>
     <string name="download_error_network">Netzwerkfehler</string>
     <string name="download_error_incomplete">Download unvollständig (%1$s von %2$s)</string>
+    <string name="notification_dictation_channel_name">MolyDiktat</string>
+    <string name="notification_dictation_ready_title">MolyDiktat – Text bereit</string>
+    <string name="notification_dictation_ready_text_copied">In Zwischenablage kopiert · Tippen zum erneuten Kopieren</string>
+    <string name="notification_dictation_ready_text_tap">Tippen zum Kopieren und Einfügen</string>
+    <string name="notification_dictation_action_open">In MolyEcho öffnen</string>
+    <string name="notification_dictation_failed_title">MolyDiktat</string>
+    <string name="notification_dictation_failed_no_text">Kein Text erkannt</string>
+    <string name="notification_dictation_failed_model">Sprachmodell fehlt – bitte MolyEcho öffnen</string>
+    <string name="notification_dictation_failed_generic">Transkription fehlgeschlagen</string>
+    <string name="dictation_toast_copied">Text kopiert</string>
+    <string name="dictation_toast_busy">MolyDiktat: Aufnahme oder Transkription läuft bereits</string>
+    <string name="shortcut_dictation_short">MolyDiktat</string>
+    <string name="shortcut_dictation_long">Neue Notiz diktieren</string>
+    <string name="widget_dictation_description">MolyDiktat mit einem Tipp starten</string>
 </resources>

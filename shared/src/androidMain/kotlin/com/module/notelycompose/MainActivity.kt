@@ -23,11 +23,21 @@ import androidx.core.app.ActivityCompat
 import com.module.notelycompose.permissions.PermissionLauncherHolder
 import android.content.Intent
 import androidx.core.content.IntentCompat
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.module.notelycompose.dictation.DictationIntents
+import com.module.notelycompose.dictation.DictationSession
+import com.module.notelycompose.service.AudioRecordingService
+import com.module.notelycompose.transcription.TranscriptionServiceController
+import de.molyecho.notlyvoice.android.R
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val fileSaverLauncherHolder by inject<FileSaverLauncherHolder>()
     private val folderPickerLauncherHolder by inject<FolderPickerLauncherHolder>()
     private val permissionLauncherHolder by inject<PermissionLauncherHolder>()
+    private val dictationSession by inject<DictationSession>()
+    private val transcriptionServiceController by inject<TranscriptionServiceController>()
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -36,6 +46,12 @@ class MainActivity : AppCompatActivity() {
         setupFolderPickerLauncher()
         setupNotificationPermissionLauncher()
         handleShareIntent(intent)
+        // Nur bei frischem Start: nach Drehen/Prozess-Neustart würde derselbe Intent sonst erneut ein Diktat auslösen.
+        if (savedInstanceState == null) handleDictationIntent(intent)
+        // Bewusst ohne repeatOnLifecycle: Das Signal kommt, solange die App noch sichtbar ist.
+        lifecycleScope.launch {
+            dictationSession.backgroundRequests.collect { moveTaskToBack(true) }
+        }
         enableEdgeToEdge()
         setContent {
             val preferenceRepository by inject<PreferencesRepository>()
@@ -103,6 +119,21 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleShareIntent(intent)
+        handleDictationIntent(intent)
+    }
+
+    private fun handleDictationIntent(intent: Intent?) {
+        if (intent?.action != DictationIntents.ACTION_DICTATE) return
+        // Aktion sofort löschen: kein erneutes Auslösen, wenn derselbe Intent wieder gelesen wird.
+        intent.action = null
+        // Start aus „Zuletzt verwendet" wiederholt den alten Start-Intent - kein neues Diktat.
+        if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return
+        val busy = AudioRecordingService.isRunning ||
+            transcriptionServiceController.isServiceActive ||
+            !dictationSession.request()
+        if (busy) {
+            Toast.makeText(this, R.string.dictation_toast_busy, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun handleShareIntent(intent: Intent?) {

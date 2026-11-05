@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- MolyDiktat: öffnet die App, legt eine neue Notiz an und startet die Aufnahme. -->
+    <shortcut
+        android:shortcutId="molydiktat"
+        android:enabled="true"
+        android:icon="@drawable/ic_dictation_mic"
+        android:shortcutShortLabel="@string/shortcut_dictation_short"
+        android:shortcutLongLabel="@string/shortcut_dictation_long">
+        <intent
+            android:action="de.molyecho.notlyvoice.android.action.DICTATE"
+            android:targetClass="com.module.notelycompose.MainActivity"
+            android:targetPackage="de.molyecho.notlyvoice.android" />
+    </shortcut>
+</shortcuts>

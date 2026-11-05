@@ -33,6 +33,7 @@ import com.module.notelycompose.shareimport.ShareImportState
 import com.module.notelycompose.Arguments.DEFAULT_NOTE_ID
 import com.module.notelycompose.audio.ui.recorder.RecordingScreen
 import com.module.notelycompose.core.Routes
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.core.composableNoAnimation
 import com.module.notelycompose.core.composableWithHorizontalSlide
 import com.module.notelycompose.core.composableWithVerticalSlide
@@ -103,6 +104,10 @@ fun App(
             when (onboardingState) {
                 is OnboardingState.Initial -> Unit
                 is OnboardingState.NotCompleted -> {
+                    // Ein vor Abschluss des Onboardings angeforderter Diktat-Start
+                    // darf nicht überraschend danach losgehen.
+                    val dictationSession: DictationSession = koinInject()
+                    LaunchedEffect(Unit) { dictationSession.clearIfNotStarted() }
                     OnboardingWalkthrough(
                         onFinish = { viewmodel.onCompleteOnboarding() },
                         permissionHandler = permissionHandler
@@ -128,6 +133,20 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
             val noteId = (shareState as ShareImportState.Ready).noteId
             navController.navigate(Routes.Details(noteId.toString(), autoTranscribe = true))
             shareCoordinator.consumed()
+        }
+    }
+
+    // MolyDiktat: neue Notiz öffnen, der Aufnahme-Screen startet danach von selbst.
+    val dictationSession: DictationSession = koinInject()
+    val preferencesRepository: PreferencesRepository = koinInject()
+    val dictationPending by dictationSession.pendingStart.collectAsState()
+    LaunchedEffect(dictationPending) {
+        if (dictationPending) {
+            val options = preferencesRepository.getDictationOptions()
+            // Ausgangslage herstellen: alles über der Notizliste wegräumen.
+            navController.popBackStack(Routes.List, inclusive = false)
+            navController.navigate(Routes.Details(DEFAULT_NOTE_ID, autoRecord = true))
+            dictationSession.begin(options)
         }
     }
 
@@ -220,6 +239,7 @@ fun NoteAppRoot(platformUiState: PlatformUiState) {
                             navController.navigateSingleTop(Routes.Transcription)
                         },
                         autoTranscribe = route.autoTranscribe,
+                        autoRecord = route.autoRecord,
                         editorViewModel = koinViewModel(viewModelStoreOwner = parentEntry),
                         onNavigateToSettingsText = {
                             navController.navigateSingleTop(Routes.NoteSettingsText)

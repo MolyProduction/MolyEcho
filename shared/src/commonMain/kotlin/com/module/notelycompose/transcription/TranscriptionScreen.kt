@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.notes.presentation.detail.TextEditorViewModel
 import com.module.notelycompose.notes.ui.theme.LocalCustomColors
 import com.module.notelycompose.platform.HandlePlatformBackNavigation
@@ -72,13 +73,15 @@ import de.molyecho.notlyvoice.resources.transcription_loading_model
 import de.molyecho.notlyvoice.resources.transcription_long_running_hint
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TranscriptionScreen(
     navigateBack: () -> Unit,
     viewModel: TranscriptionViewModel = koinViewModel(),
-    editorViewModel: TextEditorViewModel
+    editorViewModel: TextEditorViewModel,
+    dictationSession: DictationSession = koinInject()
 ) {
 
     val scrollState = rememberScrollState()
@@ -112,6 +115,9 @@ fun TranscriptionScreen(
             return@LaunchedEffect
         }
         viewModel.startRecognizer(path)
+        // MolyDiktat: startRecognizer() hat den Vordergrund-Service synchron gestartet, solange
+        // die App noch sichtbar ist - erst jetzt darf sie in den Hintergrund wechseln.
+        dictationSession.requestBackground()
     }
     DisposableEffect(Unit) {
         onDispose {

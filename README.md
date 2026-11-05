@@ -52,6 +52,7 @@ Hinter der Transkription steckt [whisper.cpp](https://github.com/ggerganov/whisp
 - **Integrierte Aufnahme** – Sprachnotizen direkt in der App aufnehmen, pausieren und stoppen
 - **Audiowiedergabe** – Aufnahmen direkt aus der Notiz abspielen
 - **Quick-Settings-Kachel** – Aufnahme per Android-Schnelleinstellung starten, ohne die App zu öffnen
+- **MolyDiktat** – Ein Klick (App-Shortcut, Verknüpfung, Widget oder Schnellkachel): neue Notiz, sofort aufnehmen, nach „Stopp" automatisch transkribieren; die Benachrichtigung „Text bereit" kopiert den Text per Tipp in die Zwischenablage
 - **Hintergrundaufnahme** – Aufnahme läuft weiter, auch wenn der Bildschirm gesperrt ist
 
 ### 📤 Export & Teilen

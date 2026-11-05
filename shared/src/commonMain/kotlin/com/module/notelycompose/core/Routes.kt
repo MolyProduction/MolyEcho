@@ -14,7 +14,12 @@ sealed interface Routes {
     data object DetailsGraph : Routes
 
     @Serializable
-    data class Details(val noteId: String?, val autoTranscribe: Boolean = false) : Routes
+    data class Details(
+        val noteId: String?,
+        val autoTranscribe: Boolean = false,
+        // MolyDiktat: Aufnahme-Screen sofort nach dem Öffnen der neuen Notiz starten
+        val autoRecord: Boolean = false
+    ) : Routes
 
     @Serializable
     data class Recorder(val noteId: String?) : Routes
