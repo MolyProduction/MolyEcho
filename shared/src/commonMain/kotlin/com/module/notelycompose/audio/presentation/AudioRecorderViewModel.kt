@@ -7,6 +7,7 @@ import com.module.notelycompose.audio.domain.AudioRecorderPresentationState
 import com.module.notelycompose.audio.ui.recorder.AudioRecorderUiState
 import com.module.notelycompose.audio.ui.recorder.ScreenState
 import com.module.notelycompose.dictation.DictationSession
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +37,10 @@ class AudioRecorderViewModel(
     }
 
     fun onStopRecording() = viewModelScope.launch {
-        interactor.onStopRecording(this)
+        // The interactor launches its own child coroutine (stop service, wait, read file path).
+        // coroutineScope {} waits for it, so Success is only set once recordingPath is known.
+        // Without this, MolyDiktat (no 2 s success delay) saved an empty path into the note.
+        coroutineScope { interactor.onStopRecording(this) }
         _screenState.update { ScreenState.Success }
     }
 
