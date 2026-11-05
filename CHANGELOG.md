@@ -16,6 +16,12 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.4.0 (45) – 2026-11-05
+- **Neu: MolyDiktat – Ein-Klick-Diktat.** Ein Tipp auf den App-Shortcut (Langdruck aufs Icon), eine angepinnte Verknüpfung, das neue 1×1-Widget oder die neue Schnellkachel „MolyDiktat" öffnet MolyEcho, legt eine neue Notiz an und startet sofort die Aufnahme in der normalen Aufnahme-Oberfläche. Nach „Stopp" wird automatisch transkribiert, die App wechselt in den Hintergrund und eine Benachrichtigung „MolyDiktat – Text bereit" meldet das Ergebnis; ein Tipp darauf kopiert den Text in die Zwischenablage (ohne die App zu öffnen).
+- **Einstellungen:** Neuer Abschnitt „MolyDiktat" mit drei Schaltern (automatisch transkribieren und in den Hintergrund gehen / Text automatisch kopieren / „Text bereit"-Benachrichtigung) sowie einem Button „Verknüpfung auf Startbildschirm anlegen". Alle Optionen sind standardmäßig an.
+- **Unverändert:** Manuelle Aufnahme, Transkription, Share-Import und die bestehende Aufnahme-Kachel verhalten sich ohne aktives Diktat wie bisher.
+- **Hinweis:** Der diktierte Text bleibt in der Zwischenablage, bis du etwas anderes kopierst. Die Zwischenablage wird nur lokal beschrieben, es wird nichts übertragen. Es werden keine neuen Berechtigungen benötigt.
+
 ### 1.3.13 (44) – 2026-07-29
 - **QR-Code im Teilen-Screen mehr als doppelt so groß:** Der Screen zeigte bisher die komplette Teilen-Karte, in der der QR-Code nur ein Drittel der Breite einnimmt — auf dem Bildschirm rund 2 cm und damit zu klein zum Abscannen. Jetzt wird der QR-Bereich als eigene, hochaufgelöste Kachel (~4,5 cm) dargestellt. Verschickt wird über „Jetzt teilen" weiterhin die vollständige Karte.
 - **Bewertungs-Hinweis:** Unter dem Teilen-Button führt ein Button „Bei Google Play bewerten" direkt auf die Store-Seite.
