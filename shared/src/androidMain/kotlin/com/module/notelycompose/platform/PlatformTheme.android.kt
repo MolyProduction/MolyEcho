@@ -8,7 +8,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.net.toUri
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import com.module.notelycompose.FileSaverHandler
+import com.module.notelycompose.MainActivity
+import com.module.notelycompose.dictation.DictationIntents
+import de.molyecho.notlyvoice.android.R
 import com.module.notelycompose.platform.pdf.AndroidPdfGenerator
 
 actual class PlatformUtils(
@@ -196,5 +202,20 @@ actual class PlatformUtils(
         } catch (e: Exception) {
             onResult(false, "Failed to copy: ${e.message}")
         }
+    }
+
+    actual fun requestPinDictationShortcut(): Boolean {
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) return false
+        val shortcut = ShortcutInfoCompat.Builder(context, "molydiktat_pinned")
+            .setShortLabel(context.getString(R.string.shortcut_dictation_short))
+            .setLongLabel(context.getString(R.string.shortcut_dictation_long))
+            .setIcon(IconCompat.createWithResource(context, R.drawable.ic_dictation_mic))
+            .setIntent(
+                Intent(context, MainActivity::class.java).apply {
+                    action = DictationIntents.ACTION_DICTATE
+                }
+            )
+            .build()
+        return ShortcutManagerCompat.requestPinShortcut(context, shortcut, null)
     }
 }

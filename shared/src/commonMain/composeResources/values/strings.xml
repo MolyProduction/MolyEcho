@@ -330,4 +330,15 @@
     <string name="download_hint_background">📱  You can minimize the app – the download continues in the background</string>
     <string name="download_hint_resume">🔄  Interrupted downloads resume automatically on the next attempt</string>
     <string name="download_hint_duration">⏳  Depending on your connection this can take several minutes</string>
+    <!-- MolyDictation settings -->
+    <string name="dictation_settings_title">MolyDictation</string>
+    <string name="dictation_settings_description">One tap opens a new note and starts recording at once. After you stop, MolyEcho transcribes and moves to the background. Tap the notification to copy the text. Note: the text stays on the clipboard until you copy something else.</string>
+    <string name="dictation_settings_auto_transcribe">Transcribe automatically after stop</string>
+    <string name="dictation_settings_auto_transcribe_desc">Moves the app to the background. When off, the note stays open as usual.</string>
+    <string name="dictation_settings_auto_copy">Copy text automatically</string>
+    <string name="dictation_settings_auto_copy_desc">Puts the finished text on the clipboard.</string>
+    <string name="dictation_settings_notify_ready">Show text-ready notification</string>
+    <string name="dictation_settings_notify_ready_desc">Tapping it copies the text again. When off, the standard completion notification is used.</string>
+    <string name="dictation_settings_pin_button">Add shortcut to home screen</string>
+    <string name="dictation_settings_pin_unsupported">Your launcher does not support shortcuts. Long-press the MolyEcho app icon and choose MolyDictation instead.</string>
 </resources>

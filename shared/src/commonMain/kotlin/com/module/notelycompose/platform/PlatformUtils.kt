@@ -31,4 +31,7 @@ expect class PlatformUtils {
         text: String,
         onResult: (Boolean, String?) -> Unit
     )
+
+    /** MolyDiktat: bittet den Launcher, eine Verknüpfung anzulegen. false = nicht unterstützt. */
+    fun requestPinDictationShortcut(): Boolean
 }
