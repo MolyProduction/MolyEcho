@@ -33,4 +33,6 @@
     <string name="notification_dictation_failed_generic">Transkription fehlgeschlagen</string>
     <string name="dictation_toast_copied">Text kopiert</string>
     <string name="dictation_toast_busy">MolyDiktat: Aufnahme oder Transkription läuft bereits</string>
+    <string name="shortcut_dictation_short">MolyDiktat</string>
+    <string name="shortcut_dictation_long">Neue Notiz diktieren</string>
 </resources>
