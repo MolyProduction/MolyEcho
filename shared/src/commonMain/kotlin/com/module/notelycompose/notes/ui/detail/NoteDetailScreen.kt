@@ -109,6 +109,7 @@ fun NoteDetailScreen(
     navigateToTranscription: () -> Unit,
     onNavigateToSettingsText: () -> Unit,
     autoTranscribe: Boolean = false,
+    autoRecord: Boolean = false,
     audioPlayerViewModel: AudioPlayerViewModel = koinViewModel(),
     downloaderViewModel: ModelDownloaderViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -139,6 +140,16 @@ fun NoteDetailScreen(
     var showCopiedTooltip by remember { mutableStateOf(false) }
     var isFabVisible by remember { mutableStateOf(true) }
     var autoTranscribeConsumed by rememberSaveable { mutableStateOf(false) }
+    var autoRecordConsumed by rememberSaveable { mutableStateOf(false) }
+
+    // MolyDiktat: neue Notiz → Aufnahme-Screen genau einmal automatisch öffnen.
+    // Das Flag ist gespeichert, damit Drehen oder Zurück aus dem Recorder nicht erneut öffnet.
+    LaunchedEffect(autoRecord) {
+        if (autoRecord && !autoRecordConsumed) {
+            autoRecordConsumed = true
+            navigateToRecorder("$currentNoteId")
+        }
+    }
 
     // Pre-warm Whisper model in background when a recording exists so the model is
     // ready (or partially cached) by the time the user taps "Transkribieren".
