@@ -16,6 +16,9 @@ MolyEcho basiert auf NotelyVoice und enthält **102 zusätzliche Commits** (11.�
 
 ## Versionshistorie
 
+### 1.4.1 (46) – 2026-11-05
+- **Fix MolyDiktat:** Nach dem Beenden der Aufnahme blieb die neue Notiz leer – ohne angehängte Audiodatei und ohne Transkription. Der Aufnahme-Screen meldete „fertig", bevor der Dateipfad der Aufnahme feststand; das fiel bisher nur beim Diktat auf, weil dort die 2-Sekunden-Erfolgsanzeige übersprungen wird. Jetzt wird erst nach dem Speichern der Aufnahme weitergemacht.
+
 ### 1.4.0 (45) – 2026-11-05
 - **Neu: MolyDiktat – Ein-Klick-Diktat.** Ein Tipp auf den App-Shortcut (Langdruck aufs Icon), eine angepinnte Verknüpfung, das neue 1×1-Widget oder die neue Schnellkachel „MolyDiktat" öffnet MolyEcho, legt eine neue Notiz an und startet sofort die Aufnahme in der normalen Aufnahme-Oberfläche. Nach „Stopp" wird automatisch transkribiert, die App wechselt in den Hintergrund und eine Benachrichtigung „MolyDiktat – Text bereit" meldet das Ergebnis; ein Tipp darauf kopiert den Text in die Zwischenablage (ohne die App zu öffnen).
 - **Einstellungen:** Neuer Abschnitt „MolyDiktat" mit drei Schaltern (automatisch transkribieren und in den Hintergrund gehen / Text automatisch kopieren / „Text bereit"-Benachrichtigung) sowie einem Button „Verknüpfung auf Startbildschirm anlegen". Alle Optionen sind standardmäßig an.
