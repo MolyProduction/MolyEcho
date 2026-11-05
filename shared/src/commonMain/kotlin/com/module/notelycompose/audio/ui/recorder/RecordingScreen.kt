@@ -147,7 +147,10 @@ fun RecordingScreen(
             ScreenState.Success -> {
                 RecordingSuccessScreen()
                 LaunchedEffect(Unit) {
-                    delay(2000)
+                    // MolyDiktat mit Auto-Transkription: Erfolgsscreen nicht abwarten.
+                    val skipWait = dictationSession.active.value &&
+                        dictationSession.options.value.autoTranscribe
+                    if (!skipWait) delay(2000)
                     debugPrintln { "%%%%%%%%%%% ${recordingState.recordingPath}" }
                     editorViewModel.onUpdateRecordingPath(recordingState.recordingPath)
                     navigateBack()
