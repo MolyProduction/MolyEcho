@@ -133,4 +133,24 @@ class DictationSessionTest {
         session.finish()
         assertNull(session.backgroundSignal())
     }
+
+    @Test
+    fun `finishIfCurrent beendet nur die eigene Session`() {
+        val session = DictationSession()
+        session.request()
+        session.begin(DictationOptions())
+        val first = session.sessionId
+        session.finishIfCurrent(first)
+        assertFalse(session.active.value)
+
+        // Ein spaeter geleertes ViewModel der ersten Session darf die zweite nicht abschiessen.
+        session.request()
+        session.begin(DictationOptions())
+        assertTrue(session.sessionId != first)
+        session.finishIfCurrent(first)
+        assertTrue("zweites Diktat muss weiterlaufen", session.active.value)
+
+        session.finishIfCurrent(session.sessionId)
+        assertFalse(session.active.value)
+    }
 }

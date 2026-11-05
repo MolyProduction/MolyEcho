@@ -45,6 +45,7 @@ class DictationSession {
     /** Startet das wartende Diktat mit eingefrorenen Optionen. Ohne [request] wirkungslos. */
     fun begin(options: DictationOptions) {
         if (!_pendingStart.value) return
+        sessionId++
         _options.value = options
         _pendingStart.value = false
         _active.value = true
@@ -63,6 +64,20 @@ class DictationSession {
         _options.value = DictationOptions()
         // Unzugestelltes Hintergrund-Signal verwerfen (keine spätere Überraschung).
         backgroundChannel.tryReceive()
+    }
+
+    /**
+     * Laufende Nummer des zuletzt gestarteten Diktats. ViewModels merken sie sich bei der
+     * Erzeugung: Ein ViewModel wird nach dem Pop erst nach der Animation geleert - dann läuft
+     * evtl. schon das nächste Diktat, das sein Aufräumen nicht beenden darf.
+     */
+    @kotlin.concurrent.Volatile
+    var sessionId: Long = 0L
+        private set
+
+    /** Beendet das Diktat nur, wenn es noch die Session [id] ist (siehe [sessionId]). */
+    fun finishIfCurrent(id: Long) {
+        if (sessionId == id) finish()
     }
 
     /** Verwirft einen wartenden, noch nicht gestarteten Diktat-Wunsch. */

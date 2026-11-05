@@ -32,6 +32,9 @@ class TranscriptionViewModel(
     private val _uiState = MutableStateFlow(TranscriptionUiState())
     val uiState: StateFlow<TranscriptionUiState> = _uiState
 
+    // Session, zu der dieses ViewModel gehört (onCleared kann nach Start eines neuen Diktats laufen).
+    private val dictationSessionId = dictationSession.sessionId
+
     // Session token captured from the Transcriber immediately after initialize() returns.
     // Passed to finish() so stale finish() calls from a previous ViewModel instance cannot
     // release the model owned by a newer session (Transcriber is a singleton).
@@ -208,7 +211,7 @@ class TranscriptionViewModel(
         // coroutine launches — by the time the coroutine runs, a new ViewModel may have
         // already called initialize() and bumped the counter.
         _uiState.update { it.copy(inTranscription = false, isModelLoading = false) }
-        dictationSession.finish()
+        dictationSession.finishIfCurrent(dictationSessionId)
         val token = mySessionToken
         CoroutineScope(Dispatchers.IO).launch {
             try {

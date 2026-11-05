@@ -17,6 +17,8 @@ class AudioRecorderViewModel(
     private val interactor: AudioRecorderInteractor,
     private val dictationSession: DictationSession
 ) : ViewModel() {
+    private val dictationSessionId = dictationSession.sessionId
+
     val audioRecorderPresentationState: StateFlow<AudioRecorderPresentationState> =
         interactor.state
 
@@ -59,7 +61,7 @@ class AudioRecorderViewModel(
         // MolyDiktat: Wird der Recorder ohne erfolgreiche Aufnahme verlassen (Berechtigung
         // abgelehnt, Zurück), endet das Diktat. Hier statt in einem DisposableEffect, weil
         // onCleared() beim Drehen NICHT läuft, die Compose-Entsorgung aber schon.
-        if (_screenState.value != ScreenState.Success) dictationSession.finish()
+        if (_screenState.value != ScreenState.Success) dictationSession.finishIfCurrent(dictationSessionId)
         interactor.onCleared()
         onStopRecording()
         finishRecorder()

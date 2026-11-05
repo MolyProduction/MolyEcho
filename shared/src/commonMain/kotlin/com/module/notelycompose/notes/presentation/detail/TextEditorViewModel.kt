@@ -21,6 +21,7 @@ import com.module.notelycompose.notes.presentation.mapper.EditorPresentationToUi
 import com.module.notelycompose.notes.presentation.mapper.TextAlignPresentationMapper
 import com.module.notelycompose.notes.presentation.mapper.TextFormatPresentationMapper
 import com.module.notelycompose.notes.ui.detail.EditorUiState
+import com.module.notelycompose.dictation.DictationSession
 import com.module.notelycompose.onboarding.data.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +49,18 @@ class TextEditorViewModel(
     private val textFormatPresentationMapper: TextFormatPresentationMapper,
     private val textAlignPresentationMapper: TextAlignPresentationMapper,
     private val textEditorHelper: TextEditorHelper,
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val dictationSession: DictationSession
 ) : ViewModel() {
+
+    // Dieses ViewModel lebt so lange wie der Detail-Flow (Notiz, Recorder, Transkription).
+    // Verlässt der Nutzer ihn vorzeitig (z. B. Zurück am Download-Dialog), endet ein Diktat hier.
+    private val dictationSessionId = dictationSession.sessionId
+
+    override fun onCleared() {
+        dictationSession.finishIfCurrent(dictationSessionId)
+        super.onCleared()
+    }
 
     private val _editorPresentationState = MutableStateFlow(EditorPresentationState())
     val editorPresentationState: StateFlow<EditorPresentationState> = _editorPresentationState
