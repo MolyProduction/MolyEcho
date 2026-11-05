@@ -35,4 +35,5 @@
     <string name="dictation_toast_busy">MolyDiktat: Aufnahme oder Transkription läuft bereits</string>
     <string name="shortcut_dictation_short">MolyDiktat</string>
     <string name="shortcut_dictation_long">Neue Notiz diktieren</string>
+    <string name="widget_dictation_description">MolyDiktat mit einem Tipp starten</string>
 </resources>

@@ -35,4 +35,5 @@
     <string name="dictation_toast_busy">MolyDictation: a recording or transcription is already running</string>
     <string name="shortcut_dictation_short">MolyDictation</string>
     <string name="shortcut_dictation_long">Dictate a new note</string>
+    <string name="widget_dictation_description">Start MolyDictation with one tap</string>
 </resources>
